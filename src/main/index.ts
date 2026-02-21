@@ -9,9 +9,9 @@ let mainWindow: BrowserWindow | null = null;
 // Load app icon
 const getIconPath = (): string => {
   if (is.dev) {
-    return join(__dirname, "../../resources/logo.svg");
+    return join(__dirname, "../../resources/icon.png");
   }
-  return join(process.resourcesPath, "logo.svg");
+  return join(process.resourcesPath, "resources/icon.png");
 };
 
 function createWindow(): void {
@@ -56,6 +56,15 @@ app.whenReady().then(async () => {
   app.on("browser-window-created", (_, window) => {
     optimizer.watchWindowShortcuts(window);
   });
+
+  // Set dock icon on macOS
+  if (process.platform === "darwin") {
+    const dockIconPath = getIconPath();
+    const dockIcon = nativeImage.createFromPath(dockIconPath);
+    if (!dockIcon.isEmpty()) {
+      app.dock.setIcon(dockIcon);
+    }
+  }
 
   // Initialize default marketplace
   await marketplaceService.initializeDefaultMarketplace();

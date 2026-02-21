@@ -21,7 +21,12 @@
     },
     "files": [
       "out/**/*",
-      "resources/**/*"
+      "node_modules/**/*"
+    ],
+    "asar": true,
+    "asarUnpack": [
+      "node_modules/chokidar/**",
+      "node_modules/fsevents/**"
     ],
     "extraResources": [
       {
@@ -32,6 +37,7 @@
     "mac": {
       "target": "dmg",
       "category": "public.app-category.developer-tools",
+      "icon": "resources/icon.png",
       "sign": false
     },
     "win": {
@@ -67,40 +73,39 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "dependencies": {
+    "chokidar": "^5.0.0",
+    "gray-matter": "^4.0.3"
+  },
   "devDependencies": {
     "@electron-toolkit/preload": "^3.0.2",
     "@electron-toolkit/utils": "^4.0.0",
+    "@monaco-editor/react": "^4.7.0",
+    "@tailwindcss/typography": "^0.5.19",
     "@tailwindcss/vite": "^4.2.0",
     "@types/node": "^25.3.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.4",
+    "@xterm/addon-fit": "^0.11.0",
+    "@xterm/xterm": "^6.0.0",
     "autoprefixer": "^10.4.24",
     "electron": "^40.6.0",
     "electron-builder": "^26.8.1",
     "electron-vite": "^5.0.0",
+    "execa": "^9.6.1",
+    "lucide-react": "^0.500.0",
     "png-to-ico": "^3.0.1",
     "postcss": "^8.5.6",
-    "sharp": "^0.34.5",
-    "tailwindcss": "^4.2.0",
-    "typescript": "^5.9.3",
-    "vite": "^7.3.1"
-  },
-  "dependencies": {
-    "@monaco-editor/react": "^4.7.0",
-    "@tailwindcss/typography": "^0.5.19",
-    "@xterm/addon-fit": "^0.11.0",
-    "@xterm/xterm": "^6.0.0",
-    "chokidar": "^5.0.0",
-    "execa": "^9.6.1",
-    "gray-matter": "^4.0.3",
-    "lucide-react": "^0.500.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-markdown": "^10.1.0",
     "react-router-dom": "^7.13.0",
     "remark-gfm": "^4.0.1",
-    "simple-git": "^3.31.1",
+    "sharp": "^0.34.5",
+    "tailwindcss": "^4.2.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1",
     "zod": "^4.3.6",
     "zustand": "^5.0.11"
   }

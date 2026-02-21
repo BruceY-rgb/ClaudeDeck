@@ -5,12 +5,7 @@ import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
   main: {
-    plugins: [externalizeDepsPlugin()],
-    build: {
-      rollupOptions: {
-        external: ['chokidar', 'simple-git', 'gray-matter']
-      }
-    }
+    plugins: [externalizeDepsPlugin({ exclude: ['execa'] })]
   },
   preload: {
     plugins: [externalizeDepsPlugin()]
