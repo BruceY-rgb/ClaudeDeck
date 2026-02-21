@@ -5,13 +5,13 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/claude-skills-and-agents-manager/releases/latest">
+  <a href="https://github.com/BruceY-rgb/ClaudeDeck/releases/latest">
     <img src="https://img.shields.io/github/release/claude-skills-and-agents-manager/claude-skills-and-agents-manager.svg" alt="Latest Release" />
   </a>
-  <a href="https://github.com/claude-skills-and-agents-manager/releases/latest">
+  <a href="https://github.com/BruceY-rgb/ClaudeDeck/releases/latest">
     <img src="https://img.shields.io/github/downloads/claude-skills-and-agents-manager/claude-skills-and-agents-manager/total.svg" alt="Downloads" />
   </a>
-  <a href="https://github.com/claude-skills-and-agents-manager/blob/master/LICENSE">
+  <a href="https://github.com/BruceY-rgb/ClaudeDeck/blob/master/LICENSE">
     <img src="https://img.shields.io/github/license/claude-skills-and-agents-manager/claude-skills-and-agents-manager.svg" alt="License" />
   </a>
 </p>
@@ -57,8 +57,8 @@ A visual desktop application for managing Claude Code agents, skills, plugins, a
 ## Downloads
 
 ### Latest Release
-- **macOS**: [Claude Skills Manager-1.0.0-mac.dmg](https://github.com/claude-skills-and-agents-manager/releases/latest)
-- **Windows**: [Claude Skills Manager Setup 1.0.0.exe](https://github.com/claude-skills-and-agents-manager/releases/latest)
+- **macOS**: [Claude Skills Manager-1.0.0-mac.dmg](https://github.com/BruceY-rgb/ClaudeDeck/releases/latest)
+- **Windows**: [Claude Skills Manager Setup 1.0.0.exe](https://github.com/BruceY-rgb/ClaudeDeck/releases/latest)
 
 ## Development
 
@@ -71,7 +71,7 @@ A visual desktop application for managing Claude Code agents, skills, plugins, a
 
 ```bash
 # Clone the repository
-git clone https://github.com/claude-skills-and-agents-manager/claude-skills-and-agents-manager.git
+git clone https://github.com/BruceY-rgb/ClaudeDeck/claude-skills-and-agents-manager.git
 cd claude-skills-and-agents-manager
 
 # Install dependencies
