@@ -11,6 +11,8 @@ import { hookService } from "../services/HookService";
 import { mcpService } from "../services/MCPService";
 import { marketplaceService } from "../services/MarketplaceService";
 import { cliService } from "../services/CLIService";
+import { projectDiscoveryService } from "../services/ProjectDiscoveryService";
+import { pixelOfficeService } from "../services/PixelOfficeService";
 
 let watcher: ReturnType<typeof watch> | null = null;
 let mainWindowRef: BrowserWindow | null = null;
@@ -226,6 +228,32 @@ export function registerHandlers(mainWindow: BrowserWindow): void {
   ipcMain.handle(IPC.CLI_KILL, async () => {
     await cliService.kill();
     return { success: true };
+  });
+
+  // --- Office / Projects ---
+  ipcMain.handle(IPC.OFFICE_GET_PROJECTS, async () => {
+    return projectDiscoveryService.getProjects();
+  });
+
+  ipcMain.handle(IPC.OFFICE_GET_PROJECT_AGENTS, async (_e, projectDir: string) => {
+    return pixelOfficeService.getAgentsByProject(projectDir);
+  });
+
+  ipcMain.handle(IPC.OFFICE_GET_AGENT_CONTEXT, async (_e, projectDir: string, sessionId: string) => {
+    return pixelOfficeService.getAgentContext(projectDir, sessionId);
+  });
+
+  ipcMain.handle(IPC.OFFICE_JOIN_TERMINAL, async (_e, projectDir: string) => {
+    await pixelOfficeService.joinTerminal(projectDir);
+    return { success: true };
+  });
+
+  ipcMain.handle(IPC.OFFICE_DELETE_AGENT, async (_e, projectDir: string, sessionId: string) => {
+    return pixelOfficeService.deleteAgent(projectDir, sessionId);
+  });
+
+  ipcMain.handle(IPC.OFFICE_DELETE_PROJECT, async (_e, projectDir: string) => {
+    return pixelOfficeService.deleteProject(projectDir);
   });
 
   // --- File Watcher ---

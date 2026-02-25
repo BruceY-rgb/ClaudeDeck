@@ -59,4 +59,13 @@ export const IPC = {
 
   // File system events (main -> renderer)
   FS_CHANGED: "fs:changed",
+
+  // Office / Projects
+  OFFICE_GET_PROJECTS: "office:get-projects",
+  OFFICE_GET_PROJECT_AGENTS: "office:get-project-agents",
+  OFFICE_GET_AGENT_CONTEXT: "office:get-agent-context",
+  OFFICE_JOIN_TERMINAL: "office:join-terminal",
+  OFFICE_DELETE_AGENT: "office:delete-agent",
+  OFFICE_DELETE_PROJECT: "office:delete-project",
+  OFFICE_PROJECT_UPDATED: "office:project-updated",
 } as const;

@@ -19,6 +19,8 @@ import { HooksPage } from "./pages/HooksPage";
 import { MCPPage } from "./pages/MCPPage";
 import { MarketplacePage } from "./pages/MarketplacePage";
 import { SettingsPage } from "./pages/SettingsPage";
+import { ProjectsListPage } from "./pages/ProjectsListPage";
+import { ProjectDetailPage } from "./pages/ProjectDetailPage";
 
 function ThemedApp(): JSX.Element {
   // Initialize theme
@@ -48,6 +50,8 @@ function ThemedApp(): JSX.Element {
             <Route path="/mcp" element={<MCPPage />} />
             <Route path="/marketplace" element={<MarketplacePage />} />
             <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/office" element={<ProjectsListPage />} />
+            <Route path="/office/project/:projectDir" element={<ProjectDetailPage />} />
           </Route>
         </Routes>
       </HashRouter>

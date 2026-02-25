@@ -9,6 +9,7 @@ import {
   Server,
   Store,
   Settings,
+  Layout,
   type LucideIcon,
 } from "lucide-react";
 import { ThemeToggle } from "../shared/ThemeToggle";
@@ -33,6 +34,7 @@ export function Sidebar(): JSX.Element {
     { path: "/hooks", label: t("sidebar.nav.hooks"), icon: Webhook },
     { path: "/mcp", label: t("sidebar.nav.mcp"), icon: Server },
     { path: "/marketplace", label: t("sidebar.nav.marketplace"), icon: Store },
+    { path: "/office", label: t("sidebar.nav.office"), icon: Layout },
     { path: "/settings", label: t("sidebar.nav.settings"), icon: Settings },
   ];
 

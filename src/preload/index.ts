@@ -192,6 +192,34 @@ const api = {
       return () => ipcRenderer.removeListener(IPC.CLI_OUTPUT, handler);
     },
   },
+  office: {
+    getProjects: (): Promise<Array<{
+      projectDir: string;
+      projectName: string;
+      agentCount: number;
+      activeCount: number;
+      lastActivity: string;
+    }>> => ipcRenderer.invoke(IPC.OFFICE_GET_PROJECTS),
+
+    getProjectAgents: (projectDir: string): Promise<Array<{
+      id: number;
+      sessionId: string;
+      projectDir: string;
+      isActive: boolean;
+    }>> => ipcRenderer.invoke(IPC.OFFICE_GET_PROJECT_AGENTS, projectDir),
+
+    joinTerminal: (projectDir: string): Promise<{ success: boolean }> =>
+      ipcRenderer.invoke(IPC.OFFICE_JOIN_TERMINAL, projectDir),
+
+    getAgentContext: (projectDir: string, sessionId: string): Promise<unknown> =>
+      ipcRenderer.invoke(IPC.OFFICE_GET_AGENT_CONTEXT, projectDir, sessionId),
+
+    deleteAgent: (projectDir: string, sessionId: string): Promise<{ success: boolean; error?: string }> =>
+      ipcRenderer.invoke(IPC.OFFICE_DELETE_AGENT, projectDir, sessionId),
+
+    deleteProject: (projectDir: string): Promise<{ success: boolean; error?: string; deletedCount?: number }> =>
+      ipcRenderer.invoke(IPC.OFFICE_DELETE_PROJECT, projectDir),
+  },
 };
 
 export type ElectronAPI = typeof api;
