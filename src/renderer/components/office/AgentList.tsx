@@ -12,7 +12,7 @@ interface AgentListProps {
   agents: AgentInfo[];
   selectedAgentId?: number;
   onSelectAgent: (agent: AgentInfo) => void;
-  onJoinTerminal: (projectDir: string) => void;
+  onJoinTerminal: (projectDir: string, sessionId?: string) => void;
   onDeleteAgent: (projectDir: string, sessionId: string) => void;
 }
 
@@ -31,15 +31,24 @@ export function AgentList({
     );
   }
 
+  // 按活跃状态排序，活跃的排在前面
+  const sortedAgents = [...agents].sort((a, b) => {
+    if (a.isActive && !b.isActive) return -1;
+    if (!a.isActive && b.isActive) return 1;
+    return 0;
+  });
+
   return (
     <div className="space-y-2">
-      {agents.map((agent) => (
+      {sortedAgents.map((agent) => (
         <div
           key={agent.sessionId}
           className={`flex items-center justify-between p-3 rounded-lg cursor-pointer transition-colors ${
-            selectedAgentId === agent.id
-              ? "bg-primary/10 border border-primary/50"
-              : "bg-card border border-border hover:border-primary/30"
+            agent.isActive
+              ? "bg-green-500/5 border border-green-500/30"
+              : selectedAgentId === agent.id
+                ? "bg-primary/10 border border-primary/50"
+                : "bg-card border border-border hover:border-primary/30"
           }`}
           onClick={() => onSelectAgent(agent)}
         >
@@ -53,6 +62,11 @@ export function AgentList({
               <span className="font-medium truncate">
                 {agent.sessionId.slice(0, 8)}...
               </span>
+              {agent.isActive && (
+                <span className="text-xs px-1.5 py-0.5 bg-green-500/20 text-green-500 rounded">
+                  活跃
+                </span>
+              )}
             </div>
             <div className="text-sm text-muted-foreground mt-1">
               {agent.isActive ? "运行中" : agent.lastModified
@@ -64,9 +78,9 @@ export function AgentList({
             className="p-2 hover:bg-primary/10 rounded-md"
             onClick={(e) => {
               e.stopPropagation();
-              onJoinTerminal(agent.projectDir);
+              onJoinTerminal(agent.projectDir, agent.sessionId);
             }}
-            title="打开终端"
+            title="恢复此会话"
           >
             <Terminal className="w-4 h-4" />
           </button>

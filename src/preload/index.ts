@@ -208,8 +208,8 @@ const api = {
       isActive: boolean;
     }>> => ipcRenderer.invoke(IPC.OFFICE_GET_PROJECT_AGENTS, projectDir),
 
-    joinTerminal: (projectDir: string): Promise<{ success: boolean }> =>
-      ipcRenderer.invoke(IPC.OFFICE_JOIN_TERMINAL, projectDir),
+    joinTerminal: (projectDir: string, sessionId?: string): Promise<{ success: boolean }> =>
+      ipcRenderer.invoke(IPC.OFFICE_JOIN_TERMINAL, projectDir, sessionId),
 
     getAgentContext: (projectDir: string, sessionId: string): Promise<unknown> =>
       ipcRenderer.invoke(IPC.OFFICE_GET_AGENT_CONTEXT, projectDir, sessionId),

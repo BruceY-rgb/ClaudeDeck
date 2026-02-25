@@ -151,17 +151,28 @@ class PixelOfficeService {
 
   /**
    * 在项目目录中打开终端并启动 claude
+   * @param projectDir 项目目录
+   * @param sessionId 可选，要恢复的会话ID，如果不提供则启动新会话
    */
-  async joinTerminal(projectDir: string): Promise<void> {
+  async joinTerminal(projectDir: string, sessionId?: string): Promise<void> {
+    const cdCmd = process.platform === "darwin" ? `cd "${projectDir.replace(/"/g, '\\"')}"` : `cd "${projectDir}"`;
+
+    let claudeCmd = "claude";
+    if (sessionId) {
+      claudeCmd += ` --resume ${sessionId}`;
+    }
+
+    const fullCmd = `${cdCmd} && ${claudeCmd}`;
+
     if (process.platform === "darwin") {
       await execAsync(
-        `osascript -e 'tell application "Terminal" to do script "cd ${projectDir.replace(/'/g, "\\'")} && claude"'`,
+        `osascript -e 'tell application "Terminal" to do script "${fullCmd.replace(/"/g, '\\"')}"'`,
       );
     } else if (process.platform === "win32") {
-      await execAsync(`start cmd /k "cd /d ${projectDir} && claude"`);
+      await execAsync(`start cmd /k "${fullCmd}"`);
     } else {
       await execAsync(
-        `x-terminal-emulator -e "cd ${projectDir} && claude"`,
+        `x-terminal-emulator -e "${fullCmd}"`,
       );
     }
   }

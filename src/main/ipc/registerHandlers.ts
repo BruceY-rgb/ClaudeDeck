@@ -243,8 +243,8 @@ export function registerHandlers(mainWindow: BrowserWindow): void {
     return pixelOfficeService.getAgentContext(projectDir, sessionId);
   });
 
-  ipcMain.handle(IPC.OFFICE_JOIN_TERMINAL, async (_e, projectDir: string) => {
-    await pixelOfficeService.joinTerminal(projectDir);
+  ipcMain.handle(IPC.OFFICE_JOIN_TERMINAL, async (_e, projectDir: string, sessionId?: string) => {
+    await pixelOfficeService.joinTerminal(projectDir, sessionId);
     return { success: true };
   });
 

@@ -36,8 +36,8 @@ export function ProjectDetailPage(): JSX.Element {
     }
   };
 
-  const handleJoinTerminal = async (dir: string): Promise<void> => {
-    await window.electronAPI.office.joinTerminal(dir);
+  const handleJoinTerminal = async (dir: string, sessionId?: string): Promise<void> => {
+    await window.electronAPI.office.joinTerminal(dir, sessionId);
   };
 
   const handleSelectAgent = (agent: AgentInfo): void => {
@@ -88,7 +88,7 @@ export function ProjectDetailPage(): JSX.Element {
         </div>
         <button
           className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-md"
-          onClick={() => handleJoinTerminal(decodedProjectDir)}
+          onClick={() => handleJoinTerminal(decodedProjectDir, selectedAgent?.sessionId || agents[0]?.sessionId)}
         >
           <Terminal className="w-4 h-4" />
           打开终端
