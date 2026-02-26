@@ -75,7 +75,8 @@
   "license": "ISC",
   "dependencies": {
     "chokidar": "^5.0.0",
-    "gray-matter": "^4.0.3"
+    "gray-matter": "^4.0.3",
+    "rehype-highlight": "^7.0.2"
   },
   "devDependencies": {
     "@electron-toolkit/preload": "^3.0.2",

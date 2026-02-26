@@ -21,6 +21,7 @@ import { MarketplacePage } from "./pages/MarketplacePage";
 import { SettingsPage } from "./pages/SettingsPage";
 import { ProjectsListPage } from "./pages/ProjectsListPage";
 import { ProjectDetailPage } from "./pages/ProjectDetailPage";
+import { PlansPage } from "./pages/PlansPage";
 
 function ThemedApp(): JSX.Element {
   // Initialize theme
@@ -52,6 +53,7 @@ function ThemedApp(): JSX.Element {
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/office" element={<ProjectsListPage />} />
             <Route path="/office/project/:projectDir" element={<ProjectDetailPage />} />
+            <Route path="/plans" element={<PlansPage />} />
           </Route>
         </Routes>
       </HashRouter>

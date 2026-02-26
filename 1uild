@@ -1,0 +1,20 @@
+error during build:
+Error: An entry point is required in the electron vite main config, which can be specified using "build.lib.entry" or "build.rollupOptions.input".
+    at BasicMinimalPluginContext.configResolved (file:///Users/yangsmac/Desktop/claude-skills-and-agents-manager/node_modules/electron-vite/dist/chunks/lib-q6ns0vZr.js:356:23)
+    at file:///Users/yangsmac/Desktop/claude-skills-and-agents-manager/node_modules/vite/dist/node/chunks/config.js:35675:87
+    at Array.map (<anonymous>)
+    at resolveConfig (file:///Users/yangsmac/Desktop/claude-skills-and-agents-manager/node_modules/vite/dist/node/chunks/config.js:35675:68)
+    at async createBuilder (file:///Users/yangsmac/Desktop/claude-skills-and-agents-manager/node_modules/vite/dist/node/chunks/config.js:33875:19)
+    at async build$1 (file:///Users/yangsmac/Desktop/claude-skills-and-agents-manager/node_modules/vite/dist/node/chunks/config.js:33437:18)
+    at async build (file:///Users/yangsmac/Desktop/claude-skills-and-agents-manager/node_modules/electron-vite/dist/chunks/lib-BkLsMF4i.js:33:13)
+    at async CAC.<anonymous> (file:///Users/yangsmac/Desktop/claude-skills-and-agents-manager/node_modules/electron-vite/dist/cli.js:83:9)
+error during build:
+Error: An entry point is required in the electron vite main config, which can be specified using "build.lib.entry" or "build.rollupOptions.input".
+    at BasicMinimalPluginContext.configResolved (file:///Users/yangsmac/Desktop/claude-skills-and-agents-manager/node_modules/electron-vite/dist/chunks/lib-q6ns0vZr.js:356:23)
+    at file:///Users/yangsmac/Desktop/claude-skills-and-agents-manager/node_modules/vite/dist/node/chunks/config.js:35675:87
+    at Array.map (<anonymous>)
+    at resolveConfig (file:///Users/yangsmac/Desktop/claude-skills-and-agents-manager/node_modules/vite/dist/node/chunks/config.js:35675:68)
+    at async createBuilder (file:///Users/yangsmac/Desktop/claude-skills-and-agents-manager/node_modules/vite/dist/node/chunks/config.js:33875:19)
+    at async build$1 (file:///Users/yangsmac/Desktop/claude-skills-and-agents-manager/node_modules/vite/dist/node/chunks/config.js:33437:18)
+    at async build (file:///Users/yangsmac/Desktop/claude-skills-and-agents-manager/node_modules/electron-vite/dist/chunks/lib-BkLsMF4i.js:33:13)
+    at async CAC.<anonymous> (file:///Users/yangsmac/Desktop/claude-skills-and-agents-manager/node_modules/electron-vite/dist/cli.js:83:9)

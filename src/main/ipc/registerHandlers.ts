@@ -13,6 +13,7 @@ import { marketplaceService } from "../services/MarketplaceService";
 import { cliService } from "../services/CLIService";
 import { projectDiscoveryService } from "../services/ProjectDiscoveryService";
 import { pixelOfficeService } from "../services/PixelOfficeService";
+import { planService } from "../services/PlanService";
 
 let watcher: ReturnType<typeof watch> | null = null;
 let mainWindowRef: BrowserWindow | null = null;
@@ -254,6 +255,27 @@ export function registerHandlers(mainWindow: BrowserWindow): void {
 
   ipcMain.handle(IPC.OFFICE_DELETE_PROJECT, async (_e, projectDir: string) => {
     return pixelOfficeService.deleteProject(projectDir);
+  });
+
+  // --- Plans ---
+  ipcMain.handle(IPC.PLANS_LIST, async () => {
+    return planService.listPlans();
+  });
+
+  ipcMain.handle(IPC.PLANS_READ, async (_e, fileName: string) => {
+    return planService.readPlan(fileName);
+  });
+
+  ipcMain.handle(IPC.PLANS_WRITE, async (_e, fileName: string, content: string) => {
+    return planService.writePlan(fileName, content);
+  });
+
+  ipcMain.handle(IPC.PLANS_DELETE, async (_e, fileName: string) => {
+    return planService.deletePlan(fileName);
+  });
+
+  ipcMain.handle(IPC.PLANS_BATCH_DELETE, async (_e, fileNames: string[]) => {
+    return planService.batchDeletePlans(fileNames);
   });
 
   // --- File Watcher ---

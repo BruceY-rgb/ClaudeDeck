@@ -1,6 +1,9 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
+/* highlight.js github-dark theme for code highlighting */
+@import "highlight.js/styles/github-dark.css";
+
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
@@ -42,4 +45,18 @@ body {
 
 .dark ::-webkit-scrollbar-thumb {
   background: theme('colors.zinc.700');
+}
+
+/* Markdown blockquote styling */
+.prose blockquote {
+  border-left: 4px solid theme('colors.zinc.300');
+  padding-left: 1rem;
+  margin-left: 0;
+  color: theme('colors.zinc.600');
+  font-style: italic;
+}
+
+.dark .prose blockquote {
+  border-left-color: theme('colors.zinc.600');
+  color: theme('colors.zinc.400');
 }

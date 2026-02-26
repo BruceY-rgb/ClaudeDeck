@@ -220,6 +220,29 @@ const api = {
     deleteProject: (projectDir: string): Promise<{ success: boolean; error?: string; deletedCount?: number }> =>
       ipcRenderer.invoke(IPC.OFFICE_DELETE_PROJECT, projectDir),
   },
+  plans: {
+    list: (): Promise<Array<{
+      fileName: string;
+      filePath: string;
+      name: string;
+      createdAt: string;
+      modifiedAt: string;
+      size: number;
+      preview: string;
+    }>> => ipcRenderer.invoke(IPC.PLANS_LIST),
+
+    read: (fileName: string): Promise<string | null> =>
+      ipcRenderer.invoke(IPC.PLANS_READ, fileName),
+
+    write: (fileName: string, content: string): Promise<{ success: boolean; error?: string }> =>
+      ipcRenderer.invoke(IPC.PLANS_WRITE, fileName, content),
+
+    delete: (fileName: string): Promise<{ success: boolean; error?: string }> =>
+      ipcRenderer.invoke(IPC.PLANS_DELETE, fileName),
+
+    batchDelete: (fileNames: string[]): Promise<{ success: boolean; deletedCount: number; errors: string[] }> =>
+      ipcRenderer.invoke(IPC.PLANS_BATCH_DELETE, fileNames),
+  },
 };
 
 export type ElectronAPI = typeof api;

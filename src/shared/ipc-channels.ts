@@ -68,4 +68,11 @@ export const IPC = {
   OFFICE_DELETE_AGENT: "office:delete-agent",
   OFFICE_DELETE_PROJECT: "office:delete-project",
   OFFICE_PROJECT_UPDATED: "office:project-updated",
+
+  // Plans
+  PLANS_LIST: "plans:list",
+  PLANS_READ: "plans:read",
+  PLANS_WRITE: "plans:write",
+  PLANS_DELETE: "plans:delete",
+  PLANS_BATCH_DELETE: "plans:batch-delete",
 } as const;
