@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Trash2 } from "lucide-react";
+import { useTranslation } from "../../i18n/LanguageContext";
 
 export interface ProjectInfo {
   projectDir: string;
@@ -15,6 +16,7 @@ interface ProjectCardProps {
 }
 
 export function ProjectCard({ project, onDelete }: ProjectCardProps): JSX.Element {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const formatTime = (dateStr: string): string => {
@@ -25,10 +27,10 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps): JSX.Elemen
     const diffHours = Math.floor(diffMins / 60);
     const diffDays = Math.floor(diffHours / 24);
 
-    if (diffMins < 1) return "刚刚";
-    if (diffMins < 60) return `${diffMins} 分钟前`;
-    if (diffHours < 24) return `${diffHours} 小时前`;
-    return `${diffDays} 天前`;
+    if (diffMins < 1) return t("office.justNow");
+    if (diffMins < 60) return t("office.minutesAgo", { count: diffMins });
+    if (diffHours < 24) return t("office.hoursAgo", { count: diffHours });
+    return t("office.daysAgo", { count: diffDays });
   };
 
   const handleClick = (): void => {
@@ -37,7 +39,7 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps): JSX.Elemen
 
   const handleDelete = (e: React.MouseEvent): void => {
     e.stopPropagation();
-    if (confirm(`确定要删除 "${project.projectName}" 的所有会话吗？此操作不可恢复。`)) {
+    if (confirm(t("office.deleteConfirm", { name: project.projectName }))) {
       onDelete(project.projectDir);
     }
   };
@@ -60,7 +62,7 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps): JSX.Elemen
           <button
             className="p-1.5 hover:bg-red-500/10 rounded-md text-muted-foreground hover:text-red-500"
             onClick={handleDelete}
-            title="删除所有会话"
+            title={t("office.deleteAllSessions")}
           >
             <Trash2 className="w-4 h-4" />
           </button>
@@ -79,7 +81,7 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps): JSX.Elemen
       </div>
       <div className="mt-4 flex items-center justify-between text-sm">
         <span className="text-muted-foreground">
-          {project.agentCount} 个会话
+          {project.agentCount === 1 ? t("office.sessions", { count: project.agentCount }) : t("office.sessionsPlural", { count: project.agentCount })}
         </span>
         <span className="text-muted-foreground">
           {formatTime(project.lastActivity)}

@@ -1,4 +1,5 @@
 import { Terminal, Trash2 } from "lucide-react";
+import { useTranslation } from "../../i18n/LanguageContext";
 
 export interface AgentInfo {
   id: number;
@@ -23,10 +24,12 @@ export function AgentList({
   onJoinTerminal,
   onDeleteAgent,
 }: AgentListProps): JSX.Element {
+  const { t } = useTranslation();
+
   if (agents.length === 0) {
     return (
       <div className="text-center text-muted-foreground py-8">
-        该项目暂无会话
+        {t("office.noSessionsInProject")}
       </div>
     );
   }
@@ -64,14 +67,14 @@ export function AgentList({
               </span>
               {agent.isActive && (
                 <span className="text-xs px-1.5 py-0.5 bg-green-500/20 text-green-500 rounded">
-                  活跃
+                  {t("office.active")}
                 </span>
               )}
             </div>
             <div className="text-sm text-muted-foreground mt-1">
-              {agent.isActive ? "运行中" : agent.lastModified
+              {agent.isActive ? t("office.running") : agent.lastModified
                 ? new Date(agent.lastModified).toLocaleString()
-                : "已结束"}
+                : t("office.ended")}
             </div>
           </div>
           <button
@@ -80,7 +83,7 @@ export function AgentList({
               e.stopPropagation();
               onJoinTerminal(agent.projectDir, agent.sessionId);
             }}
-            title="恢复此会话"
+            title={t("office.resumeSession")}
           >
             <Terminal className="w-4 h-4" />
           </button>
@@ -88,11 +91,11 @@ export function AgentList({
             className="p-2 hover:bg-red-500/10 rounded-md text-muted-foreground hover:text-red-500"
             onClick={(e) => {
               e.stopPropagation();
-              if (confirm("确定要删除这个会话吗？此操作不可恢复。")) {
+              if (confirm(t("office.deleteSessionConfirm"))) {
                 onDeleteAgent(agent.projectDir, agent.sessionId);
               }
             }}
-            title="删除会话"
+            title={t("office.deleteSession")}
           >
             <Trash2 className="w-4 h-4" />
           </button>

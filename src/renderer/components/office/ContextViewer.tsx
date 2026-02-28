@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { MessageSquare, User, Bot, Cpu, Loader2 } from "lucide-react";
+import { useTranslation } from "../../i18n/LanguageContext";
 import type { AgentInfo } from "./AgentList";
 
 interface ContextViewerProps {
@@ -14,6 +15,7 @@ interface Message {
 }
 
 export function ContextViewer({ agent }: ContextViewerProps): JSX.Element {
+  const { t } = useTranslation();
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -46,7 +48,7 @@ export function ContextViewer({ agent }: ContextViewerProps): JSX.Element {
   if (!agent) {
     return (
       <div className="flex items-center justify-center h-full text-muted-foreground">
-        选择一个会话来查看上下文
+        {t("office.selectSessionToViewContext")}
       </div>
     );
   }
@@ -80,7 +82,7 @@ export function ContextViewer({ agent }: ContextViewerProps): JSX.Element {
   return (
     <div className="h-full overflow-y-auto p-4 space-y-4">
       <div className="mb-4">
-        <h3 className="font-semibold">会话上下文</h3>
+        <h3 className="font-semibold">{t("office.sessionContext")}</h3>
         <p className="text-sm text-muted-foreground">
           Session: {agent.sessionId}
         </p>
@@ -89,11 +91,11 @@ export function ContextViewer({ agent }: ContextViewerProps): JSX.Element {
       {loading ? (
         <div className="flex items-center justify-center py-8 gap-2 text-muted-foreground">
           <Loader2 className="w-4 h-4 animate-spin" />
-          加载中...
+          {t("common.loading")}
         </div>
       ) : messages.length === 0 ? (
         <div className="text-center text-muted-foreground py-8">
-          暂无对话记录
+          {t("office.noConversationHistory")}
         </div>
       ) : (
         <div className="space-y-4">

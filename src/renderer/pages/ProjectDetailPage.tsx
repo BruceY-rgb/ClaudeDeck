@@ -3,8 +3,10 @@ import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Terminal, RefreshCw } from "lucide-react";
 import { AgentList, type AgentInfo } from "../components/office/AgentList";
 import { ContextViewer } from "../components/office/ContextViewer";
+import { useTranslation } from "../i18n/LanguageContext";
 
 export function ProjectDetailPage(): JSX.Element {
+  const { t } = useTranslation();
   const { projectDir } = useParams<{ projectDir: string }>();
   const navigate = useNavigate();
   const [agents, setAgents] = useState<AgentInfo[]>([]);
@@ -53,17 +55,17 @@ export function ProjectDetailPage(): JSX.Element {
       if (selectedAgent?.sessionId === sessionId) {
         setSelectedAgent(null);
       }
-      alert("会话已成功删除");
+      alert(t("office.sessionDeleted"));
     } else {
       console.error("Failed to delete agent:", result.error);
-      alert(`删除失败: ${result.error}`);
+      alert(t("office.deleteFailed", { error: result.error }));
     }
   };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-muted-foreground">加载中...</div>
+        <div className="text-muted-foreground">{t("common.loading")}</div>
       </div>
     );
   }
@@ -91,12 +93,12 @@ export function ProjectDetailPage(): JSX.Element {
           onClick={() => handleJoinTerminal(decodedProjectDir, selectedAgent?.sessionId || agents[0]?.sessionId)}
         >
           <Terminal className="w-4 h-4" />
-          打开终端
+          {t("office.openTerminal")}
         </button>
         <button
           className="p-2 hover:bg-card rounded-md"
           onClick={loadAgents}
-          title="刷新"
+          title={t("common.refresh")}
         >
           <RefreshCw className="w-5 h-5" />
         </button>
@@ -106,7 +108,7 @@ export function ProjectDetailPage(): JSX.Element {
       <div className="flex-1 flex overflow-hidden">
         {/* Left - Agent List */}
         <div className="w-80 border-r border-border p-4 overflow-y-auto">
-          <h2 className="font-semibold mb-4">会话列表</h2>
+          <h2 className="font-semibold mb-4">{t("office.sessionList")}</h2>
           <AgentList
             agents={agents}
             selectedAgentId={selectedAgent?.id}

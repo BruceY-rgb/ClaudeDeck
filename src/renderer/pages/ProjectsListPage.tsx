@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { ProjectCard, type ProjectInfo } from "../components/office/ProjectCard";
 import { FolderOpen } from "lucide-react";
+import { useTranslation } from "../i18n/LanguageContext";
 
 export function ProjectsListPage(): JSX.Element {
+  const { t } = useTranslation();
   const [projects, setProjects] = useState<ProjectInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -18,7 +20,7 @@ export function ProjectsListPage(): JSX.Element {
       const data = await window.electronAPI.office.getProjects();
       setProjects(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "加载项目失败");
+      setError(err instanceof Error ? err.message : t("office.loadProjectsFailed"));
     } finally {
       setLoading(false);
     }
@@ -28,16 +30,16 @@ export function ProjectsListPage(): JSX.Element {
     const result = await window.electronAPI.office.deleteProject(projectDir);
     if (result.success) {
       setProjects((prev) => prev.filter((p) => p.projectDir !== projectDir));
-      alert(`已删除 ${result.deletedCount || 0} 个会话`);
+      alert(t("office.deleted", { count: result.deletedCount || 0 }));
     } else {
-      alert(`删除失败: ${result.error}`);
+      alert(t("office.deleteFailed", { error: result.error }));
     }
   };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-muted-foreground">加载中...</div>
+        <div className="text-muted-foreground">{t("common.loading")}</div>
       </div>
     );
   }
@@ -50,7 +52,7 @@ export function ProjectsListPage(): JSX.Element {
           className="px-4 py-2 bg-primary text-primary-foreground rounded-md"
           onClick={loadProjects}
         >
-          重试
+          {t("office.retry")}
         </button>
       </div>
     );
@@ -60,9 +62,9 @@ export function ProjectsListPage(): JSX.Element {
     return (
       <div className="flex flex-col items-center justify-center h-64 gap-4">
         <FolderOpen className="w-16 h-16 text-muted-foreground" />
-        <h2 className="text-xl font-semibold">暂无项目</h2>
+        <h2 className="text-xl font-semibold">{t("office.noProjects")}</h2>
         <p className="text-muted-foreground">
-          在 Claude Code 中创建会话后将会显示在这里
+          {t("office.noProjectsHint")}
         </p>
       </div>
     );
@@ -71,9 +73,9 @@ export function ProjectsListPage(): JSX.Element {
   return (
     <div className="p-6">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold">项目</h1>
+        <h1 className="text-2xl font-bold">{t("office.projects")}</h1>
         <p className="text-muted-foreground mt-1">
-          显示所有 Claude Code 活跃进程所在的文件夹
+          {t("office.projectsDescription")}
         </p>
       </div>
 
