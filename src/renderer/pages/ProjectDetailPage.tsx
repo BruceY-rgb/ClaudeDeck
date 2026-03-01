@@ -62,6 +62,22 @@ export function ProjectDetailPage(): JSX.Element {
     }
   };
 
+  const handleBatchDelete = async (projectDir: string, sessionIds: string[]): Promise<void> => {
+    const result = await window.electronAPI.office.deleteAgents(projectDir, sessionIds);
+    if (result.success || result.deletedCount > 0) {
+      // 移除已删除的会话
+      setAgents((prev) => prev.filter((a) => !sessionIds.includes(a.sessionId)));
+      // 如果删除的是当前选中的会话，清空选择
+      if (selectedAgent && sessionIds.includes(selectedAgent.sessionId)) {
+        setSelectedAgent(null);
+      }
+      alert(t("office.sessionsDeleted", { count: result.deletedCount }));
+    } else {
+      console.error("Failed to delete agents:", result.errors);
+      alert(t("office.deleteFailed", { error: result.errors.join(", ") }));
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -108,13 +124,14 @@ export function ProjectDetailPage(): JSX.Element {
       <div className="flex-1 flex overflow-hidden">
         {/* Left - Agent List */}
         <div className="w-80 border-r border-border p-4 overflow-y-auto">
-          <h2 className="font-semibold mb-4">{t("office.sessionList")}</h2>
           <AgentList
             agents={agents}
+            title={t("office.sessionList")}
             selectedAgentId={selectedAgent?.id}
             onSelectAgent={handleSelectAgent}
             onJoinTerminal={handleJoinTerminal}
             onDeleteAgent={handleDeleteAgent}
+            onBatchDelete={handleBatchDelete}
           />
         </div>
 

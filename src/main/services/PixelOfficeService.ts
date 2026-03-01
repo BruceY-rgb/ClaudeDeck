@@ -205,6 +205,38 @@ class PixelOfficeService {
   }
 
   /**
+   * 批量删除会话
+   */
+  async deleteAgents(projectDir: string, sessionIds: string[]): Promise<{ success: boolean; deletedCount: number; errors: string[] }> {
+    console.log(`[PixelOfficeService] deleteAgents called: projectDir=${projectDir}, count=${sessionIds.length}`);
+
+    const encoded = this.encodeDirName(projectDir);
+    const projectPath = path.join(PROJECTS_DIR, encoded);
+
+    if (!fs.existsSync(projectPath)) {
+      return { success: false, deletedCount: 0, errors: ["项目目录不存在"] };
+    }
+
+    const errors: string[] = [];
+    let deletedCount = 0;
+
+    for (const sessionId of sessionIds) {
+      const jsonlPath = path.join(projectPath, `${sessionId}.jsonl`);
+      try {
+        if (fs.existsSync(jsonlPath)) {
+          fs.unlinkSync(jsonlPath);
+          deletedCount++;
+        }
+      } catch (e) {
+        errors.push(`删除 ${sessionId} 失败: ${e}`);
+      }
+    }
+
+    console.log(`[PixelOfficeService] Deleted ${deletedCount} files, ${errors.length} errors`);
+    return { success: errors.length === 0, deletedCount, errors };
+  }
+
+  /**
    * 删除项目（删除项目目录下的所有会话文件）
    */
   async deleteProject(projectDir: string): Promise<{ success: boolean; error?: string; deletedCount?: number }> {

@@ -66,6 +66,7 @@ export const IPC = {
   OFFICE_GET_AGENT_CONTEXT: "office:get-agent-context",
   OFFICE_JOIN_TERMINAL: "office:join-terminal",
   OFFICE_DELETE_AGENT: "office:delete-agent",
+  OFFICE_DELETE_AGENTS: "office:delete-agents",
   OFFICE_DELETE_PROJECT: "office:delete-project",
   OFFICE_PROJECT_UPDATED: "office:project-updated",
 

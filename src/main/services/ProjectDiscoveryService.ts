@@ -34,9 +34,35 @@ class ProjectDiscoveryService {
   /**
    * 将编码的目录名转换为真实路径
    * e.g. "-Users-yangsmac-Desktop-Slack" → "/Users/yangsmac/Desktop/Slack"
+   * e.g. "-Users-yangsmac-Desktop-claude-skills-and-agents-manager" → "/Users/yangsmac/Desktop/claude-skills-and-agents-manager"
    */
   private decodeDirName(encoded: string): string {
-    return encoded.replace(/^-/, "/").replace(/-/g, "/");
+    // Claude Code 的编码规则：用 "-" 替换每个 "/"，开头保留 "-"
+    // 问题：目录名中的 "-" 也会被保留，导致无法简单解码
+    // 解决方案：使用启发式方法，从最简单的情况开始尝试，直到找到存在的路径
+
+    // 1. 先尝试简单替换所有 "-" 为 "/"
+    let decoded = encoded.replace(/-/g, "/").replace(/\/+/g, "/");
+
+    // 2. 检查路径是否存在，如果存在就返回
+    if (fs.existsSync(decoded)) {
+      return decoded;
+    }
+
+    // 3. 如果不存在，尝试从后往前将部分 "/" 替换回 "-"
+    // 例如：/Users/yangsmac/Desktop/claude/skills/and/agents/manager → /Users/yangsmac/Desktop/claude-skills/and/agents/manager → ...
+    const parts = decoded.split("/");
+    // 从倒数第二个部分开始（最后一个是目录名本身）
+    for (let i = parts.length - 2; i >= 1; i--) {
+      // 将 parts[i] 和 parts[i+1] 之间的 "/" 替换为 "-"
+      const testDecoded = parts.slice(0, i).join("/") + "/" + parts.slice(i).join("-");
+      if (fs.existsSync(testDecoded)) {
+        return testDecoded;
+      }
+    }
+
+    // 4. 如果都找不到，返回简单替换的结果
+    return decoded;
   }
 
   /**

@@ -217,6 +217,9 @@ const api = {
     deleteAgent: (projectDir: string, sessionId: string): Promise<{ success: boolean; error?: string }> =>
       ipcRenderer.invoke(IPC.OFFICE_DELETE_AGENT, projectDir, sessionId),
 
+    deleteAgents: (projectDir: string, sessionIds: string[]): Promise<{ success: boolean; deletedCount: number; errors: string[] }> =>
+      ipcRenderer.invoke(IPC.OFFICE_DELETE_AGENTS, projectDir, sessionIds),
+
     deleteProject: (projectDir: string): Promise<{ success: boolean; error?: string; deletedCount?: number }> =>
       ipcRenderer.invoke(IPC.OFFICE_DELETE_PROJECT, projectDir),
   },

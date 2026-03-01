@@ -253,6 +253,10 @@ export function registerHandlers(mainWindow: BrowserWindow): void {
     return pixelOfficeService.deleteAgent(projectDir, sessionId);
   });
 
+  ipcMain.handle(IPC.OFFICE_DELETE_AGENTS, async (_e, projectDir: string, sessionIds: string[]) => {
+    return pixelOfficeService.deleteAgents(projectDir, sessionIds);
+  });
+
   ipcMain.handle(IPC.OFFICE_DELETE_PROJECT, async (_e, projectDir: string) => {
     return pixelOfficeService.deleteProject(projectDir);
   });
