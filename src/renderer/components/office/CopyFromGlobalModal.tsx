@@ -127,12 +127,12 @@ export function CopyFromGlobalModal(): JSX.Element | null {
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
       onClick={handleBackdropClick}
     >
-      <div className="bg-background rounded-lg shadow-lg w-full max-w-lg mx-4 flex flex-col max-h-[80vh]">
+      <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-lg w-full max-w-lg mx-4 flex flex-col max-h-[80vh]">
         {/* Header */}
         <div className="flex items-center justify-between p-6 pb-4">
-          <h2 className="text-lg font-semibold text-foreground">{modalTitle}</h2>
+          <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">{modalTitle}</h2>
           <button
-            className="p-1 hover:bg-card rounded-md text-muted-foreground hover:text-foreground transition-colors"
+            className="p-1 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
             onClick={closeCopyModal}
           >
             <X className="w-5 h-5" />
@@ -142,10 +142,10 @@ export function CopyFromGlobalModal(): JSX.Element | null {
         {/* Search */}
         <div className="px-6 pb-4">
           <div className="relative">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
             <input
               type="text"
-              className="w-full bg-background border border-border rounded-md pl-8 pr-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary placeholder:text-muted-foreground/50"
+              className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-md pl-8 pr-3 py-1.5 text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-blue-500 placeholder:text-zinc-400/50"
               placeholder={t("office.copyModal.searchPlaceholder")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -157,11 +157,11 @@ export function CopyFromGlobalModal(): JSX.Element | null {
         {/* Item list */}
         <div className="flex-1 overflow-y-auto px-6 min-h-0">
           {loading ? (
-            <div className="flex items-center justify-center py-8 text-muted-foreground">
+            <div className="flex items-center justify-center py-8 text-zinc-400">
               {t("common.loading")}
             </div>
           ) : filteredItems.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
+            <div className="flex flex-col items-center justify-center py-8 text-zinc-400">
               <TypeIcon className="w-8 h-8 mb-2 opacity-50" />
               <p className="text-sm">{t("office.copyModal.noItems")}</p>
             </div>
@@ -172,15 +172,15 @@ export function CopyFromGlobalModal(): JSX.Element | null {
                 return (
                   <div
                     key={item.name}
-                    className="flex items-center gap-3 p-3 bg-card border border-border rounded-lg hover:border-primary/30 transition-colors"
+                    className="flex items-center gap-3 p-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors"
                   >
-                    <TypeIcon className="w-4 h-4 flex-shrink-0 text-muted-foreground" />
+                    <TypeIcon className="w-4 h-4 flex-shrink-0 text-zinc-400" />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-foreground truncate">
+                      <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100 truncate">
                         {item.name}
                       </p>
                       {item.description && (
-                        <p className="text-xs text-muted-foreground truncate">
+                        <p className="text-xs text-zinc-500 dark:text-zinc-400 truncate">
                           {item.description}
                         </p>
                       )}
@@ -189,7 +189,7 @@ export function CopyFromGlobalModal(): JSX.Element | null {
                       className={`flex items-center gap-1 px-2.5 py-1 text-xs rounded-md flex-shrink-0 transition-colors ${
                         isCopied
                           ? "bg-green-500/10 text-green-500"
-                          : "bg-primary/10 text-primary hover:bg-primary/20"
+                          : "bg-blue-500/10 text-blue-500 hover:bg-blue-500/20"
                       }`}
                       onClick={() => handleCopy(item.name)}
                       disabled={isCopied}
@@ -216,7 +216,7 @@ export function CopyFromGlobalModal(): JSX.Element | null {
         {/* Footer */}
         <div className="flex items-center justify-end p-6 pt-4">
           <button
-            className="px-4 py-1.5 text-sm rounded-md border border-border hover:bg-accent transition-colors"
+            className="px-4 py-1.5 text-sm rounded-md border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
             onClick={closeCopyModal}
           >
             {t("office.copyModal.close")}

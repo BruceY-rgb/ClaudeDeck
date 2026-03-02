@@ -115,17 +115,17 @@ export function ProjectHooks(): JSX.Element {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-muted-foreground">{t("common.loading")}</div>
+        <div className="text-zinc-400">{t("common.loading")}</div>
       </div>
     );
   }
 
   return (
-    <div className="p-4 space-y-4">
+    <div className="p-4 space-y-4 overflow-y-auto">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <h2 className="text-lg font-semibold text-foreground">
+          <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
             {t("office.projectHooks.title")}
           </h2>
           {hasUnsavedChanges && (
@@ -136,14 +136,14 @@ export function ProjectHooks(): JSX.Element {
         </div>
         <div className="flex items-center gap-2">
           <button
-            className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md bg-card border border-border hover:bg-accent transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
             onClick={handleAdd}
           >
             <Plus className="w-4 h-4" />
             {t("office.projectHooks.add")}
           </button>
           <button
-            className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 hover:opacity-90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={handleSave}
             disabled={!hasUnsavedChanges || saving}
           >
@@ -155,7 +155,7 @@ export function ProjectHooks(): JSX.Element {
 
       {/* Empty state */}
       {localHooks.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
+        <div className="flex flex-col items-center justify-center py-16 text-zinc-400">
           <Webhook className="w-12 h-12 mb-3 opacity-50" />
           <p className="text-base font-medium">
             {t("office.projectHooks.empty")}
@@ -170,16 +170,16 @@ export function ProjectHooks(): JSX.Element {
           {localHooks.map((hook) => (
             <div
               key={hook.id}
-              className="bg-card border border-border rounded-lg p-4 space-y-3"
+              className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg p-4 space-y-3"
             >
               {/* First row: Event, Matcher, Delete */}
               <div className="flex items-center gap-3">
                 <div className="flex-shrink-0">
-                  <label className="block text-xs text-muted-foreground mb-1">
+                  <label className="block text-xs text-zinc-500 dark:text-zinc-400 mb-1">
                     {t("office.projectHooks.event")}
                   </label>
                   <select
-                    className="bg-background border border-border rounded-md px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                    className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-md px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
                     value={hook.event}
                     onChange={(e) =>
                       handleChange(hook.id, "event", e.target.value)
@@ -193,12 +193,12 @@ export function ProjectHooks(): JSX.Element {
                   </select>
                 </div>
                 <div className="flex-1">
-                  <label className="block text-xs text-muted-foreground mb-1">
+                  <label className="block text-xs text-zinc-500 dark:text-zinc-400 mb-1">
                     {t("office.projectHooks.matcher")}
                   </label>
                   <input
                     type="text"
-                    className="w-full bg-background border border-border rounded-md px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary placeholder:text-muted-foreground/50"
+                    className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-md px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 placeholder:text-zinc-400/50"
                     placeholder={t("office.projectHooks.matcherPlaceholder")}
                     value={hook.matcher}
                     onChange={(e) =>
@@ -208,7 +208,7 @@ export function ProjectHooks(): JSX.Element {
                 </div>
                 <div className="flex-shrink-0 self-end">
                   <button
-                    className="p-1.5 hover:bg-red-500/10 rounded-md text-muted-foreground hover:text-red-500 transition-colors"
+                    className="p-1.5 hover:bg-red-500/10 rounded-md text-zinc-400 hover:text-red-500 transition-colors"
                     onClick={() => handleRemove(hook.id)}
                     title="Delete"
                   >
@@ -219,12 +219,12 @@ export function ProjectHooks(): JSX.Element {
 
               {/* Second row: Command */}
               <div>
-                <label className="block text-xs text-muted-foreground mb-1">
+                <label className="block text-xs text-zinc-500 dark:text-zinc-400 mb-1">
                   {t("office.projectHooks.command")}
                 </label>
                 <input
                   type="text"
-                  className="w-full bg-background border border-border rounded-md px-2 py-1.5 text-sm font-mono focus:outline-none focus:ring-1 focus:ring-primary placeholder:text-muted-foreground/50"
+                  className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-md px-2 py-1.5 text-sm font-mono focus:outline-none focus:ring-1 focus:ring-blue-500 placeholder:text-zinc-400/50"
                   placeholder={t("office.projectHooks.commandPlaceholder")}
                   value={hook.command}
                   onChange={(e) =>

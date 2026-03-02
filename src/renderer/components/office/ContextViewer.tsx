@@ -47,7 +47,7 @@ export function ContextViewer({ agent }: ContextViewerProps): JSX.Element {
 
   if (!agent) {
     return (
-      <div className="flex items-center justify-center h-full text-muted-foreground">
+      <div className="flex items-center justify-center h-full text-zinc-400">
         {t("office.selectSessionToViewContext")}
       </div>
     );
@@ -75,26 +75,26 @@ export function ContextViewer({ agent }: ContextViewerProps): JSX.Element {
       case "system":
         return "bg-yellow-500/10 text-yellow-500";
       default:
-        return "bg-muted text-muted-foreground";
+        return "bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400";
     }
   };
 
   return (
     <div className="h-full overflow-y-auto p-4 space-y-4">
       <div className="mb-4">
-        <h3 className="font-semibold">{t("office.sessionContext")}</h3>
-        <p className="text-sm text-muted-foreground">
+        <h3 className="font-semibold text-zinc-900 dark:text-zinc-100">{t("office.sessionContext")}</h3>
+        <p className="text-sm text-zinc-500 dark:text-zinc-400">
           Session: {agent.sessionId}
         </p>
       </div>
 
       {loading ? (
-        <div className="flex items-center justify-center py-8 gap-2 text-muted-foreground">
+        <div className="flex items-center justify-center py-8 gap-2 text-zinc-400">
           <Loader2 className="w-4 h-4 animate-spin" />
           {t("common.loading")}
         </div>
       ) : messages.length === 0 ? (
-        <div className="text-center text-muted-foreground py-8">
+        <div className="text-center text-zinc-400 py-8">
           {t("office.noConversationHistory")}
         </div>
       ) : (
@@ -106,14 +106,14 @@ export function ContextViewer({ agent }: ContextViewerProps): JSX.Element {
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="font-medium capitalize">{msg.role}</span>
+                  <span className="font-medium capitalize text-zinc-900 dark:text-zinc-100">{msg.role}</span>
                   {msg.timestamp && (
-                    <span className="text-xs text-muted-foreground">
+                    <span className="text-xs text-zinc-400">
                       {new Date(msg.timestamp).toLocaleTimeString()}
                     </span>
                   )}
                 </div>
-                <div className="text-sm whitespace-pre-wrap">{msg.content}</div>
+                <div className="text-sm whitespace-pre-wrap text-zinc-700 dark:text-zinc-300">{msg.content}</div>
                 {msg.tools && msg.tools.length > 0 && (
                   <div className="mt-2 flex flex-wrap gap-2">
                     {msg.tools.map((tool, tidx) => (

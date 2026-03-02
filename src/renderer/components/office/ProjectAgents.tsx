@@ -64,7 +64,7 @@ export function ProjectAgents(): JSX.Element {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="flex items-center gap-2 text-muted-foreground">
+        <div className="flex items-center gap-2 text-zinc-400">
           <Cpu className="w-5 h-5 animate-spin" />
           <span>{t("common.loading")}</span>
         </div>
@@ -73,25 +73,25 @@ export function ProjectAgents(): JSX.Element {
   }
 
   return (
-    <div className="p-4 space-y-4">
+    <div className="p-4 space-y-4 overflow-y-auto">
       {/* ─── Toolbar: Search + Actions ─────────────────────── */}
       <div className="flex items-center gap-3">
         {/* Search */}
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={t("office.projectAgents.searchPlaceholder")}
-            className="w-full pl-9 pr-3 py-2 bg-card border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-colors"
+            className="w-full pl-9 pr-3 py-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-lg text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
           />
         </div>
 
         {/* Copy from Global */}
         <button
           onClick={handleCopyFromGlobal}
-          className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground bg-card border border-border rounded-lg hover:border-primary/30 transition-colors whitespace-nowrap"
+          className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-lg hover:border-zinc-300 dark:hover:border-zinc-600 transition-colors whitespace-nowrap"
         >
           <Copy className="w-4 h-4" />
           {t("office.projectAgents.copyFromGlobal")}
@@ -100,7 +100,7 @@ export function ProjectAgents(): JSX.Element {
         {/* New Agent */}
         <button
           onClick={handleCreate}
-          className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-lg hover:bg-primary/90 transition-colors whitespace-nowrap"
+          className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-white dark:text-zinc-900 bg-zinc-900 dark:bg-zinc-100 rounded-lg hover:opacity-90 transition-colors whitespace-nowrap"
         >
           <Plus className="w-4 h-4" />
           {t("office.projectAgents.create")}
@@ -110,13 +110,13 @@ export function ProjectAgents(): JSX.Element {
       {/* ─── Empty state ───────────────────────────────────── */}
       {filteredAgents.length === 0 && (
         <div className="flex flex-col items-center justify-center py-20 text-center">
-          <div className="w-16 h-16 rounded-full bg-card border border-border flex items-center justify-center mb-4">
-            <Bot className="w-8 h-8 text-muted-foreground" />
+          <div className="w-16 h-16 rounded-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center mb-4">
+            <Bot className="w-8 h-8 text-zinc-400" />
           </div>
-          <p className="text-lg font-medium text-foreground mb-1">
+          <p className="text-lg font-medium text-zinc-900 dark:text-zinc-100 mb-1">
             {t("office.projectAgents.empty")}
           </p>
-          <p className="text-sm text-muted-foreground max-w-sm">
+          <p className="text-sm text-zinc-500 dark:text-zinc-400 max-w-sm">
             {t("office.projectAgents.emptyHint")}
           </p>
         </div>
@@ -128,11 +128,11 @@ export function ProjectAgents(): JSX.Element {
           {filteredAgents.map((agent) => (
             <div
               key={agent.name}
-              className="group flex flex-col bg-card border border-border rounded-lg p-4 hover:border-primary/30 transition-colors"
+              className="group flex flex-col bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-lg hover:shadow-zinc-200/50 dark:hover:shadow-zinc-900/50 hover:-translate-y-0.5 cursor-pointer active:translate-y-0 active:shadow-md transition-all duration-200"
             >
               {/* Agent name */}
-              <div className="flex items-start justify-between gap-2 mb-2">
-                <h3 className="font-semibold text-foreground truncate" title={agent.name}>
+              <div className="flex items-start justify-between gap-2 mb-3">
+                <h3 className="font-semibold text-sm truncate" title={agent.name}>
                   {agent.name}
                 </h3>
                 {agent.model && (
@@ -146,7 +146,7 @@ export function ProjectAgents(): JSX.Element {
 
               {/* Description (truncated to 2 lines) */}
               <p
-                className="text-sm text-muted-foreground line-clamp-2 mb-3 min-h-[2.5rem]"
+                className="text-xs text-zinc-500 dark:text-zinc-400 line-clamp-2 mb-3 min-h-[2.5rem]"
                 title={agent.description}
               >
                 {agent.description || "\u2014"}
@@ -157,13 +157,13 @@ export function ProjectAgents(): JSX.Element {
                 {agent.tools.slice(0, 6).map((tool) => (
                   <span
                     key={tool}
-                    className="text-xs px-1.5 py-0.5 bg-background border border-border rounded text-muted-foreground"
+                    className="text-[10px] px-1.5 py-0.5 bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-500 rounded"
                   >
                     {tool}
                   </span>
                 ))}
                 {agent.tools.length > 6 && (
-                  <span className="text-xs px-1.5 py-0.5 text-muted-foreground">
+                  <span className="text-[10px] px-1.5 py-0.5 text-zinc-400">
                     +{agent.tools.length - 6}
                   </span>
                 )}
@@ -173,10 +173,10 @@ export function ProjectAgents(): JSX.Element {
               <div className="flex-1" />
 
               {/* Action buttons */}
-              <div className="flex items-center justify-end gap-1 pt-3 border-t border-border">
+              <div className="flex items-center justify-end gap-1 pt-3 border-t border-zinc-200 dark:border-zinc-800">
                 <button
                   onClick={() => handleEdit(agent)}
-                  className="flex items-center gap-1 px-2.5 py-1.5 text-sm text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-md transition-colors"
+                  className="flex items-center gap-1 px-2.5 py-1.5 text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md transition-colors"
                   title="Edit"
                 >
                   <Edit2 className="w-3.5 h-3.5" />
@@ -184,7 +184,7 @@ export function ProjectAgents(): JSX.Element {
                 </button>
                 <button
                   onClick={() => handleDelete(agent)}
-                  className="flex items-center gap-1 px-2.5 py-1.5 text-sm text-muted-foreground hover:text-red-500 hover:bg-red-500/10 rounded-md transition-colors"
+                  className="flex items-center gap-1 px-2.5 py-1.5 text-sm text-zinc-500 dark:text-zinc-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors"
                   title="Delete"
                 >
                   <Trash2 className="w-3.5 h-3.5" />

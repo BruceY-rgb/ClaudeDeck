@@ -130,20 +130,20 @@ export function ProjectMCP(): JSX.Element {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-muted-foreground">{t("common.loading")}</div>
+        <div className="text-zinc-400">{t("common.loading")}</div>
       </div>
     );
   }
 
   return (
-    <div className="p-4">
+    <div className="p-4 overflow-y-auto">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold text-foreground">
+        <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
           {t("office.projectMCP.title")}
         </h2>
         <button
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-primary text-primary-foreground rounded-md text-sm hover:bg-primary/90 transition-colors"
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-md text-sm hover:opacity-90 transition-colors"
           onClick={openAddModal}
         >
           <Plus className="w-4 h-4" />
@@ -153,7 +153,7 @@ export function ProjectMCP(): JSX.Element {
 
       {/* Empty state */}
       {mcpServers.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
+        <div className="flex flex-col items-center justify-center py-16 text-zinc-400">
           <Server className="w-12 h-12 mb-3 opacity-40" />
           <p className="text-base font-medium">
             {t("office.projectMCP.empty")}
@@ -167,12 +167,12 @@ export function ProjectMCP(): JSX.Element {
         {mcpServers.map((server) => (
           <div
             key={server.name}
-            className="bg-card border border-border rounded-lg p-4"
+            className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg p-4 hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-lg hover:shadow-zinc-200/50 dark:hover:shadow-zinc-900/50 hover:-translate-y-0.5 cursor-pointer active:translate-y-0 active:shadow-md transition-all duration-200"
           >
             {/* Top row: name, type badge, actions */}
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
-                <span className="font-semibold text-foreground">
+                <span className="font-semibold text-zinc-900 dark:text-zinc-100">
                   {server.name}
                 </span>
                 <span
@@ -192,14 +192,14 @@ export function ProjectMCP(): JSX.Element {
               </div>
               <div className="flex items-center gap-1">
                 <button
-                  className="p-1.5 hover:bg-card rounded-md text-muted-foreground hover:text-foreground transition-colors"
+                  className="p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
                   onClick={() => openEditModal(server)}
                   title={t("office.projectMCP.editServer")}
                 >
                   <Edit2 className="w-4 h-4" />
                 </button>
                 <button
-                  className="p-1.5 hover:bg-red-500/10 rounded-md text-muted-foreground hover:text-red-500 transition-colors"
+                  className="p-1.5 hover:bg-red-500/10 rounded-md text-zinc-400 hover:text-red-500 transition-colors"
                   onClick={() => handleDelete(server.name)}
                 >
                   <Trash2 className="w-4 h-4" />
@@ -208,10 +208,10 @@ export function ProjectMCP(): JSX.Element {
             </div>
 
             {/* Details */}
-            <div className="text-sm text-muted-foreground space-y-1">
+            <div className="text-sm text-zinc-500 dark:text-zinc-400 space-y-1">
               {server.type === "stdio" && server.command && (
                 <p>
-                  <span className="text-foreground/70">command:</span>{" "}
+                  <span className="text-zinc-400 dark:text-zinc-500">command:</span>{" "}
                   {server.command}
                 </p>
               )}
@@ -219,18 +219,18 @@ export function ProjectMCP(): JSX.Element {
                 server.args &&
                 server.args.length > 0 && (
                   <p>
-                    <span className="text-foreground/70">args:</span>{" "}
+                    <span className="text-zinc-400 dark:text-zinc-500">args:</span>{" "}
                     {server.args.join(" ")}
                   </p>
                 )}
               {server.type === "http" && server.url && (
                 <p>
-                  <span className="text-foreground/70">url:</span> {server.url}
+                  <span className="text-zinc-400 dark:text-zinc-500">url:</span> {server.url}
                 </p>
               )}
               {server.env && Object.keys(server.env).length > 0 && (
                 <p>
-                  <span className="text-foreground/70">env:</span>{" "}
+                  <span className="text-zinc-400 dark:text-zinc-500">env:</span>{" "}
                   {Object.keys(server.env)
                     .map((k) => `${k}=***`)
                     .join(", ")}
@@ -244,16 +244,16 @@ export function ProjectMCP(): JSX.Element {
       {/* Add/Edit Modal */}
       {modal.open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="bg-background rounded-lg shadow-lg w-full max-w-lg mx-4 p-6 max-h-[85vh] overflow-y-auto">
+          <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-lg w-full max-w-lg mx-4 p-6 max-h-[85vh] overflow-y-auto">
             {/* Modal header */}
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold">
+              <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
                 {modal.mode === "edit"
                   ? t("office.projectMCP.editServer")
                   : t("office.projectMCP.addServer")}
               </h2>
               <button
-                className="p-1 hover:bg-card rounded-md"
+                className="p-1 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md"
                 onClick={closeModal}
               >
                 <X className="w-5 h-5" />
@@ -263,12 +263,12 @@ export function ProjectMCP(): JSX.Element {
             <div className="space-y-4">
               {/* Server Name */}
               <div>
-                <label className="block text-sm font-medium text-foreground mb-1">
+                <label className="block text-sm font-medium text-zinc-900 dark:text-zinc-100 mb-1">
                   {t("office.projectMCP.serverName")}
                 </label>
                 <input
                   type="text"
-                  className="w-full px-3 py-2 bg-card border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  className="w-full px-3 py-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-md text-zinc-900 dark:text-zinc-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={form.name}
                   onChange={(e) =>
                     setForm((prev) => ({ ...prev, name: e.target.value }))
@@ -280,7 +280,7 @@ export function ProjectMCP(): JSX.Element {
 
               {/* Server Type */}
               <div>
-                <label className="block text-sm font-medium text-foreground mb-1">
+                <label className="block text-sm font-medium text-zinc-900 dark:text-zinc-100 mb-1">
                   {t("office.projectMCP.serverType")}
                 </label>
                 <div className="flex gap-4">
@@ -293,10 +293,10 @@ export function ProjectMCP(): JSX.Element {
                       onChange={() =>
                         setForm((prev) => ({ ...prev, type: "stdio" }))
                       }
-                      className="accent-primary"
+                      className="accent-blue-500"
                     />
                     <Terminal className="w-4 h-4 text-blue-500" />
-                    <span className="text-sm">stdio</span>
+                    <span className="text-sm text-zinc-900 dark:text-zinc-100">stdio</span>
                   </label>
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input
@@ -307,10 +307,10 @@ export function ProjectMCP(): JSX.Element {
                       onChange={() =>
                         setForm((prev) => ({ ...prev, type: "http" }))
                       }
-                      className="accent-primary"
+                      className="accent-green-500"
                     />
                     <Globe className="w-4 h-4 text-green-500" />
-                    <span className="text-sm">http</span>
+                    <span className="text-sm text-zinc-900 dark:text-zinc-100">http</span>
                   </label>
                 </div>
               </div>
@@ -320,12 +320,12 @@ export function ProjectMCP(): JSX.Element {
                 <>
                   {/* Command */}
                   <div>
-                    <label className="block text-sm font-medium text-foreground mb-1">
+                    <label className="block text-sm font-medium text-zinc-900 dark:text-zinc-100 mb-1">
                       {t("office.projectMCP.command")}
                     </label>
                     <input
                       type="text"
-                      className="w-full px-3 py-2 bg-card border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                      className="w-full px-3 py-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-md text-zinc-900 dark:text-zinc-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                       value={form.command ?? ""}
                       onChange={(e) =>
                         setForm((prev) => ({
@@ -338,12 +338,12 @@ export function ProjectMCP(): JSX.Element {
                   </div>
                   {/* Args */}
                   <div>
-                    <label className="block text-sm font-medium text-foreground mb-1">
+                    <label className="block text-sm font-medium text-zinc-900 dark:text-zinc-100 mb-1">
                       {t("office.projectMCP.args")}
                     </label>
                     <input
                       type="text"
-                      className="w-full px-3 py-2 bg-card border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                      className="w-full px-3 py-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-md text-zinc-900 dark:text-zinc-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                       value={argsText}
                       onChange={(e) => setArgsText(e.target.value)}
                       placeholder={t("office.projectMCP.argsPlaceholder")}
@@ -353,12 +353,12 @@ export function ProjectMCP(): JSX.Element {
               ) : (
                 /* URL */
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-1">
+                  <label className="block text-sm font-medium text-zinc-900 dark:text-zinc-100 mb-1">
                     {t("office.projectMCP.url")}
                   </label>
                   <input
                     type="text"
-                    className="w-full px-3 py-2 bg-card border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                    className="w-full px-3 py-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-md text-zinc-900 dark:text-zinc-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                     value={form.url ?? ""}
                     onChange={(e) =>
                       setForm((prev) => ({ ...prev, url: e.target.value }))
@@ -371,12 +371,12 @@ export function ProjectMCP(): JSX.Element {
               {/* Environment Variables */}
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="block text-sm font-medium text-foreground">
+                  <label className="block text-sm font-medium text-zinc-900 dark:text-zinc-100">
                     {t("office.projectMCP.envVars")}
                   </label>
                   <button
                     type="button"
-                    className="flex items-center gap-1 text-xs text-primary hover:text-primary/80 transition-colors"
+                    className="flex items-center gap-1 text-xs text-blue-500 hover:text-blue-600 transition-colors"
                     onClick={addEnvEntry}
                   >
                     <Plus className="w-3 h-3" />
@@ -384,7 +384,7 @@ export function ProjectMCP(): JSX.Element {
                   </button>
                 </div>
                 {envEntries.length === 0 ? (
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-zinc-400">
                     No environment variables
                   </p>
                 ) : (
@@ -393,7 +393,7 @@ export function ProjectMCP(): JSX.Element {
                       <div key={index} className="flex items-center gap-2">
                         <input
                           type="text"
-                          className="flex-1 px-3 py-1.5 bg-card border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                          className="flex-1 px-3 py-1.5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-md text-zinc-900 dark:text-zinc-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                           value={entry.key}
                           onChange={(e) =>
                             updateEnvEntry(index, "key", e.target.value)
@@ -402,7 +402,7 @@ export function ProjectMCP(): JSX.Element {
                         />
                         <input
                           type="text"
-                          className="flex-1 px-3 py-1.5 bg-card border border-border rounded-md text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                          className="flex-1 px-3 py-1.5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-md text-zinc-900 dark:text-zinc-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                           value={entry.value}
                           onChange={(e) =>
                             updateEnvEntry(index, "value", e.target.value)
@@ -411,7 +411,7 @@ export function ProjectMCP(): JSX.Element {
                         />
                         <button
                           type="button"
-                          className="p-1 hover:bg-red-500/10 rounded-md text-muted-foreground hover:text-red-500 transition-colors"
+                          className="p-1 hover:bg-red-500/10 rounded-md text-zinc-400 hover:text-red-500 transition-colors"
                           onClick={() => removeEnvEntry(index)}
                         >
                           <Trash2 className="w-4 h-4" />
@@ -426,13 +426,13 @@ export function ProjectMCP(): JSX.Element {
             {/* Modal footer */}
             <div className="flex justify-end gap-2 mt-6">
               <button
-                className="px-4 py-2 text-sm rounded-md border border-border hover:bg-card transition-colors"
+                className="px-4 py-2 text-sm rounded-md border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
                 onClick={closeModal}
               >
                 Cancel
               </button>
               <button
-                className="flex items-center gap-1.5 px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm hover:bg-primary/90 transition-colors disabled:opacity-50"
+                className="flex items-center gap-1.5 px-4 py-2 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-md text-sm hover:opacity-90 transition-colors disabled:opacity-50"
                 onClick={handleSave}
                 disabled={saving || !form.name.trim()}
               >

@@ -51,21 +51,21 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps): JSX.Elemen
 
   return (
     <div
-      className="bg-card border border-border rounded-lg p-4 cursor-pointer hover:border-primary/50 transition-colors"
+      className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg p-4 cursor-pointer hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors"
       onClick={handleClick}
     >
       <div className="flex items-start justify-between">
         <div className="flex-1 min-w-0">
-          <h3 className="text-lg font-semibold text-foreground truncate">
+          <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 truncate">
             {project.projectName}
           </h3>
-          <p className="text-sm text-muted-foreground truncate mt-1">
+          <p className="text-sm text-zinc-500 dark:text-zinc-400 truncate mt-1">
             {project.projectDir}
           </p>
         </div>
         <div className="flex items-center gap-2 ml-4">
           <button
-            className="p-1.5 hover:bg-red-500/10 rounded-md text-muted-foreground hover:text-red-500"
+            className="p-1.5 hover:bg-red-500/10 rounded-md text-zinc-400 hover:text-red-500"
             onClick={handleDelete}
             title={t("office.deleteAllSessions")}
           >
@@ -77,23 +77,23 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps): JSX.Elemen
               {project.activeCount}
             </span>
           ) : (
-            <span className="flex items-center gap-1 text-sm text-muted-foreground">
-              <span className="w-2 h-2 bg-muted-foreground/50 rounded-full" />
+            <span className="flex items-center gap-1 text-sm text-zinc-400">
+              <span className="w-2 h-2 bg-zinc-400/50 rounded-full" />
               {project.activeCount}
             </span>
           )}
         </div>
       </div>
       <div className="mt-4 flex items-center justify-between text-sm">
-        <span className="text-muted-foreground">
+        <span className="text-zinc-500 dark:text-zinc-400">
           {project.agentCount === 1 ? t("office.sessions", { count: project.agentCount }) : t("office.sessionsPlural", { count: project.agentCount })}
         </span>
-        <span className="text-muted-foreground">
+        <span className="text-zinc-500 dark:text-zinc-400">
           {formatTime(project.lastActivity)}
         </span>
       </div>
       {project.configSummary && (project.configSummary.agents > 0 || project.configSummary.skills > 0 || project.configSummary.mcp > 0) && (
-        <div className="mt-2 pt-2 border-t border-border flex items-center gap-3 text-xs text-muted-foreground">
+        <div className="mt-2 pt-2 border-t border-zinc-200 dark:border-zinc-800 flex items-center gap-3 text-xs text-zinc-500 dark:text-zinc-400">
           {project.configSummary.agents > 0 && (
             <span className="flex items-center gap-1">
               <Bot className="w-3 h-3" />

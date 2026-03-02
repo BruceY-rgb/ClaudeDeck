@@ -35,7 +35,7 @@ export function AgentList({
 
   if (agents.length === 0) {
     return (
-      <div className="text-center text-muted-foreground py-8">
+      <div className="text-center text-zinc-400 py-8">
         {t("office.noSessionsInProject")}
       </div>
     );
@@ -86,27 +86,27 @@ export function AgentList({
 
     // 选中状态优先显示
     if (isSelected && isBatchMode) {
-      return "bg-primary/20 border-2 border-primary";
+      return "bg-zinc-900/10 dark:bg-zinc-100/10 border-2 border-zinc-900 dark:border-zinc-100";
     }
     if (isSelected) {
-      return "bg-primary/20 border-2 border-primary";
+      return "bg-zinc-900/10 dark100/10 border-2 border-zinc-900 dark:bg-zinc-:border-zinc-100";
     }
     if (agent.isActive) {
       return "bg-green-500/5 border border-green-500/30 hover:border-green-500/50";
     }
-    return "bg-card border border-border hover:border-primary/30";
+    return "bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700";
   };
 
   return (
     <div className="space-y-3">
       {/* 标题和Batch操作工具栏 */}
-      <div className="flex items-center justify-between pb-2 border-b border-border">
+      <div className="flex items-center justify-between pb-2 border-b border-zinc-200 dark:border-zinc-800">
         <div className="flex items-center gap-2">
-          {title && <h2 className="font-semibold">{title}</h2>}
+          {title && <h2 className="font-semibold text-zinc-900 dark:text-zinc-100">{title}</h2>}
           {onBatchDelete && (
             <button
               className={`flex items-center gap-1 text-sm px-2 py-1 rounded ${
-                isBatchMode ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground"
+                isBatchMode ? "text-zinc-900 dark:text-zinc-100 bg-zinc-100 dark:bg-zinc-800" : "text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100"
               }`}
               onClick={() => {
                 setIsBatchMode(!isBatchMode);
@@ -132,7 +132,7 @@ export function AgentList({
       {/* 全选按钮 */}
       {isBatchMode && (
         <button
-          className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-2"
+          className="flex items-center gap-2 text-sm text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 mb-2"
           onClick={handleSelectAll}
         >
           {selectedIds.size === sortedAgents.length ? (
@@ -166,9 +166,9 @@ export function AgentList({
                     }}
                   >
                     {isChecked ? (
-                      <CheckSquare className="w-5 h-5 text-primary" />
+                      <CheckSquare className="w-5 h-5 text-zinc-900 dark:text-zinc-100" />
                     ) : (
-                      <Square className="w-5 h-5 text-muted-foreground" />
+                      <Square className="w-5 h-5 text-zinc-400" />
                     )}
                   </button>
                 )}
@@ -177,10 +177,10 @@ export function AgentList({
                   <div className="flex items-center gap-2">
                     <span
                       className={`w-2 h-2 rounded-full flex-shrink-0 ${
-                        agent.isActive ? "bg-green-500 animate-pulse" : "bg-muted-foreground/50"
+                        agent.isActive ? "bg-green-500 animate-pulse" : "bg-zinc-400/50"
                       }`}
                     />
-                    <span className="font-medium truncate">
+                    <span className="font-medium truncate text-zinc-900 dark:text-zinc-100">
                       {agent.sessionId.slice(0, 8)}...
                     </span>
                     {agent.isActive && (
@@ -189,15 +189,17 @@ export function AgentList({
                       </span>
                     )}
                     {isSelected && !isBatchMode && (
-                      <span className="text-xs px-1.5 py-0.5 bg-primary/20 text-primary rounded flex-shrink-0">
+                      <span className="text-xs px-1.5 py-0.5 bg-zinc-900/20 dark:bg-zinc-100/20 text-zinc-900 dark:text-zinc-100 rounded flex-shrink-0">
                         {t("office.selected")}
                       </span>
                     )}
                   </div>
-                  <div className="text-sm text-muted-foreground mt-1">
-                    {agent.isActive ? t("office.running") : agent.lastModified
-                      ? new Date(agent.lastModified).toLocaleString()
-                      : t("office.ended")}
+                  <div className={`text-sm text-zinc-500 dark:text-zinc-400 ${agent.isActive ? 'mt-1' : ''}`}>
+                    {agent.isActive
+                      ? t("office.running")
+                      : agent.lastModified
+                        ? new Date(agent.lastModified).toLocaleString()
+                        : t("office.ended")}
                   </div>
                 </div>
               </div>
@@ -205,7 +207,7 @@ export function AgentList({
               {/* 操作按钮 */}
               <div className="flex items-center gap-1 flex-shrink-0 ml-2">
                 <button
-                  className="p-2 hover:bg-primary/10 rounded-md text-muted-foreground hover:text-primary"
+                  className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100"
                   onClick={(e) => {
                     e.stopPropagation();
                     onJoinTerminal(agent.projectDir, agent.sessionId);
@@ -215,7 +217,7 @@ export function AgentList({
                   <Terminal className="w-4 h-4" />
                 </button>
                 <button
-                  className="p-2 hover:bg-red-500/10 rounded-md text-muted-foreground hover:text-red-500"
+                  className="p-2 hover:bg-red-500/10 rounded-md text-zinc-400 hover:text-red-500"
                   onClick={(e) => {
                     e.stopPropagation();
                     if (confirm(t("office.deleteSessionConfirm"))) {

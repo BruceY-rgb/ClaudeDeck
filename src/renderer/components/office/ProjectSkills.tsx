@@ -26,7 +26,7 @@ function SkillCard({
   const { t } = useTranslation();
 
   return (
-    <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-5 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors">
+    <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-5 hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-lg hover:shadow-zinc-200/50 dark:hover:shadow-zinc-900/50 hover:-translate-y-0.5 cursor-pointer active:translate-y-0 active:shadow-md transition-all duration-200">
       {/* Header */}
       <div className="flex items-start justify-between mb-2">
         <h3 className="font-semibold text-sm truncate">{skill.name}</h3>
@@ -117,7 +117,7 @@ export function ProjectSkills(): JSX.Element {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="flex items-center gap-2 text-muted-foreground">
+        <div className="flex items-center gap-2 text-zinc-400">
           <div className="w-5 h-5 border-2 border-zinc-300 dark:border-zinc-600 border-t-zinc-600 dark:border-t-zinc-300 rounded-full animate-spin" />
           <span>{t("common.loading")}</span>
         </div>
@@ -126,7 +126,7 @@ export function ProjectSkills(): JSX.Element {
   }
 
   return (
-    <div className="p-4">
+    <div className="p-4 overflow-y-auto">
       {/* Header: Title + Actions */}
       <div className="flex items-center justify-between mb-5">
         <h2 className="text-lg font-semibold">
@@ -134,7 +134,7 @@ export function ProjectSkills(): JSX.Element {
         </h2>
         <div className="flex items-center gap-2">
           <button
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
             onClick={() => openCopyModal("skill")}
           >
             <Copy className="w-4 h-4" />
@@ -158,7 +158,7 @@ export function ProjectSkills(): JSX.Element {
           placeholder={t("office.projectSkills.searchPlaceholder")}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full pl-9 pr-3 py-2 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full pl-9 pr-3 py-2 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
 

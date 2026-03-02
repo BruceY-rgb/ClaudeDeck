@@ -180,7 +180,7 @@ export function ProjectSkillDrawer(): JSX.Element {
               onChange={(e) => setBody(e.target.value)}
               placeholder={t("office.drawer.skillBodyPlaceholder")}
               className="w-full px-3 py-3 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
-              style={{ minHeight: "300px" }}
+              style={{ minHeight: "400px" }}
             />
           </div>
         </div>
