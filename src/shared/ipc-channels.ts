@@ -76,4 +76,38 @@ export const IPC = {
   PLANS_WRITE: "plans:write",
   PLANS_DELETE: "plans:delete",
   PLANS_BATCH_DELETE: "plans:batch-delete",
+
+  // Project Config — project-level resource management
+  // Agents
+  PROJECT_CONFIG_AGENTS_LIST: "project-config:agents-list",
+  PROJECT_CONFIG_AGENTS_READ: "project-config:agents-read",
+  PROJECT_CONFIG_AGENTS_WRITE: "project-config:agents-write",
+  PROJECT_CONFIG_AGENTS_DELETE: "project-config:agents-delete",
+  // Skills
+  PROJECT_CONFIG_SKILLS_LIST: "project-config:skills-list",
+  PROJECT_CONFIG_SKILLS_READ: "project-config:skills-read",
+  PROJECT_CONFIG_SKILLS_WRITE: "project-config:skills-write",
+  PROJECT_CONFIG_SKILLS_DELETE: "project-config:skills-delete",
+  // MCP
+  PROJECT_CONFIG_MCP_LIST: "project-config:mcp-list",
+  PROJECT_CONFIG_MCP_WRITE: "project-config:mcp-write",
+  PROJECT_CONFIG_MCP_DELETE: "project-config:mcp-delete",
+  // Plans
+  PROJECT_CONFIG_PLANS_LIST: "project-config:plans-list",
+  PROJECT_CONFIG_PLANS_READ: "project-config:plans-read",
+  PROJECT_CONFIG_PLANS_WRITE: "project-config:plans-write",
+  PROJECT_CONFIG_PLANS_DELETE: "project-config:plans-delete",
+  // Hooks
+  PROJECT_CONFIG_HOOKS_LIST: "project-config:hooks-list",
+  PROJECT_CONFIG_HOOKS_WRITE: "project-config:hooks-write",
+  // Commands
+  PROJECT_CONFIG_COMMANDS_LIST: "project-config:commands-list",
+  PROJECT_CONFIG_COMMANDS_READ: "project-config:commands-read",
+  PROJECT_CONFIG_COMMANDS_WRITE: "project-config:commands-write",
+  PROJECT_CONFIG_COMMANDS_DELETE: "project-config:commands-delete",
+  // Summary
+  PROJECT_CONFIG_SUMMARY: "project-config:summary",
+  // Copy from global
+  PROJECT_CONFIG_COPY_GLOBAL_AGENT: "project-config:copy-global-agent",
+  PROJECT_CONFIG_COPY_GLOBAL_SKILL: "project-config:copy-global-skill",
 } as const;

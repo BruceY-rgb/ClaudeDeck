@@ -13,6 +13,20 @@ import type {
 } from "../shared/types/marketplace";
 import type { HookDefinition } from "../shared/types/hook";
 import type { MCPServer } from "../shared/types/mcp";
+import type {
+  ProjectAgent,
+  ProjectSkill,
+  ProjectMCPServer,
+  ProjectCommand,
+  ProjectHook,
+  ProjectPlan,
+  ProjectSummary,
+  ProjectAgentFormData,
+  ProjectSkillFormData,
+  ProjectMCPFormData,
+  ProjectCommandFormData,
+  ProjectHookFormData,
+} from "../shared/types/project-config";
 
 // Types for plugin detail
 interface PluginDetail {
@@ -199,6 +213,11 @@ const api = {
       agentCount: number;
       activeCount: number;
       lastActivity: string;
+      configSummary?: {
+        agents: number;
+        skills: number;
+        mcp: number;
+      };
     }>> => ipcRenderer.invoke(IPC.OFFICE_GET_PROJECTS),
 
     getProjectAgents: (projectDir: string): Promise<Array<{
@@ -245,6 +264,71 @@ const api = {
 
     batchDelete: (fileNames: string[]): Promise<{ success: boolean; deletedCount: number; errors: string[] }> =>
       ipcRenderer.invoke(IPC.PLANS_BATCH_DELETE, fileNames),
+  },
+  projectConfig: {
+    // Agents
+    listAgents: (projectDir: string): Promise<ProjectAgent[]> =>
+      ipcRenderer.invoke(IPC.PROJECT_CONFIG_AGENTS_LIST, projectDir),
+    readAgent: (projectDir: string, name: string): Promise<ProjectAgent | null> =>
+      ipcRenderer.invoke(IPC.PROJECT_CONFIG_AGENTS_READ, projectDir, name),
+    writeAgent: (projectDir: string, name: string, data: ProjectAgentFormData): Promise<void> =>
+      ipcRenderer.invoke(IPC.PROJECT_CONFIG_AGENTS_WRITE, projectDir, name, data),
+    deleteAgent: (projectDir: string, name: string): Promise<void> =>
+      ipcRenderer.invoke(IPC.PROJECT_CONFIG_AGENTS_DELETE, projectDir, name),
+
+    // Skills
+    listSkills: (projectDir: string): Promise<ProjectSkill[]> =>
+      ipcRenderer.invoke(IPC.PROJECT_CONFIG_SKILLS_LIST, projectDir),
+    readSkill: (projectDir: string, name: string): Promise<ProjectSkill | null> =>
+      ipcRenderer.invoke(IPC.PROJECT_CONFIG_SKILLS_READ, projectDir, name),
+    writeSkill: (projectDir: string, name: string, data: ProjectSkillFormData): Promise<void> =>
+      ipcRenderer.invoke(IPC.PROJECT_CONFIG_SKILLS_WRITE, projectDir, name, data),
+    deleteSkill: (projectDir: string, name: string): Promise<void> =>
+      ipcRenderer.invoke(IPC.PROJECT_CONFIG_SKILLS_DELETE, projectDir, name),
+
+    // MCP
+    listMCPServers: (projectDir: string): Promise<ProjectMCPServer[]> =>
+      ipcRenderer.invoke(IPC.PROJECT_CONFIG_MCP_LIST, projectDir),
+    writeMCPServer: (projectDir: string, name: string, data: ProjectMCPFormData): Promise<void> =>
+      ipcRenderer.invoke(IPC.PROJECT_CONFIG_MCP_WRITE, projectDir, name, data),
+    deleteMCPServer: (projectDir: string, name: string): Promise<void> =>
+      ipcRenderer.invoke(IPC.PROJECT_CONFIG_MCP_DELETE, projectDir, name),
+
+    // Plans
+    listPlans: (projectDir: string): Promise<ProjectPlan[]> =>
+      ipcRenderer.invoke(IPC.PROJECT_CONFIG_PLANS_LIST, projectDir),
+    readPlan: (projectDir: string, name: string): Promise<ProjectPlan | null> =>
+      ipcRenderer.invoke(IPC.PROJECT_CONFIG_PLANS_READ, projectDir, name),
+    writePlan: (projectDir: string, name: string, content: string): Promise<void> =>
+      ipcRenderer.invoke(IPC.PROJECT_CONFIG_PLANS_WRITE, projectDir, name, content),
+    deletePlan: (projectDir: string, name: string): Promise<void> =>
+      ipcRenderer.invoke(IPC.PROJECT_CONFIG_PLANS_DELETE, projectDir, name),
+
+    // Hooks
+    listHooks: (projectDir: string): Promise<ProjectHook[]> =>
+      ipcRenderer.invoke(IPC.PROJECT_CONFIG_HOOKS_LIST, projectDir),
+    writeHooks: (projectDir: string, hooks: ProjectHookFormData[]): Promise<void> =>
+      ipcRenderer.invoke(IPC.PROJECT_CONFIG_HOOKS_WRITE, projectDir, hooks),
+
+    // Commands
+    listCommands: (projectDir: string): Promise<ProjectCommand[]> =>
+      ipcRenderer.invoke(IPC.PROJECT_CONFIG_COMMANDS_LIST, projectDir),
+    readCommand: (projectDir: string, name: string): Promise<ProjectCommand | null> =>
+      ipcRenderer.invoke(IPC.PROJECT_CONFIG_COMMANDS_READ, projectDir, name),
+    writeCommand: (projectDir: string, name: string, data: ProjectCommandFormData): Promise<void> =>
+      ipcRenderer.invoke(IPC.PROJECT_CONFIG_COMMANDS_WRITE, projectDir, name, data),
+    deleteCommand: (projectDir: string, name: string): Promise<void> =>
+      ipcRenderer.invoke(IPC.PROJECT_CONFIG_COMMANDS_DELETE, projectDir, name),
+
+    // Summary
+    getSummary: (projectDir: string): Promise<ProjectSummary> =>
+      ipcRenderer.invoke(IPC.PROJECT_CONFIG_SUMMARY, projectDir),
+
+    // Copy from global
+    copyGlobalAgent: (projectDir: string, agentName: string): Promise<void> =>
+      ipcRenderer.invoke(IPC.PROJECT_CONFIG_COPY_GLOBAL_AGENT, projectDir, agentName),
+    copyGlobalSkill: (projectDir: string, skillName: string): Promise<void> =>
+      ipcRenderer.invoke(IPC.PROJECT_CONFIG_COPY_GLOBAL_SKILL, projectDir, skillName),
   },
 };
 

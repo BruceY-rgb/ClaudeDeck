@@ -2,8 +2,15 @@ import * as fs from "fs";
 import * as path from "path";
 import { exec } from "child_process";
 import { promisify } from "util";
+import { projectConfigService } from "./ProjectConfigService";
 
 const execAsync = promisify(exec);
+
+export interface ProjectConfigSummary {
+  agents: number;
+  skills: number;
+  mcp: number;
+}
 
 export interface ProjectInfo {
   projectDir: string;
@@ -12,6 +19,7 @@ export interface ProjectInfo {
   activeCount: number;
   lastActivity: Date;
   sessions: ProjectSession[];
+  configSummary?: ProjectConfigSummary;
 }
 
 export interface ProjectSession {
@@ -159,6 +167,22 @@ class ProjectDiscoveryService {
         sessions,
       });
     }
+
+    // Fetch config summaries for all projects in parallel
+    await Promise.all(
+      projects.map(async (project) => {
+        try {
+          const summary = await projectConfigService.getSummary(project.projectDir);
+          project.configSummary = {
+            agents: summary.agentCount,
+            skills: summary.skillCount,
+            mcp: summary.mcpCount,
+          };
+        } catch {
+          // If summary fetch fails, leave configSummary undefined
+        }
+      }),
+    );
 
     // 按活跃数降序，再按最近活动时间降序
     projects.sort((a, b) => {

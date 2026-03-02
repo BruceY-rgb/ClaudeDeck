@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Trash2 } from "lucide-react";
+import { Trash2, Bot, Sparkles, Server } from "lucide-react";
 import { useTranslation } from "../../i18n/LanguageContext";
 
 export interface ProjectInfo {
@@ -8,6 +8,11 @@ export interface ProjectInfo {
   agentCount: number;
   activeCount: number;
   lastActivity: string;
+  configSummary?: {
+    agents: number;
+    skills: number;
+    mcp: number;
+  };
 }
 
 interface ProjectCardProps {
@@ -87,6 +92,28 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps): JSX.Elemen
           {formatTime(project.lastActivity)}
         </span>
       </div>
+      {project.configSummary && (project.configSummary.agents > 0 || project.configSummary.skills > 0 || project.configSummary.mcp > 0) && (
+        <div className="mt-2 pt-2 border-t border-border flex items-center gap-3 text-xs text-muted-foreground">
+          {project.configSummary.agents > 0 && (
+            <span className="flex items-center gap-1">
+              <Bot className="w-3 h-3" />
+              {project.configSummary.agents}
+            </span>
+          )}
+          {project.configSummary.skills > 0 && (
+            <span className="flex items-center gap-1">
+              <Sparkles className="w-3 h-3" />
+              {project.configSummary.skills}
+            </span>
+          )}
+          {project.configSummary.mcp > 0 && (
+            <span className="flex items-center gap-1">
+              <Server className="w-3 h-3" />
+              {project.configSummary.mcp}
+            </span>
+          )}
+        </div>
+      )}
     </div>
   );
 }

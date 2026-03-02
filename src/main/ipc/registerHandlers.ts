@@ -14,6 +14,8 @@ import { cliService } from "../services/CLIService";
 import { projectDiscoveryService } from "../services/ProjectDiscoveryService";
 import { pixelOfficeService } from "../services/PixelOfficeService";
 import { planService } from "../services/PlanService";
+import { projectConfigService } from "../services/ProjectConfigService";
+import type { ProjectAgentFormData, ProjectSkillFormData, ProjectMCPFormData, ProjectCommandFormData, ProjectHookFormData } from "../../shared/types/project-config";
 
 let watcher: ReturnType<typeof watch> | null = null;
 let mainWindowRef: BrowserWindow | null = null;
@@ -280,6 +282,111 @@ export function registerHandlers(mainWindow: BrowserWindow): void {
 
   ipcMain.handle(IPC.PLANS_BATCH_DELETE, async (_e, fileNames: string[]) => {
     return planService.batchDeletePlans(fileNames);
+  });
+
+  // --- Project Config ---
+  // Agents
+  ipcMain.handle(IPC.PROJECT_CONFIG_AGENTS_LIST, async (_e, projectDir: string) => {
+    return projectConfigService.listAgents(projectDir);
+  });
+
+  ipcMain.handle(IPC.PROJECT_CONFIG_AGENTS_READ, async (_e, projectDir: string, name: string) => {
+    return projectConfigService.readAgent(projectDir, name);
+  });
+
+  ipcMain.handle(IPC.PROJECT_CONFIG_AGENTS_WRITE, async (_e, projectDir: string, name: string, data: ProjectAgentFormData) => {
+    return projectConfigService.writeAgent(projectDir, name, data);
+  });
+
+  ipcMain.handle(IPC.PROJECT_CONFIG_AGENTS_DELETE, async (_e, projectDir: string, name: string) => {
+    return projectConfigService.deleteAgent(projectDir, name);
+  });
+
+  // Skills
+  ipcMain.handle(IPC.PROJECT_CONFIG_SKILLS_LIST, async (_e, projectDir: string) => {
+    return projectConfigService.listSkills(projectDir);
+  });
+
+  ipcMain.handle(IPC.PROJECT_CONFIG_SKILLS_READ, async (_e, projectDir: string, name: string) => {
+    return projectConfigService.readSkill(projectDir, name);
+  });
+
+  ipcMain.handle(IPC.PROJECT_CONFIG_SKILLS_WRITE, async (_e, projectDir: string, name: string, data: ProjectSkillFormData) => {
+    return projectConfigService.writeSkill(projectDir, name, data);
+  });
+
+  ipcMain.handle(IPC.PROJECT_CONFIG_SKILLS_DELETE, async (_e, projectDir: string, name: string) => {
+    return projectConfigService.deleteSkill(projectDir, name);
+  });
+
+  // MCP
+  ipcMain.handle(IPC.PROJECT_CONFIG_MCP_LIST, async (_e, projectDir: string) => {
+    return projectConfigService.listMCPServers(projectDir);
+  });
+
+  ipcMain.handle(IPC.PROJECT_CONFIG_MCP_WRITE, async (_e, projectDir: string, name: string, data: ProjectMCPFormData) => {
+    return projectConfigService.writeMCPServer(projectDir, name, data);
+  });
+
+  ipcMain.handle(IPC.PROJECT_CONFIG_MCP_DELETE, async (_e, projectDir: string, name: string) => {
+    return projectConfigService.deleteMCPServer(projectDir, name);
+  });
+
+  // Plans
+  ipcMain.handle(IPC.PROJECT_CONFIG_PLANS_LIST, async (_e, projectDir: string) => {
+    return projectConfigService.listPlans(projectDir);
+  });
+
+  ipcMain.handle(IPC.PROJECT_CONFIG_PLANS_READ, async (_e, projectDir: string, name: string) => {
+    return projectConfigService.readPlan(projectDir, name);
+  });
+
+  ipcMain.handle(IPC.PROJECT_CONFIG_PLANS_WRITE, async (_e, projectDir: string, name: string, content: string) => {
+    return projectConfigService.writePlan(projectDir, name, content);
+  });
+
+  ipcMain.handle(IPC.PROJECT_CONFIG_PLANS_DELETE, async (_e, projectDir: string, name: string) => {
+    return projectConfigService.deletePlan(projectDir, name);
+  });
+
+  // Hooks
+  ipcMain.handle(IPC.PROJECT_CONFIG_HOOKS_LIST, async (_e, projectDir: string) => {
+    return projectConfigService.listHooks(projectDir);
+  });
+
+  ipcMain.handle(IPC.PROJECT_CONFIG_HOOKS_WRITE, async (_e, projectDir: string, hooks: ProjectHookFormData[]) => {
+    return projectConfigService.writeHooks(projectDir, hooks);
+  });
+
+  // Commands
+  ipcMain.handle(IPC.PROJECT_CONFIG_COMMANDS_LIST, async (_e, projectDir: string) => {
+    return projectConfigService.listCommands(projectDir);
+  });
+
+  ipcMain.handle(IPC.PROJECT_CONFIG_COMMANDS_READ, async (_e, projectDir: string, name: string) => {
+    return projectConfigService.readCommand(projectDir, name);
+  });
+
+  ipcMain.handle(IPC.PROJECT_CONFIG_COMMANDS_WRITE, async (_e, projectDir: string, name: string, data: ProjectCommandFormData) => {
+    return projectConfigService.writeCommand(projectDir, name, data);
+  });
+
+  ipcMain.handle(IPC.PROJECT_CONFIG_COMMANDS_DELETE, async (_e, projectDir: string, name: string) => {
+    return projectConfigService.deleteCommand(projectDir, name);
+  });
+
+  // Summary
+  ipcMain.handle(IPC.PROJECT_CONFIG_SUMMARY, async (_e, projectDir: string) => {
+    return projectConfigService.getSummary(projectDir);
+  });
+
+  // Copy from global
+  ipcMain.handle(IPC.PROJECT_CONFIG_COPY_GLOBAL_AGENT, async (_e, projectDir: string, agentName: string) => {
+    return projectConfigService.copyGlobalAgent(projectDir, agentName);
+  });
+
+  ipcMain.handle(IPC.PROJECT_CONFIG_COPY_GLOBAL_SKILL, async (_e, projectDir: string, skillName: string) => {
+    return projectConfigService.copyGlobalSkill(projectDir, skillName);
   });
 
   // --- File Watcher ---
