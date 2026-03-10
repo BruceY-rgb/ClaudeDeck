@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { Plus, TerminalSquare, Edit2, Trash2 } from "lucide-react";
+import { Plus, TerminalSquare, Edit2, Trash2, FolderOpen } from "lucide-react";
 import { useTranslation } from "../../i18n/LanguageContext";
 import { useProjectConfigStore } from "../../stores/projectConfigStore";
 import { ProjectCommandDrawer } from "./ProjectCommandDrawer";
@@ -85,6 +85,15 @@ export function ProjectCommands(): JSX.Element {
                   {cmd.name}
                 </h3>
                 <div className="flex items-center gap-1 flex-shrink-0 ml-2">
+                  {cmd.filePath && (
+                    <button
+                      className="p-1 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+                      onClick={() => window.electronAPI.file.reveal(cmd.filePath)}
+                      title={t("common.revealInFinder")}
+                    >
+                      <FolderOpen className="w-3.5 h-3.5" />
+                    </button>
+                  )}
                   <button
                     className="p-1 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
                     onClick={() => openEditModal(cmd)}

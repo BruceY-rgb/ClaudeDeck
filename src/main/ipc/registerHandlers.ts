@@ -1,7 +1,7 @@
-import { ipcMain, BrowserWindow } from "electron";
+import { ipcMain, BrowserWindow, shell } from "electron";
 import { watch } from "chokidar";
 import { IPC } from "../../shared/ipc-channels";
-import { AGENTS_DIR, SKILLS_DIR, PLUGINS_DIR } from "../../shared/constants";
+import { AGENTS_DIR, SKILLS_DIR, PLUGINS_DIR, CLAUDE_JSON_FILE } from "../../shared/constants";
 import { agentService } from "../services/AgentService";
 import { skillService } from "../services/SkillService";
 import { pluginService } from "../services/PluginService";
@@ -387,6 +387,15 @@ export function registerHandlers(mainWindow: BrowserWindow): void {
 
   ipcMain.handle(IPC.PROJECT_CONFIG_COPY_GLOBAL_SKILL, async (_e, projectDir: string, skillName: string) => {
     return projectConfigService.copyGlobalSkill(projectDir, skillName);
+  });
+
+  // --- File System ---
+  ipcMain.handle(IPC.FILE_REVEAL, async (_e, filePath: string) => {
+    shell.showItemInFolder(filePath);
+  });
+
+  ipcMain.handle(IPC.FILE_REVEAL_MCP_CONFIG, async () => {
+    shell.showItemInFolder(CLAUDE_JSON_FILE);
   });
 
   // --- File Watcher ---

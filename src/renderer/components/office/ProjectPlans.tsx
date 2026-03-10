@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, FileText, Edit2, Trash2, Clock, X, Save } from "lucide-react";
+import { Plus, FileText, Edit2, Trash2, Clock, X, Save, FolderOpen } from "lucide-react";
 import { useTranslation } from "../../i18n/LanguageContext";
 import { useProjectConfigStore } from "../../stores/projectConfigStore";
 import type { ProjectPlan } from "@shared/types/project-config";
@@ -156,15 +156,29 @@ export function ProjectPlans(): JSX.Element {
                     <span className="text-sm font-medium text-zinc-900 dark:text-zinc-100 truncate">
                       {plan.name}
                     </span>
-                    <button
-                      className="p-1 hover:bg-red-500/10 rounded-md text-zinc-400 hover:text-red-500 transition-colors flex-shrink-0"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDelete(plan);
-                      }}
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
+                    <div className="flex items-center gap-0.5 flex-shrink-0">
+                      {plan.filePath && (
+                        <button
+                          className="p-1 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            window.electronAPI.file.reveal(plan.filePath);
+                          }}
+                          title={t("common.revealInFinder")}
+                        >
+                          <FolderOpen className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                      <button
+                        className="p-1 hover:bg-red-500/10 rounded-md text-zinc-400 hover:text-red-500 transition-colors"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(plan);
+                        }}
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                   </div>
                   {plan.lastModified && (
                     <div className="flex items-center gap-1 mt-1 text-xs text-zinc-400">

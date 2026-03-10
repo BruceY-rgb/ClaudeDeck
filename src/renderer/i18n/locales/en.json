@@ -45,6 +45,7 @@
   "common.activating": "Activating...",
   "common.stop": "Stop",
   "common.preview": "Preview",
+  "common.revealInFinder": "Reveal in File Manager",
 
   "search.placeholder": "Search agents, skills, plugins, commands...",
   "search.searching": "Searching...",

@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Plus, Copy, Bot, Edit2, Trash2, Search, Cpu } from "lucide-react";
+import { Plus, Copy, Bot, Edit2, Trash2, Search, Cpu, FolderOpen } from "lucide-react";
 import { useTranslation } from "../../i18n/LanguageContext";
 import { useProjectConfigStore } from "../../stores/projectConfigStore";
 import { ProjectAgentDrawer } from "./ProjectAgentDrawer";
@@ -174,6 +174,15 @@ export function ProjectAgents(): JSX.Element {
 
               {/* Action buttons */}
               <div className="flex items-center justify-end gap-1 pt-3 border-t border-zinc-200 dark:border-zinc-800">
+                {agent.filePath && (
+                  <button
+                    onClick={() => window.electronAPI.file.reveal(agent.filePath)}
+                    className="flex items-center gap-1 px-2.5 py-1.5 text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md transition-colors"
+                    title={t("common.revealInFinder")}
+                  >
+                    <FolderOpen className="w-3.5 h-3.5" />
+                  </button>
+                )}
                 <button
                   onClick={() => handleEdit(agent)}
                   className="flex items-center gap-1 px-2.5 py-1.5 text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md transition-colors"

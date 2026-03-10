@@ -330,6 +330,12 @@ const api = {
     copyGlobalSkill: (projectDir: string, skillName: string): Promise<void> =>
       ipcRenderer.invoke(IPC.PROJECT_CONFIG_COPY_GLOBAL_SKILL, projectDir, skillName),
   },
+  file: {
+    reveal: (filePath: string): Promise<void> =>
+      ipcRenderer.invoke(IPC.FILE_REVEAL, filePath),
+    revealMCPConfig: (): Promise<void> =>
+      ipcRenderer.invoke(IPC.FILE_REVEAL_MCP_CONFIG),
+  },
 };
 
 export type ElectronAPI = typeof api;

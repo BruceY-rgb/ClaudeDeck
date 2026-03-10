@@ -14,6 +14,7 @@ import {
   X,
   Maximize2,
   Minimize2,
+  FolderOpen,
 } from "lucide-react";
 import { PageHeader } from "../components/shared/PageHeader";
 import { useTranslation } from "../i18n/LanguageContext";
@@ -312,6 +313,18 @@ export function PlansPage(): JSX.Element {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
+                        if (plan.filePath) {
+                          window.electronAPI.file.reveal(plan.filePath);
+                        }
+                      }}
+                      className="p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 shrink-0"
+                      title={t("common.revealInFinder")}
+                    >
+                      <FolderOpen className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
                         handleDelete(plan.fileName);
                       }}
                       className="p-1.5 hover:bg-red-100 dark:hover:bg-red-900/30 rounded text-zinc-400 hover:text-red-500 shrink-0"
@@ -350,6 +363,15 @@ export function PlansPage(): JSX.Element {
                   <div className="flex items-center justify-between mb-2">
                     <h3 className="font-semibold text-lg">{previewPlan.name}</h3>
                     <div className="flex items-center gap-1">
+                      {previewPlan.filePath && (
+                        <button
+                          onClick={() => window.electronAPI.file.reveal(previewPlan.filePath)}
+                          className="p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+                          title={t("common.revealInFinder")}
+                        >
+                          <FolderOpen className="w-4 h-4" />
+                        </button>
+                      )}
                       <button
                         onClick={toggleFullscreen}
                         className="p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded"

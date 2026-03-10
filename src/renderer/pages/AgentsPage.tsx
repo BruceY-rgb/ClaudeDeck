@@ -1,5 +1,6 @@
 import { useEffect, useCallback, useState } from "react";
 import { Link } from "react-router-dom";
+import { FolderOpen } from "lucide-react";
 import { useAgentStore } from "../stores/agentStore";
 import { useFileWatcher } from "../hooks/useFileWatcher";
 import { PageHeader } from "../components/shared/PageHeader";
@@ -8,6 +9,15 @@ import type { Agent } from "@shared/types/agent";
 
 function AgentCard({ agent }: { agent: Agent }): JSX.Element {
   const { t } = useTranslation();
+
+  const handleReveal = (e: React.MouseEvent): void => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (agent.filePath) {
+      window.electronAPI.file.reveal(agent.filePath);
+    }
+  };
+
   return (
     <Link
       to={`/agents/${agent.name}`}
@@ -16,6 +26,15 @@ function AgentCard({ agent }: { agent: Agent }): JSX.Element {
       <div className="flex items-start justify-between mb-3">
         <h3 className="font-semibold text-sm">{agent.name}</h3>
         <div className="flex items-center gap-1.5">
+          {agent.filePath && (
+            <button
+              onClick={handleReveal}
+              className="p-1 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+              title={t("common.revealInFinder")}
+            >
+              <FolderOpen className="w-3.5 h-3.5" />
+            </button>
+          )}
           <span
             className={`text-xs px-2 py-0.5 rounded-full ${
               agent.source === "personal"

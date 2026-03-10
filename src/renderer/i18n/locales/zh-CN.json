@@ -45,6 +45,7 @@
   "common.activating": "激活中...",
   "common.stop": "停止",
   "common.preview": "预览",
+  "common.revealInFinder": "在文件管理器中打开",
 
   "search.placeholder": "搜索智能体、技能、插件、命令...",
   "search.searching": "搜索中...",

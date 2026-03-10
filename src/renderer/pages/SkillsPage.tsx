@@ -9,6 +9,7 @@ import {
   ChevronDown,
   AlertTriangle,
   Search,
+  FolderOpen,
 } from "lucide-react";
 import { useSkillStore } from "../stores/skillStore";
 import { useFileWatcher } from "../hooks/useFileWatcher";
@@ -33,6 +34,14 @@ function SkillCard({
   const { t } = useTranslation();
   const linkPath = `/skills/${skill.source}/${skill.name}`;
 
+  const handleReveal = (e: React.MouseEvent): void => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (skill.filePath) {
+      window.electronAPI.file.reveal(skill.filePath);
+    }
+  };
+
   return (
     <Link
       to={linkPath}
@@ -52,17 +61,28 @@ function SkillCard({
           )}
           <h3 className="font-semibold text-sm">{skill.name}</h3>
         </div>
-        <span
-          className={`text-xs px-2 py-0.5 rounded-full ${
-            skill.source === "personal"
-              ? "bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400"
-              : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400"
-          }`}
-        >
-          {skill.source === "personal"
-            ? t("common.personal")
-            : skill.pluginId?.split("@")[0] || t("common.plugin")}
-        </span>
+        <div className="flex items-center gap-1.5">
+          {skill.filePath && (
+            <button
+              onClick={handleReveal}
+              className="p-1 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+              title={t("common.revealInFinder")}
+            >
+              <FolderOpen className="w-3.5 h-3.5" />
+            </button>
+          )}
+          <span
+            className={`text-xs px-2 py-0.5 rounded-full ${
+              skill.source === "personal"
+                ? "bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400"
+                : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400"
+            }`}
+          >
+            {skill.source === "personal"
+              ? t("common.personal")
+              : skill.pluginId?.split("@")[0] || t("common.plugin")}
+          </span>
+        </div>
       </div>
       <p className="text-xs text-zinc-500 dark:text-zinc-400 line-clamp-2 mb-3">
         {skill.description}

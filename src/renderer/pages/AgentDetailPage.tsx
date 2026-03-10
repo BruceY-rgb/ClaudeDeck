@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { PageHeader } from "../components/shared/PageHeader";
 import { TerminalPanel } from "../components/shared/TerminalPanel";
 import { AVAILABLE_TOOLS, AVAILABLE_MODELS } from "@shared/types/agent";
-import { Terminal } from "lucide-react";
+import { Terminal, FolderOpen } from "lucide-react";
 import { useTranslation } from "../i18n/LanguageContext";
 
 export function AgentDetailPage(): JSX.Element {
@@ -29,6 +29,7 @@ export function AgentDetailPage(): JSX.Element {
   const [isPlugin, setIsPlugin] = useState(false);
   const [showTerminal, setShowTerminal] = useState(false);
   const [isRunning, setIsRunning] = useState(false);
+  const [filePath, setFilePath] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isNew && name) {
@@ -40,6 +41,7 @@ export function AgentDetailPage(): JSX.Element {
           setModel(agent.model);
           setBody(agent.body);
           setIsPlugin(agent.source === "plugin");
+          setFilePath(agent.filePath || null);
         }
         setLoading(false);
       });
@@ -94,6 +96,12 @@ export function AgentDetailPage(): JSX.Element {
     setIsRunning(false);
   };
 
+  const handleReveal = (): void => {
+    if (filePath) {
+      window.electronAPI.file.reveal(filePath);
+    }
+  };
+
   // Listen for CLI close event
   useEffect(() => {
     const unsubscribe = window.electronAPI.cli.onOutput((data) => {
@@ -122,6 +130,15 @@ export function AgentDetailPage(): JSX.Element {
         backTo={{ label: t("agents.backToAgents"), path: "/agents" }}
         actions={
           <div className="flex items-center gap-2">
+            {!isNew && filePath && (
+              <button
+                onClick={handleReveal}
+                className="px-4 py-2 rounded-lg text-sm text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 flex items-center gap-2"
+                title={t("common.revealInFinder")}
+              >
+                <FolderOpen className="w-4 h-4" />
+              </button>
+            )}
             {!isNew && !isPlugin && (
               <button
                 onClick={handleDelete}

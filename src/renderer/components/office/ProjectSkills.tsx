@@ -8,6 +8,7 @@ import {
   Search,
   Eye,
   EyeOff,
+  FolderOpen,
 } from "lucide-react";
 import { useTranslation } from "../../i18n/LanguageContext";
 import { useProjectConfigStore } from "../../stores/projectConfigStore";
@@ -31,6 +32,15 @@ function SkillCard({
       <div className="flex items-start justify-between mb-2">
         <h3 className="font-semibold text-sm truncate">{skill.name}</h3>
         <div className="flex items-center gap-1 flex-shrink-0 ml-2">
+          {skill.filePath && (
+            <button
+              className="p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
+              onClick={() => window.electronAPI.file.reveal(skill.filePath)}
+              title={t("common.revealInFinder")}
+            >
+              <FolderOpen className="w-4 h-4" />
+            </button>
+          )}
           <button
             className="p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
             onClick={() => onEdit(skill)}

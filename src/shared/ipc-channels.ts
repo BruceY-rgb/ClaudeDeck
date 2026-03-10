@@ -110,4 +110,8 @@ export const IPC = {
   // Copy from global
   PROJECT_CONFIG_COPY_GLOBAL_AGENT: "project-config:copy-global-agent",
   PROJECT_CONFIG_COPY_GLOBAL_SKILL: "project-config:copy-global-skill",
+
+  // File system
+  FILE_REVEAL: "file:reveal",
+  FILE_REVEAL_MCP_CONFIG: "file:reveal-mcp-config",
 } as const;
