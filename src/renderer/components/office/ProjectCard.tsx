@@ -18,9 +18,12 @@ export interface ProjectInfo {
 interface ProjectCardProps {
   project: ProjectInfo;
   onDelete: (projectDir: string) => void;
+  batchMode?: boolean;
+  selected?: boolean;
+  onToggleSelect?: (projectDir: string) => void;
 }
 
-export function ProjectCard({ project, onDelete }: ProjectCardProps): JSX.Element {
+export function ProjectCard({ project, onDelete, batchMode = false, selected = false, onToggleSelect }: ProjectCardProps): JSX.Element {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
@@ -39,6 +42,10 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps): JSX.Elemen
   };
 
   const handleClick = (): void => {
+    if (batchMode) {
+      onToggleSelect?.(project.projectDir);
+      return;
+    }
     navigate(`/office/project/${encodeURIComponent(project.projectDir)}`);
   };
 
@@ -51,11 +58,25 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps): JSX.Elemen
 
   return (
     <div
-      className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg p-4 cursor-pointer hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors"
+      className={`bg-white dark:bg-zinc-900 border rounded-lg p-4 cursor-pointer transition-colors ${
+        batchMode && selected
+          ? "border-blue-400 dark:border-blue-600 ring-2 ring-blue-400/30"
+          : "border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700"
+      }`}
       onClick={handleClick}
     >
       <div className="flex items-start justify-between">
-        <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2 flex-1 min-w-0">
+          {batchMode && (
+            <input
+              type="checkbox"
+              checked={selected}
+              onChange={() => onToggleSelect?.(project.projectDir)}
+              onClick={(e) => e.stopPropagation()}
+              className="w-4 h-4 rounded border-zinc-300 dark:border-zinc-600 text-blue-600 focus:ring-blue-500 flex-shrink-0"
+            />
+          )}
+          <div className="flex-1 min-w-0">
           <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 truncate">
             {project.projectName}
           </h3>
@@ -63,7 +84,9 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps): JSX.Elemen
             {project.projectDir}
           </p>
         </div>
+        </div>
         <div className="flex items-center gap-2 ml-4">
+          {!batchMode && (
           <button
             className="p-1.5 hover:bg-red-500/10 rounded-md text-zinc-400 hover:text-red-500"
             onClick={handleDelete}
@@ -71,6 +94,7 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps): JSX.Elemen
           >
             <Trash2 className="w-4 h-4" />
           </button>
+          )}
           {project.activeCount > 0 ? (
             <span className="flex items-center gap-1 text-sm text-green-500">
               <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />

@@ -46,6 +46,10 @@ export function registerHandlers(mainWindow: BrowserWindow): void {
     return agentService.delete(name);
   });
 
+  ipcMain.handle(IPC.AGENTS_BATCH_DELETE, async (_e, names: string[]) => {
+    return agentService.batchDelete(names);
+  });
+
   // --- Skills ---
   ipcMain.handle(IPC.SKILLS_LIST, async () => {
     return skillService.list();
@@ -69,6 +73,10 @@ export function registerHandlers(mainWindow: BrowserWindow): void {
 
   ipcMain.handle(IPC.SKILLS_DELETE, async (_e, name: string) => {
     return skillService.delete(name);
+  });
+
+  ipcMain.handle(IPC.SKILLS_BATCH_DELETE, async (_e, names: string[]) => {
+    return skillService.batchDelete(names);
   });
 
   ipcMain.handle(IPC.SKILLS_DIRECTORY_TREE, async () => {
@@ -302,6 +310,10 @@ export function registerHandlers(mainWindow: BrowserWindow): void {
     return projectConfigService.deleteAgent(projectDir, name);
   });
 
+  ipcMain.handle(IPC.PROJECT_CONFIG_AGENTS_BATCH_DELETE, async (_e, projectDir: string, names: string[]) => {
+    return projectConfigService.batchDeleteAgents(projectDir, names);
+  });
+
   // Skills
   ipcMain.handle(IPC.PROJECT_CONFIG_SKILLS_LIST, async (_e, projectDir: string) => {
     return projectConfigService.listSkills(projectDir);
@@ -317,6 +329,10 @@ export function registerHandlers(mainWindow: BrowserWindow): void {
 
   ipcMain.handle(IPC.PROJECT_CONFIG_SKILLS_DELETE, async (_e, projectDir: string, name: string) => {
     return projectConfigService.deleteSkill(projectDir, name);
+  });
+
+  ipcMain.handle(IPC.PROJECT_CONFIG_SKILLS_BATCH_DELETE, async (_e, projectDir: string, names: string[]) => {
+    return projectConfigService.batchDeleteSkills(projectDir, names);
   });
 
   // MCP

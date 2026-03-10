@@ -59,12 +59,14 @@ interface ProjectConfigStore {
   createAgent: (name: string, data: ProjectAgentFormData) => Promise<void>
   updateAgent: (name: string, data: ProjectAgentFormData) => Promise<void>
   deleteAgent: (name: string) => Promise<void>
+  batchDeleteAgents: (names: string[]) => Promise<{ success: boolean; deletedCount: number; errors: string[] }>
   copyGlobalAgent: (agentName: string) => Promise<void>
 
   // Skill CRUD
   createSkill: (name: string, data: ProjectSkillFormData) => Promise<void>
   updateSkill: (name: string, data: ProjectSkillFormData) => Promise<void>
   deleteSkill: (name: string) => Promise<void>
+  batchDeleteSkills: (names: string[]) => Promise<{ success: boolean; deletedCount: number; errors: string[] }>
   copyGlobalSkill: (skillName: string) => Promise<void>
 
   // MCP CRUD
@@ -249,6 +251,15 @@ export const useProjectConfigStore = create<ProjectConfigStore>((set, get) => ({
     await get().fetchSummary()
   },
 
+  async batchDeleteAgents(names) {
+    const { projectDir } = get()
+    if (!projectDir) return { success: false, deletedCount: 0, errors: ['No project selected'] }
+    const result = await window.electronAPI.projectConfig.batchDeleteAgents(projectDir, names)
+    set(s => ({ agents: s.agents.filter(a => !names.includes(a.name)) }))
+    await get().fetchSummary()
+    return result
+  },
+
   async copyGlobalAgent(agentName) {
     const { projectDir } = get()
     if (!projectDir) return
@@ -280,6 +291,15 @@ export const useProjectConfigStore = create<ProjectConfigStore>((set, get) => ({
     await window.electronAPI.projectConfig.deleteSkill(projectDir, name)
     set(s => ({ skills: s.skills.filter(sk => sk.name !== name) }))
     await get().fetchSummary()
+  },
+
+  async batchDeleteSkills(names) {
+    const { projectDir } = get()
+    if (!projectDir) return { success: false, deletedCount: 0, errors: ['No project selected'] }
+    const result = await window.electronAPI.projectConfig.batchDeleteSkills(projectDir, names)
+    set(s => ({ skills: s.skills.filter(sk => !names.includes(sk.name)) }))
+    await get().fetchSummary()
+    return result
   },
 
   async copyGlobalSkill(skillName) {

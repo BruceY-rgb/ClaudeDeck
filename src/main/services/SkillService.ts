@@ -73,6 +73,20 @@ export class SkillService {
     await rm(dir, { recursive: true, force: true })
   }
 
+  async batchDelete(names: string[]): Promise<{ success: boolean; deletedCount: number; errors: string[] }> {
+    const errors: string[] = []
+    let deletedCount = 0
+    for (const name of names) {
+      try {
+        await this.delete(name)
+        deletedCount++
+      } catch (e) {
+        errors.push(`${name}: ${e}`)
+      }
+    }
+    return { success: errors.length === 0, deletedCount, errors }
+  }
+
   private async getPersonalSkills(): Promise<Skill[]> {
     const skills: Skill[] = []
     const dirs = await fsService.listDirs(SKILLS_DIR)

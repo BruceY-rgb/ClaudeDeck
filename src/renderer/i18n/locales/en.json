@@ -88,6 +88,8 @@
   "agents.backToAgents": "Back to Agents",
   "agents.pluginReadOnly": "This agent is provided by a plugin and is read-only.",
   "agents.deleteConfirm": "Delete agent \"{{name}}\"?",
+  "agents.batchDeleteConfirm": "Delete {{count}} selected agents? This action cannot be undone.",
+  "agents.deleteSelected": "Delete ({{count}})",
   "agents.fields.name": "Name",
   "agents.fields.description": "Description",
   "agents.fields.model": "Model",
@@ -119,6 +121,8 @@
   "skills.disableModelInvocation": "Disable Model Invocation",
   "skills.deleteSkill": "Delete Skill",
   "skills.deleteConfirm": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
+  "skills.batchDeleteConfirm": "Delete {{count}} selected skills? This action cannot be undone.",
+  "skills.deleteSelected": "Delete ({{count}})",
   "skills.newTitle": "New Skill",
   "skills.newDescription": "Create a new skill",
 
@@ -254,6 +258,7 @@
   "office.selectAll": "Select all",
   "office.deleteSelected": "Delete selected ({{count}})",
   "office.batchDeleteConfirm": "Are you sure you want to delete the {{count}} selected sessions? This action cannot be undone.",
+  "office.batchDeleteProjectsConfirm": "Delete {{count}} selected projects and all their sessions? This action cannot be undone.",
   "office.selected": "Selected",
   "office.selectSessionToViewContext": "Select a session to view context",
   "office.sessionContext": "Session Context",
@@ -273,6 +278,7 @@
   "office.projectAgents.empty": "No project agents",
   "office.projectAgents.emptyHint": "Create a new agent or copy one from your global agents.",
   "office.projectAgents.deleteConfirm": "Delete agent \"{{name}}\"?",
+  "office.projectAgents.batchDeleteConfirm": "Delete {{count}} selected agents? This action cannot be undone.",
 
   "office.projectSkills.title": "Skills",
   "office.projectSkills.searchPlaceholder": "Search skills...",
@@ -281,6 +287,7 @@
   "office.projectSkills.empty": "No project skills",
   "office.projectSkills.emptyHint": "Create a new skill or copy one from your global skills.",
   "office.projectSkills.deleteConfirm": "Delete skill \"{{name}}\"?",
+  "office.projectSkills.batchDeleteConfirm": "Delete {{count}} selected skills? This action cannot be undone.",
 
   "office.projectMCP.title": "MCP Servers",
   "office.projectMCP.add": "Add Server",

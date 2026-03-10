@@ -19,18 +19,43 @@ function SkillCard({
   skill,
   onEdit,
   onDelete,
+  batchMode = false,
+  selected = false,
+  onToggleSelect,
 }: {
   skill: ProjectSkill;
   onEdit: (skill: ProjectSkill) => void;
   onDelete: (name: string) => void;
+  batchMode?: boolean;
+  selected?: boolean;
+  onToggleSelect?: (name: string) => void;
 }): JSX.Element {
   const { t } = useTranslation();
 
   return (
-    <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-5 hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-lg hover:shadow-zinc-200/50 dark:hover:shadow-zinc-900/50 hover:-translate-y-0.5 cursor-pointer active:translate-y-0 active:shadow-md transition-all duration-200">
+    <div
+      onClick={batchMode ? () => onToggleSelect?.(skill.name) : undefined}
+      className={`bg-white dark:bg-zinc-900 rounded-xl border p-5 transition-all duration-200 ${
+        batchMode && selected
+          ? "border-blue-400 dark:border-blue-600 ring-2 ring-blue-400/30"
+          : "border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-lg hover:shadow-zinc-200/50 dark:hover:shadow-zinc-900/50 hover:-translate-y-0.5"
+      } cursor-pointer active:translate-y-0 active:shadow-md`}
+    >
       {/* Header */}
       <div className="flex items-start justify-between mb-2">
-        <h3 className="font-semibold text-sm truncate">{skill.name}</h3>
+        <div className="flex items-center gap-2">
+          {batchMode && (
+            <input
+              type="checkbox"
+              checked={selected}
+              onChange={() => onToggleSelect?.(skill.name)}
+              onClick={(e) => e.stopPropagation()}
+              className="w-4 h-4 rounded border-zinc-300 dark:border-zinc-600 text-blue-600 focus:ring-blue-500"
+            />
+          )}
+          <h3 className="font-semibold text-sm truncate">{skill.name}</h3>
+        </div>
+        {!batchMode && (
         <div className="flex items-center gap-1 flex-shrink-0 ml-2">
           {skill.filePath && (
             <button
@@ -56,6 +81,7 @@ function SkillCard({
             <Trash2 className="w-4 h-4" />
           </button>
         </div>
+        )}
       </div>
 
       {/* Description */}
@@ -100,8 +126,11 @@ export function ProjectSkills(): JSX.Element {
   const openDrawer = useProjectConfigStore((s) => s.openDrawer);
   const openCopyModal = useProjectConfigStore((s) => s.openCopyModal);
   const deleteSkill = useProjectConfigStore((s) => s.deleteSkill);
+  const batchDeleteSkills = useProjectConfigStore((s) => s.batchDeleteSkills);
 
   const [search, setSearch] = useState("");
+  const [batchMode, setBatchMode] = useState(false);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
 
   const filteredSkills = useMemo(() => {
     if (!search) return skills;
@@ -121,6 +150,39 @@ export function ProjectSkills(): JSX.Element {
     if (confirm(t("office.projectSkills.deleteConfirm", { name }))) {
       deleteSkill(name);
     }
+  };
+
+  const toggleSelect = (name: string): void => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(name)) next.delete(name);
+      else next.add(name);
+      return next;
+    });
+  };
+
+  const toggleSelectAll = (): void => {
+    if (selected.size === filteredSkills.length) {
+      setSelected(new Set());
+    } else {
+      setSelected(new Set(filteredSkills.map((s) => s.name)));
+    }
+  };
+
+  const handleBatchDelete = async (): Promise<void> => {
+    if (selected.size === 0) return;
+    const confirmed = confirm(
+      t("office.projectSkills.batchDeleteConfirm", { count: String(selected.size) }),
+    );
+    if (!confirmed) return;
+    await batchDeleteSkills(Array.from(selected));
+    setSelected(new Set());
+    setBatchMode(false);
+  };
+
+  const exitBatchMode = (): void => {
+    setBatchMode(false);
+    setSelected(new Set());
   };
 
   // Loading state
@@ -143,20 +205,54 @@ export function ProjectSkills(): JSX.Element {
           {t("office.projectSkills.title")}
         </h2>
         <div className="flex items-center gap-2">
-          <button
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
-            onClick={() => openCopyModal("skill")}
-          >
-            <Copy className="w-4 h-4" />
-            {t("office.projectSkills.copyFromGlobal")}
-          </button>
-          <button
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-sm font-medium hover:opacity-90 transition-opacity"
-            onClick={() => openDrawer("skill", "create")}
-          >
-            <Plus className="w-4 h-4" />
-            {t("office.projectSkills.create")}
-          </button>
+          {batchMode ? (
+            <>
+              <button
+                onClick={toggleSelectAll}
+                className="px-3 py-2 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+              >
+                {t("plans.selectAll")}
+              </button>
+              {selected.size > 0 && (
+                <button
+                  onClick={handleBatchDelete}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-red-600 text-white text-sm font-medium hover:bg-red-700 transition-colors"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  {t("office.deleteSelected", { count: String(selected.size) })}
+                </button>
+              )}
+              <button
+                onClick={exitBatchMode}
+                className="px-3 py-2 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+              >
+                {t("common.cancel")}
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                onClick={() => setBatchMode(true)}
+                className="px-3 py-2 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+              >
+                {t("plans.batchDelete")}
+              </button>
+              <button
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+                onClick={() => openCopyModal("skill")}
+              >
+                <Copy className="w-4 h-4" />
+                {t("office.projectSkills.copyFromGlobal")}
+              </button>
+              <button
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-sm font-medium hover:opacity-90 transition-opacity"
+                onClick={() => openDrawer("skill", "create")}
+              >
+                <Plus className="w-4 h-4" />
+                {t("office.projectSkills.create")}
+              </button>
+            </>
+          )}
         </div>
       </div>
 
@@ -191,6 +287,9 @@ export function ProjectSkills(): JSX.Element {
               skill={skill}
               onEdit={handleEdit}
               onDelete={handleDelete}
+              batchMode={batchMode}
+              selected={selected.has(skill.name)}
+              onToggleSelect={toggleSelect}
             />
           ))}
         </div>

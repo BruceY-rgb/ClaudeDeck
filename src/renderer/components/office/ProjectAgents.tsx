@@ -28,8 +28,11 @@ export function ProjectAgents(): JSX.Element {
   const openDrawer = useProjectConfigStore((s) => s.openDrawer);
   const openCopyModal = useProjectConfigStore((s) => s.openCopyModal);
   const deleteAgent = useProjectConfigStore((s) => s.deleteAgent);
+  const batchDeleteAgents = useProjectConfigStore((s) => s.batchDeleteAgents);
 
   const [searchQuery, setSearchQuery] = useState("");
+  const [batchMode, setBatchMode] = useState(false);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
 
   const filteredAgents = useMemo(() => {
     if (!searchQuery.trim()) return agents;
@@ -60,6 +63,39 @@ export function ProjectAgents(): JSX.Element {
     }
   };
 
+  const toggleSelect = (name: string): void => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(name)) next.delete(name);
+      else next.add(name);
+      return next;
+    });
+  };
+
+  const toggleSelectAll = (): void => {
+    if (selected.size === filteredAgents.length) {
+      setSelected(new Set());
+    } else {
+      setSelected(new Set(filteredAgents.map((a) => a.name)));
+    }
+  };
+
+  const handleBatchDelete = async (): Promise<void> => {
+    if (selected.size === 0) return;
+    const confirmed = confirm(
+      t("office.projectAgents.batchDeleteConfirm", { count: String(selected.size) }),
+    );
+    if (!confirmed) return;
+    await batchDeleteAgents(Array.from(selected));
+    setSelected(new Set());
+    setBatchMode(false);
+  };
+
+  const exitBatchMode = (): void => {
+    setBatchMode(false);
+    setSelected(new Set());
+  };
+
   // ─── Loading state ──────────────────────────────────────
   if (loading) {
     return (
@@ -88,23 +124,54 @@ export function ProjectAgents(): JSX.Element {
           />
         </div>
 
-        {/* Copy from Global */}
-        <button
-          onClick={handleCopyFromGlobal}
-          className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-lg hover:border-zinc-300 dark:hover:border-zinc-600 transition-colors whitespace-nowrap"
-        >
-          <Copy className="w-4 h-4" />
-          {t("office.projectAgents.copyFromGlobal")}
-        </button>
-
-        {/* New Agent */}
-        <button
-          onClick={handleCreate}
-          className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-white dark:text-zinc-900 bg-zinc-900 dark:bg-zinc-100 rounded-lg hover:opacity-90 transition-colors whitespace-nowrap"
-        >
-          <Plus className="w-4 h-4" />
-          {t("office.projectAgents.create")}
-        </button>
+        {batchMode ? (
+          <>
+            <button
+              onClick={toggleSelectAll}
+              className="px-3 py-2 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+            >
+              {t("plans.selectAll")}
+            </button>
+            {selected.size > 0 && (
+              <button
+                onClick={handleBatchDelete}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-red-600 text-white text-sm font-medium hover:bg-red-700 transition-colors"
+              >
+                <Trash2 className="w-4 h-4" />
+                {t("office.deleteSelected", { count: String(selected.size) })}
+              </button>
+            )}
+            <button
+              onClick={exitBatchMode}
+              className="px-3 py-2 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+            >
+              {t("common.cancel")}
+            </button>
+          </>
+        ) : (
+          <>
+            <button
+              onClick={() => setBatchMode(true)}
+              className="px-3 py-2 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+            >
+              {t("plans.batchDelete")}
+            </button>
+            <button
+              onClick={handleCopyFromGlobal}
+              className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-lg hover:border-zinc-300 dark:hover:border-zinc-600 transition-colors whitespace-nowrap"
+            >
+              <Copy className="w-4 h-4" />
+              {t("office.projectAgents.copyFromGlobal")}
+            </button>
+            <button
+              onClick={handleCreate}
+              className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-white dark:text-zinc-900 bg-zinc-900 dark:bg-zinc-100 rounded-lg hover:opacity-90 transition-colors whitespace-nowrap"
+            >
+              <Plus className="w-4 h-4" />
+              {t("office.projectAgents.create")}
+            </button>
+          </>
+        )}
       </div>
 
       {/* ─── Empty state ───────────────────────────────────── */}
@@ -128,13 +195,29 @@ export function ProjectAgents(): JSX.Element {
           {filteredAgents.map((agent) => (
             <div
               key={agent.name}
-              className="group flex flex-col bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-lg hover:shadow-zinc-200/50 dark:hover:shadow-zinc-900/50 hover:-translate-y-0.5 cursor-pointer active:translate-y-0 active:shadow-md transition-all duration-200"
+              onClick={batchMode ? () => toggleSelect(agent.name) : undefined}
+              className={`group flex flex-col bg-white dark:bg-zinc-900 border rounded-xl p-5 transition-all duration-200 ${
+                batchMode && selected.has(agent.name)
+                  ? "border-blue-400 dark:border-blue-600 ring-2 ring-blue-400/30"
+                  : "border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-lg hover:shadow-zinc-200/50 dark:hover:shadow-zinc-900/50 hover:-translate-y-0.5"
+              } cursor-pointer active:translate-y-0 active:shadow-md`}
             >
               {/* Agent name */}
               <div className="flex items-start justify-between gap-2 mb-3">
-                <h3 className="font-semibold text-sm truncate" title={agent.name}>
-                  {agent.name}
-                </h3>
+                <div className="flex items-center gap-2">
+                  {batchMode && (
+                    <input
+                      type="checkbox"
+                      checked={selected.has(agent.name)}
+                      onChange={() => toggleSelect(agent.name)}
+                      onClick={(e) => e.stopPropagation()}
+                      className="w-4 h-4 rounded border-zinc-300 dark:border-zinc-600 text-blue-600 focus:ring-blue-500"
+                    />
+                  )}
+                  <h3 className="font-semibold text-sm truncate" title={agent.name}>
+                    {agent.name}
+                  </h3>
+                </div>
                 {agent.model && (
                   <span
                     className={`flex-shrink-0 text-xs font-medium px-2 py-0.5 rounded-full border ${getModelBadgeClass(agent.model)}`}
@@ -173,6 +256,7 @@ export function ProjectAgents(): JSX.Element {
               <div className="flex-1" />
 
               {/* Action buttons */}
+              {!batchMode && (
               <div className="flex items-center justify-end gap-1 pt-3 border-t border-zinc-200 dark:border-zinc-800">
                 {agent.filePath && (
                   <button
@@ -200,6 +284,7 @@ export function ProjectAgents(): JSX.Element {
                   <span className="text-xs">Delete</span>
                 </button>
               </div>
+              )}
             </div>
           ))}
         </div>

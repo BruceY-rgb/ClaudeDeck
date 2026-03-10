@@ -100,6 +100,20 @@ export class ProjectConfigService {
     await fsService.deleteFile(filePath)
   }
 
+  async batchDeleteAgents(projectDir: string, names: string[]): Promise<{ success: boolean; deletedCount: number; errors: string[] }> {
+    const errors: string[] = []
+    let deletedCount = 0
+    for (const name of names) {
+      try {
+        await this.deleteAgent(projectDir, name)
+        deletedCount++
+      } catch (e) {
+        errors.push(`${name}: ${e}`)
+      }
+    }
+    return { success: errors.length === 0, deletedCount, errors }
+  }
+
   async copyGlobalAgent(projectDir: string, agentName: string): Promise<void> {
     const srcPath = join(AGENTS_DIR, `${agentName}.md`)
     if (!(await fsService.exists(srcPath))) {
@@ -163,6 +177,20 @@ export class ProjectConfigService {
   async deleteSkill(projectDir: string, name: string): Promise<void> {
     const dir = join(this.skillsDir(projectDir), name)
     await rm(dir, { recursive: true, force: true })
+  }
+
+  async batchDeleteSkills(projectDir: string, names: string[]): Promise<{ success: boolean; deletedCount: number; errors: string[] }> {
+    const errors: string[] = []
+    let deletedCount = 0
+    for (const name of names) {
+      try {
+        await this.deleteSkill(projectDir, name)
+        deletedCount++
+      } catch (e) {
+        errors.push(`${name}: ${e}`)
+      }
+    }
+    return { success: errors.length === 0, deletedCount, errors }
   }
 
   async copyGlobalSkill(projectDir: string, skillName: string): Promise<void> {

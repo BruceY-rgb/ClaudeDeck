@@ -25,6 +25,7 @@ interface SkillStore {
   createSkill: (name: string, data: SkillFormData) => Promise<void>
   updateSkill: (name: string, data: SkillFormData) => Promise<void>
   deleteSkill: (name: string) => Promise<void>
+  batchDeleteSkills: (names: string[]) => Promise<{ success: boolean; deletedCount: number; errors: string[] }>
   getShadowedSkills: () => Skill[]
   fetchDirectoryTree: () => Promise<void>
   readFileContent: (filePath: string) => Promise<string | null>
@@ -69,6 +70,11 @@ export const useSkillStore = create<SkillStore>((set, get) => ({
   async deleteSkill(name: string) {
     await window.electronAPI.skills.delete(name)
     await get().fetch()
+  },
+  async batchDeleteSkills(names: string[]) {
+    const result = await window.electronAPI.skills.batchDelete(names)
+    await get().fetch()
+    return result
   },
   getShadowedSkills() {
     const { personal, plugin } = get()

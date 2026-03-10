@@ -88,6 +88,8 @@
   "agents.backToAgents": "返回智能体列表",
   "agents.pluginReadOnly": "此智能体由插件提供，为只读状态。",
   "agents.deleteConfirm": "确定删除智能体 \"{{name}}\"？",
+  "agents.batchDeleteConfirm": "确定删除选中的 {{count}} 个智能体？此操作不可恢复。",
+  "agents.deleteSelected": "删除 ({{count}})",
   "agents.fields.name": "名称",
   "agents.fields.description": "描述",
   "agents.fields.model": "模型",
@@ -119,6 +121,8 @@
   "skills.disableModelInvocation": "禁用模型调用",
   "skills.deleteSkill": "删除技能",
   "skills.deleteConfirm": "确定要删除 \"{{name}}\"？此操作无法撤销。",
+  "skills.batchDeleteConfirm": "确定删除选中的 {{count}} 个技能？此操作不可恢复。",
+  "skills.deleteSelected": "删除 ({{count}})",
   "skills.newTitle": "新建技能",
   "skills.newDescription": "创建新技能",
 
@@ -255,6 +259,7 @@
   "office.selectAll": "全选",
   "office.deleteSelected": "删除选中 ({{count}})",
   "office.batchDeleteConfirm": "确定要删除选中的 {{count}} 个会话吗？此操作不可恢复。",
+  "office.batchDeleteProjectsConfirm": "确定要删除选中的 {{count}} 个项目及其所有会话吗？此操作不可恢复。",
   "office.selected": "已选中",
   "office.selectSessionToViewContext": "选择一个会话来查看上下文",
   "office.sessionContext": "会话上下文",
@@ -274,6 +279,7 @@
   "office.projectAgents.empty": "暂无项目智能体",
   "office.projectAgents.emptyHint": "创建一个新智能体或从全局智能体中复制。",
   "office.projectAgents.deleteConfirm": "确定删除智能体 \"{{name}}\"？",
+  "office.projectAgents.batchDeleteConfirm": "确定删除选中的 {{count}} 个智能体？此操作不可恢复。",
 
   "office.projectSkills.title": "技能",
   "office.projectSkills.searchPlaceholder": "搜索技能...",
@@ -282,6 +288,7 @@
   "office.projectSkills.empty": "暂无项目技能",
   "office.projectSkills.emptyHint": "创建一个新技能或从全局技能中复制。",
   "office.projectSkills.deleteConfirm": "确定删除技能 \"{{name}}\"？",
+  "office.projectSkills.batchDeleteConfirm": "确定删除选中的 {{count}} 个技能？此操作不可恢复。",
 
   "office.projectMCP.title": "MCP 服务器",
   "office.projectMCP.add": "添加服务器",

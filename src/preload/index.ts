@@ -67,6 +67,8 @@ const api = {
     ): Promise<void> => ipcRenderer.invoke(IPC.AGENTS_WRITE, name, data),
     delete: (name: string): Promise<void> =>
       ipcRenderer.invoke(IPC.AGENTS_DELETE, name),
+    batchDelete: (names: string[]): Promise<{ success: boolean; deletedCount: number; errors: string[] }> =>
+      ipcRenderer.invoke(IPC.AGENTS_BATCH_DELETE, names),
   },
   skills: {
     list: (): Promise<{ personal: Skill[]; plugin: Skill[] }> =>
@@ -81,6 +83,8 @@ const api = {
       ipcRenderer.invoke(IPC.SKILLS_WRITE, name, body, metadata),
     delete: (name: string): Promise<void> =>
       ipcRenderer.invoke(IPC.SKILLS_DELETE, name),
+    batchDelete: (names: string[]): Promise<{ success: boolean; deletedCount: number; errors: string[] }> =>
+      ipcRenderer.invoke(IPC.SKILLS_BATCH_DELETE, names),
     getDirectoryTree: (): Promise<{
       personal: FileNode[];
       plugin: FileNode[];
@@ -275,6 +279,8 @@ const api = {
       ipcRenderer.invoke(IPC.PROJECT_CONFIG_AGENTS_WRITE, projectDir, name, data),
     deleteAgent: (projectDir: string, name: string): Promise<void> =>
       ipcRenderer.invoke(IPC.PROJECT_CONFIG_AGENTS_DELETE, projectDir, name),
+    batchDeleteAgents: (projectDir: string, names: string[]): Promise<{ success: boolean; deletedCount: number; errors: string[] }> =>
+      ipcRenderer.invoke(IPC.PROJECT_CONFIG_AGENTS_BATCH_DELETE, projectDir, names),
 
     // Skills
     listSkills: (projectDir: string): Promise<ProjectSkill[]> =>
@@ -285,6 +291,8 @@ const api = {
       ipcRenderer.invoke(IPC.PROJECT_CONFIG_SKILLS_WRITE, projectDir, name, data),
     deleteSkill: (projectDir: string, name: string): Promise<void> =>
       ipcRenderer.invoke(IPC.PROJECT_CONFIG_SKILLS_DELETE, projectDir, name),
+    batchDeleteSkills: (projectDir: string, names: string[]): Promise<{ success: boolean; deletedCount: number; errors: string[] }> =>
+      ipcRenderer.invoke(IPC.PROJECT_CONFIG_SKILLS_BATCH_DELETE, projectDir, names),
 
     // MCP
     listMCPServers: (projectDir: string): Promise<ProjectMCPServer[]> =>

@@ -6,6 +6,7 @@ interface AgentStore {
   loading: boolean
   fetch: () => Promise<void>
   deleteAgent: (name: string) => Promise<void>
+  batchDeleteAgents: (names: string[]) => Promise<{ success: boolean; deletedCount: number; errors: string[] }>
 }
 
 export const useAgentStore = create<AgentStore>((set) => ({
@@ -24,5 +25,10 @@ export const useAgentStore = create<AgentStore>((set) => ({
   async deleteAgent(name: string) {
     await window.electronAPI.agents.delete(name)
     set(state => ({ items: state.items.filter(a => a.name !== name) }))
+  },
+  async batchDeleteAgents(names: string[]) {
+    const result = await window.electronAPI.agents.batchDelete(names)
+    set(state => ({ items: state.items.filter(a => !names.includes(a.name)) }))
+    return result
   }
 }))

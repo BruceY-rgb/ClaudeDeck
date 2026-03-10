@@ -10,6 +10,7 @@ import {
   AlertTriangle,
   Search,
   FolderOpen,
+  Trash2,
 } from "lucide-react";
 import { useSkillStore } from "../stores/skillStore";
 import { useFileWatcher } from "../hooks/useFileWatcher";
@@ -27,9 +28,15 @@ interface FileNode {
 function SkillCard({
   skill,
   shadowed = false,
+  batchMode = false,
+  selected = false,
+  onToggleSelect,
 }: {
   skill: Skill;
   shadowed?: boolean;
+  batchMode?: boolean;
+  selected?: boolean;
+  onToggleSelect?: (name: string) => void;
 }): JSX.Element {
   const { t } = useTranslation();
   const linkPath = `/skills/${skill.source}/${skill.name}`;
@@ -42,17 +49,35 @@ function SkillCard({
     }
   };
 
+  const handleCheckbox = (e: React.MouseEvent): void => {
+    e.preventDefault();
+    e.stopPropagation();
+    onToggleSelect?.(skill.name);
+  };
+
   return (
     <Link
-      to={linkPath}
-      className={`block bg-white dark:bg-zinc-900 rounded-xl border p-5 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors ${
-        shadowed
-          ? "border-orange-300 dark:border-orange-700"
-          : "border-zinc-200 dark:border-zinc-800"
+      to={batchMode ? "#" : linkPath}
+      onClick={batchMode ? (e) => { e.preventDefault(); onToggleSelect?.(skill.name); } : undefined}
+      className={`block bg-white dark:bg-zinc-900 rounded-xl border p-5 transition-colors ${
+        batchMode && selected
+          ? "border-blue-400 dark:border-blue-600 ring-2 ring-blue-400/30"
+          : shadowed
+            ? "border-orange-300 dark:border-orange-700 hover:border-zinc-300 dark:hover:border-zinc-700"
+            : "border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700"
       }`}
     >
       <div className="flex items-start justify-between mb-2">
         <div className="flex items-center gap-2">
+          {batchMode && (
+            <input
+              type="checkbox"
+              checked={selected}
+              onClick={handleCheckbox}
+              onChange={() => {}}
+              className="w-4 h-4 rounded border-zinc-300 dark:border-zinc-600 text-blue-600 focus:ring-blue-500"
+            />
+          )}
           {shadowed && (
             <AlertTriangle
               className="w-4 h-4 text-orange-500 shrink-0"
@@ -180,6 +205,7 @@ export function SkillsPage(): JSX.Element {
     loading,
     fetch,
     getShadowedSkills,
+    batchDeleteSkills,
     directoryTree,
     fetchDirectoryTree,
     readFileContent,
@@ -190,6 +216,8 @@ export function SkillsPage(): JSX.Element {
   const [selectedFile, setSelectedFile] = useState<FileNode | null>(null);
   const [fileContent, setFileContent] = useState<string | null>(null);
   const [loadingContent, setLoadingContent] = useState(false);
+  const [batchMode, setBatchMode] = useState(false);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     fetch();
@@ -233,6 +261,41 @@ export function SkillsPage(): JSX.Element {
 
   const isMarkdown = selectedFile?.name.endsWith(".md");
 
+  const filteredPersonal = filterSkills(personal);
+
+  const toggleSelect = (name: string): void => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(name)) next.delete(name);
+      else next.add(name);
+      return next;
+    });
+  };
+
+  const toggleSelectAll = (): void => {
+    if (selected.size === filteredPersonal.length) {
+      setSelected(new Set());
+    } else {
+      setSelected(new Set(filteredPersonal.map((s) => s.name)));
+    }
+  };
+
+  const handleBatchDelete = async (): Promise<void> => {
+    if (selected.size === 0) return;
+    const confirmed = confirm(
+      t("skills.batchDeleteConfirm", { count: String(selected.size) }),
+    );
+    if (!confirmed) return;
+    await batchDeleteSkills(Array.from(selected));
+    setSelected(new Set());
+    setBatchMode(false);
+  };
+
+  const exitBatchMode = (): void => {
+    setBatchMode(false);
+    setSelected(new Set());
+  };
+
   return (
     <div>
       <PageHeader
@@ -243,35 +306,69 @@ export function SkillsPage(): JSX.Element {
         })}
         actions={
           <div className="flex items-center gap-2">
-            {/* View Toggle */}
-            <div className="flex items-center bg-zinc-100 dark:bg-zinc-800 rounded-lg p-1">
-              <button
-                onClick={() => setViewMode("cards")}
-                className={`px-3 py-1 text-sm rounded-md transition-colors ${
-                  viewMode === "cards"
-                    ? "bg-white dark:bg-zinc-700 shadow-sm"
-                    : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
-                }`}
-              >
-                {t("skills.cards")}
-              </button>
-              <button
-                onClick={() => setViewMode("tree")}
-                className={`px-3 py-1 text-sm rounded-md transition-colors ${
-                  viewMode === "tree"
-                    ? "bg-white dark:bg-zinc-700 shadow-sm"
-                    : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
-                }`}
-              >
-                {t("skills.tree")}
-              </button>
-            </div>
-            <Link
-              to="/skills/new"
-              className="px-4 py-2 rounded-lg bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-sm font-medium hover:opacity-90"
-            >
-              {t("skills.newSkill")}
-            </Link>
+            {batchMode ? (
+              <>
+                <button
+                  onClick={toggleSelectAll}
+                  className="px-3 py-2 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+                >
+                  {t("plans.selectAll")}
+                </button>
+                {selected.size > 0 && (
+                  <button
+                    onClick={handleBatchDelete}
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-red-600 text-white text-sm font-medium hover:bg-red-700 transition-colors"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    {t("skills.deleteSelected", { count: String(selected.size) })}
+                  </button>
+                )}
+                <button
+                  onClick={exitBatchMode}
+                  className="px-3 py-2 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+                >
+                  {t("common.cancel")}
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={() => setBatchMode(true)}
+                  className="px-3 py-2 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+                >
+                  {t("plans.batchDelete")}
+                </button>
+                {/* View Toggle */}
+                <div className="flex items-center bg-zinc-100 dark:bg-zinc-800 rounded-lg p-1">
+                  <button
+                    onClick={() => setViewMode("cards")}
+                    className={`px-3 py-1 text-sm rounded-md transition-colors ${
+                      viewMode === "cards"
+                        ? "bg-white dark:bg-zinc-700 shadow-sm"
+                        : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
+                    }`}
+                  >
+                    {t("skills.cards")}
+                  </button>
+                  <button
+                    onClick={() => setViewMode("tree")}
+                    className={`px-3 py-1 text-sm rounded-md transition-colors ${
+                      viewMode === "tree"
+                        ? "bg-white dark:bg-zinc-700 shadow-sm"
+                        : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
+                    }`}
+                  >
+                    {t("skills.tree")}
+                  </button>
+                </div>
+                <Link
+                  to="/skills/new"
+                  className="px-4 py-2 rounded-lg bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-sm font-medium hover:opacity-90"
+                >
+                  {t("skills.newSkill")}
+                </Link>
+              </>
+            )}
           </div>
         }
       />
@@ -308,7 +405,13 @@ export function SkillsPage(): JSX.Element {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {filterSkills(personal).map((skill) => (
-                  <SkillCard key={skill.name} skill={skill} />
+                  <SkillCard
+                    key={skill.name}
+                    skill={skill}
+                    batchMode={batchMode}
+                    selected={selected.has(skill.name)}
+                    onToggleSelect={toggleSelect}
+                  />
                 ))}
               </div>
             )}

@@ -1,13 +1,23 @@
 import { useEffect, useCallback, useState } from "react";
 import { Link } from "react-router-dom";
-import { FolderOpen } from "lucide-react";
+import { FolderOpen, Trash2 } from "lucide-react";
 import { useAgentStore } from "../stores/agentStore";
 import { useFileWatcher } from "../hooks/useFileWatcher";
 import { PageHeader } from "../components/shared/PageHeader";
 import { useTranslation } from "../i18n/LanguageContext";
 import type { Agent } from "@shared/types/agent";
 
-function AgentCard({ agent }: { agent: Agent }): JSX.Element {
+function AgentCard({
+  agent,
+  batchMode,
+  selected,
+  onToggleSelect,
+}: {
+  agent: Agent;
+  batchMode: boolean;
+  selected: boolean;
+  onToggleSelect: (name: string) => void;
+}): JSX.Element {
   const { t } = useTranslation();
 
   const handleReveal = (e: React.MouseEvent): void => {
@@ -18,13 +28,35 @@ function AgentCard({ agent }: { agent: Agent }): JSX.Element {
     }
   };
 
+  const handleCheckbox = (e: React.MouseEvent): void => {
+    e.preventDefault();
+    e.stopPropagation();
+    onToggleSelect(agent.name);
+  };
+
   return (
     <Link
-      to={`/agents/${agent.name}`}
-      className="block bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-5 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors"
+      to={batchMode ? "#" : `/agents/${agent.name}`}
+      onClick={batchMode ? (e) => { e.preventDefault(); onToggleSelect(agent.name); } : undefined}
+      className={`block bg-white dark:bg-zinc-900 rounded-xl border p-5 transition-colors ${
+        batchMode && selected
+          ? "border-blue-400 dark:border-blue-600 ring-2 ring-blue-400/30"
+          : "border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700"
+      }`}
     >
       <div className="flex items-start justify-between mb-3">
-        <h3 className="font-semibold text-sm">{agent.name}</h3>
+        <div className="flex items-center gap-2">
+          {batchMode && (
+            <input
+              type="checkbox"
+              checked={selected}
+              onClick={handleCheckbox}
+              onChange={() => {}}
+              className="w-4 h-4 rounded border-zinc-300 dark:border-zinc-600 text-blue-600 focus:ring-blue-500"
+            />
+          )}
+          <h3 className="font-semibold text-sm">{agent.name}</h3>
+        </div>
         <div className="flex items-center gap-1.5">
           {agent.filePath && (
             <button
@@ -74,12 +106,14 @@ function AgentCard({ agent }: { agent: Agent }): JSX.Element {
 }
 
 export function AgentsPage(): JSX.Element {
-  const { items, loading, fetch } = useAgentStore();
+  const { items, loading, fetch, batchDeleteAgents } = useAgentStore();
   const { t } = useTranslation();
   const [search, setSearch] = useState("");
   const [sourceFilter, setSourceFilter] = useState<
     "all" | "personal" | "plugin"
   >("all");
+  const [batchMode, setBatchMode] = useState(false);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     fetch();
@@ -98,18 +132,90 @@ export function AgentsPage(): JSX.Element {
     return true;
   });
 
+  // Only personal agents can be batch deleted
+  const personalFiltered = filtered.filter((a) => a.source === "personal");
+
+  const toggleSelect = (name: string): void => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(name)) next.delete(name);
+      else next.add(name);
+      return next;
+    });
+  };
+
+  const toggleSelectAll = (): void => {
+    if (selected.size === personalFiltered.length) {
+      setSelected(new Set());
+    } else {
+      setSelected(new Set(personalFiltered.map((a) => a.name)));
+    }
+  };
+
+  const handleBatchDelete = async (): Promise<void> => {
+    if (selected.size === 0) return;
+    const confirmed = confirm(
+      t("agents.batchDeleteConfirm", { count: String(selected.size) }),
+    );
+    if (!confirmed) return;
+    await batchDeleteAgents(Array.from(selected));
+    setSelected(new Set());
+    setBatchMode(false);
+  };
+
+  const exitBatchMode = (): void => {
+    setBatchMode(false);
+    setSelected(new Set());
+  };
+
   return (
     <div>
       <PageHeader
         title={t("agents.title")}
         description={t("agents.description", { count: String(items.length) })}
         actions={
-          <Link
-            to="/agents/new"
-            className="px-4 py-2 rounded-lg bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-sm font-medium hover:opacity-90 transition-opacity"
-          >
-            {t("agents.newAgent")}
-          </Link>
+          <div className="flex items-center gap-2">
+            {batchMode ? (
+              <>
+                <button
+                  onClick={toggleSelectAll}
+                  className="px-3 py-2 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+                >
+                  {t("plans.selectAll")}
+                </button>
+                {selected.size > 0 && (
+                  <button
+                    onClick={handleBatchDelete}
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-red-600 text-white text-sm font-medium hover:bg-red-700 transition-colors"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    {t("agents.deleteSelected", { count: String(selected.size) })}
+                  </button>
+                )}
+                <button
+                  onClick={exitBatchMode}
+                  className="px-3 py-2 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+                >
+                  {t("common.cancel")}
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={() => setBatchMode(true)}
+                  className="px-3 py-2 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+                >
+                  {t("plans.batchDelete")}
+                </button>
+                <Link
+                  to="/agents/new"
+                  className="px-4 py-2 rounded-lg bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-sm font-medium hover:opacity-90 transition-opacity"
+                >
+                  {t("agents.newAgent")}
+                </Link>
+              </>
+            )}
+          </div>
         }
       />
 
@@ -157,7 +263,13 @@ export function AgentsPage(): JSX.Element {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filtered.map((agent) => (
-            <AgentCard key={`${agent.source}-${agent.name}`} agent={agent} />
+            <AgentCard
+              key={`${agent.source}-${agent.name}`}
+              agent={agent}
+              batchMode={batchMode}
+              selected={selected.has(agent.name)}
+              onToggleSelect={toggleSelect}
+            />
           ))}
         </div>
       )}

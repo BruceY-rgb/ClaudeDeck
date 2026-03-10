@@ -5,12 +5,14 @@ export const IPC = {
   AGENTS_READ: "agents:read",
   AGENTS_WRITE: "agents:write",
   AGENTS_DELETE: "agents:delete",
+  AGENTS_BATCH_DELETE: "agents:batch-delete",
 
   // Skills
   SKILLS_LIST: "skills:list",
   SKILLS_READ: "skills:read",
   SKILLS_WRITE: "skills:write",
   SKILLS_DELETE: "skills:delete",
+  SKILLS_BATCH_DELETE: "skills:batch-delete",
   SKILLS_DIRECTORY_TREE: "skills:directory-tree",
   SKILLS_READ_FILE: "skills:read-file",
   SKILLS_WRITE_FILE: "skills:write-file",
@@ -83,11 +85,13 @@ export const IPC = {
   PROJECT_CONFIG_AGENTS_READ: "project-config:agents-read",
   PROJECT_CONFIG_AGENTS_WRITE: "project-config:agents-write",
   PROJECT_CONFIG_AGENTS_DELETE: "project-config:agents-delete",
+  PROJECT_CONFIG_AGENTS_BATCH_DELETE: "project-config:agents-batch-delete",
   // Skills
   PROJECT_CONFIG_SKILLS_LIST: "project-config:skills-list",
   PROJECT_CONFIG_SKILLS_READ: "project-config:skills-read",
   PROJECT_CONFIG_SKILLS_WRITE: "project-config:skills-write",
   PROJECT_CONFIG_SKILLS_DELETE: "project-config:skills-delete",
+  PROJECT_CONFIG_SKILLS_BATCH_DELETE: "project-config:skills-batch-delete",
   // MCP
   PROJECT_CONFIG_MCP_LIST: "project-config:mcp-list",
   PROJECT_CONFIG_MCP_WRITE: "project-config:mcp-write",
