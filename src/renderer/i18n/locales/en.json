@@ -176,6 +176,8 @@
   "marketplace.title": "Marketplaces",
   "marketplace.description": "Manage plugin sources",
   "marketplace.repoPlaceholder": "Enter GitHub repository URL (e.g., https://github.com/anthropic/claude-code-plugins)",
+  "marketplace.addSuccess": "Marketplace added successfully",
+  "marketplace.addFailed": "Failed to add marketplace: {{error}}. Please check if Git is installed and the repository URL is valid.",
   "marketplace.noMarketplaces": "No marketplaces configured. Add a GitHub repository above.",
   "marketplace.lastUpdated": "Last updated: {{date}}",
   "marketplace.backToMarketplaces": "← Back to marketplaces",

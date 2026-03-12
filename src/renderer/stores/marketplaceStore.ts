@@ -56,6 +56,8 @@ export const useMarketplaceStore = create<MarketplaceStore>((set, get) => ({
     try {
       const source = await window.electronAPI.marketplace.add(repoUrl);
       set((state) => ({ sources: [...state.sources, source] }));
+    } catch (error) {
+      throw error;
     } finally {
       set({ loading: false });
     }

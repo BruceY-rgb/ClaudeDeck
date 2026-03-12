@@ -2,9 +2,11 @@ import { useState } from "react";
 import { useMarketplaceStore } from "../../stores/marketplaceStore";
 import { PageHeader } from "../shared/PageHeader";
 import { useTranslation } from "../../i18n/LanguageContext";
+import { useToast } from "../shared/Toast";
 
 export function MarketplaceList(): JSX.Element {
   const { t } = useTranslation();
+  const { showToast } = useToast();
   const {
     sources,
     loading,
@@ -23,6 +25,10 @@ export function MarketplaceList(): JSX.Element {
     try {
       await addSource(newRepoUrl.trim());
       setNewRepoUrl("");
+      showToast(t("marketplace.addSuccess"), "success");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      showToast(t("marketplace.addFailed", { error: message }), "error");
     } finally {
       setIsAdding(false);
     }

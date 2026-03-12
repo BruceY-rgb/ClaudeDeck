@@ -176,6 +176,8 @@
   "marketplace.title": "市场",
   "marketplace.description": "管理插件来源",
   "marketplace.repoPlaceholder": "输入 GitHub 仓库 URL（例如 https://github.com/anthropic/claude-code-plugins）",
+  "marketplace.addSuccess": "市场源添加成功",
+  "marketplace.addFailed": "添加市场源失败: {{error}}。请检查是否已安装 Git 以及仓库 URL 是否有效。",
   "marketplace.noMarketplaces": "未配置市场。请在上方添加 GitHub 仓库。",
   "marketplace.lastUpdated": "最后更新：{{date}}",
   "marketplace.backToMarketplaces": "← 返回市场列表",
