@@ -50,6 +50,7 @@ export const IPC = {
   MARKETPLACE_PLUGIN_DETAIL: "marketplace:pluginDetail",
   MARKETPLACE_REFRESH: "marketplace:refresh",
   MARKETPLACE_INSTALL: "marketplace:install",
+  MARKETPLACE_BROWSE_CATEGORY: "marketplace:browseCategory",
   MARKETPLACE_GET_INSTALLED: "marketplace:getInstalled",
 
   // CLI

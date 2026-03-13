@@ -14,6 +14,9 @@ export interface MarketplacePlugin {
   repository?: string
   readmePath?: string
   marketplaceId: string
+  isCategory?: boolean
+  childCount?: number
+  categoryPath?: string
 }
 
 export interface MarketplacePluginDetail extends MarketplacePlugin {

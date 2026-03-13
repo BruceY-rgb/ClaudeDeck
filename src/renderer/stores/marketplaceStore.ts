@@ -6,6 +6,11 @@ import type {
   InstalledPluginRecord,
 } from "@shared/types/marketplace";
 
+interface CategoryEntry {
+  name: string;
+  path: string;
+}
+
 interface MarketplaceStore {
   sources: MarketplaceSource[];
   currentSource: MarketplaceSource | null;
@@ -14,6 +19,7 @@ interface MarketplaceStore {
   loading: boolean;
   installing: boolean;
   installedPlugins: InstalledPluginRecord[];
+  categoryStack: CategoryEntry[];
 
   fetchSources: () => Promise<void>;
   addSource: (repoUrl: string) => Promise<void>;
@@ -21,6 +27,12 @@ interface MarketplaceStore {
   setCurrentSource: (source: MarketplaceSource | null) => void;
   setCurrentPlugin: (plugin: MarketplacePluginDetail | null) => void;
   browsePlugins: (marketplaceId: string) => Promise<void>;
+  browseCategory: (
+    marketplaceId: string,
+    categoryPath: string,
+    categoryName: string,
+  ) => Promise<void>;
+  popCategory: () => Promise<void>;
   getPluginDetail: (marketplaceId: string, pluginName: string) => Promise<void>;
   refreshMarketplace: (id: string) => Promise<void>;
   installPlugin: (
@@ -39,6 +51,7 @@ export const useMarketplaceStore = create<MarketplaceStore>((set, get) => ({
   loading: false,
   installing: false,
   installedPlugins: [],
+  categoryStack: [],
 
   async fetchSources() {
     if (!window.electronAPI) return;
@@ -73,7 +86,12 @@ export const useMarketplaceStore = create<MarketplaceStore>((set, get) => ({
   },
 
   setCurrentSource(source: MarketplaceSource | null) {
-    set({ currentSource: source, plugins: [], currentPlugin: null });
+    set({
+      currentSource: source,
+      plugins: [],
+      currentPlugin: null,
+      categoryStack: [],
+    });
   },
 
   setCurrentPlugin(plugin: MarketplacePluginDetail | null) {
@@ -81,11 +99,61 @@ export const useMarketplaceStore = create<MarketplaceStore>((set, get) => ({
   },
 
   async browsePlugins(marketplaceId: string) {
-    set({ loading: true });
+    set({ loading: true, categoryStack: [] });
     try {
       const plugins =
         await window.electronAPI.marketplace.browse(marketplaceId);
       set({ plugins });
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  async browseCategory(
+    marketplaceId: string,
+    categoryPath: string,
+    categoryName: string,
+  ) {
+    set({ loading: true });
+    try {
+      const plugins = await window.electronAPI.marketplace.browseCategory(
+        marketplaceId,
+        categoryPath,
+      );
+      set((state) => ({
+        plugins,
+        categoryStack: [
+          ...state.categoryStack,
+          { name: categoryName, path: categoryPath },
+        ],
+      }));
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  async popCategory() {
+    const { categoryStack, currentSource } = get();
+    if (!currentSource) return;
+
+    set({ loading: true });
+    try {
+      if (categoryStack.length <= 1) {
+        // Go back to top-level plugins
+        const plugins = await window.electronAPI.marketplace.browse(
+          currentSource.id,
+        );
+        set({ plugins, categoryStack: [] });
+      } else {
+        // Go back to previous category
+        const newStack = categoryStack.slice(0, -1);
+        const parent = newStack[newStack.length - 1];
+        const plugins = await window.electronAPI.marketplace.browseCategory(
+          currentSource.id,
+          parent.path,
+        );
+        set({ plugins, categoryStack: newStack });
+      }
     } finally {
       set({ loading: false });
     }

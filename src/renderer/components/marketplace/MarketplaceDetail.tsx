@@ -15,6 +15,9 @@ export function MarketplaceDetail(): JSX.Element {
     uninstallPlugin,
     getPluginDetail,
     installedPlugins,
+    categoryStack,
+    browseCategory,
+    popCategory,
   } = useMarketplaceStore();
   const [pluginInstallStatus, setPluginInstallStatus] = useState<
     Record<string, InstallStatus>
@@ -41,6 +44,14 @@ export function MarketplaceDetail(): JSX.Element {
   const handleViewDetail = async (pluginName: string) => {
     if (!currentSource) return;
     await getPluginDetail(currentSource.id, pluginName);
+  };
+
+  const handleBrowseCategory = async (
+    categoryPath: string,
+    categoryName: string,
+  ) => {
+    if (!currentSource) return;
+    await browseCategory(currentSource.id, categoryPath, categoryName);
   };
 
   const isPluginInstalled = (pluginName: string) => {
@@ -78,16 +89,79 @@ export function MarketplaceDetail(): JSX.Element {
   return (
     <div>
       <div className="mb-4">
-        <button
-          onClick={() => useMarketplaceStore.getState().setCurrentSource(null)}
-          className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200"
-        >
-          {t("marketplace.backToMarketplaces")}
-        </button>
+        {categoryStack.length > 0 ? (
+          <button
+            onClick={() => popCategory()}
+            className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200"
+          >
+            ← {t("common.back")}
+          </button>
+        ) : (
+          <button
+            onClick={() =>
+              useMarketplaceStore.getState().setCurrentSource(null)
+            }
+            className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200"
+          >
+            {t("marketplace.backToMarketplaces")}
+          </button>
+        )}
       </div>
 
+      {categoryStack.length > 0 && (
+        <div className="mb-3 flex items-center gap-1 text-sm text-zinc-500 dark:text-zinc-400 flex-wrap">
+          <button
+            onClick={async () => {
+              if (!currentSource) return;
+              await useMarketplaceStore
+                .getState()
+                .browsePlugins(currentSource.id);
+            }}
+            className="hover:text-zinc-900 dark:hover:text-zinc-200"
+          >
+            {currentSource.id}
+          </button>
+          {categoryStack.map((cat, idx) => (
+            <span key={cat.path} className="flex items-center gap-1">
+              <span>/</span>
+              {idx === categoryStack.length - 1 ? (
+                <span className="text-zinc-900 dark:text-white">
+                  {cat.name}
+                </span>
+              ) : (
+                <button
+                  onClick={async () => {
+                    // Navigate to this level by popping back
+                    const store = useMarketplaceStore.getState();
+                    const targetStack = categoryStack.slice(0, idx + 1);
+                    const target = targetStack[targetStack.length - 1];
+                    const plugins =
+                      await window.electronAPI.marketplace.browseCategory(
+                        currentSource.id,
+                        target.path,
+                      );
+                    useMarketplaceStore.setState({
+                      plugins,
+                      categoryStack: targetStack,
+                      loading: false,
+                    });
+                  }}
+                  className="hover:text-zinc-900 dark:hover:text-zinc-200"
+                >
+                  {cat.name}
+                </button>
+              )}
+            </span>
+          ))}
+        </div>
+      )}
+
       <PageHeader
-        title={currentSource.id}
+        title={
+          categoryStack.length > 0
+            ? categoryStack[categoryStack.length - 1].name
+            : currentSource.id
+        }
         description={t("marketplace.availablePlugins")}
       />
 
@@ -107,86 +181,124 @@ export function MarketplaceDetail(): JSX.Element {
         {plugins.map((plugin) => (
           <div
             key={plugin.id}
-            className="p-4 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg hover:border-zinc-400 dark:hover:border-zinc-600 transition-colors"
+            className={`p-4 bg-white dark:bg-zinc-800 border rounded-lg hover:border-zinc-400 dark:hover:border-zinc-600 transition-colors ${
+              plugin.isCategory
+                ? "border-blue-200 dark:border-blue-800"
+                : "border-zinc-200 dark:border-zinc-700"
+            }`}
           >
             <div className="flex items-start justify-between">
               <div className="flex-1 min-w-0">
-                <h3 className="text-lg font-medium text-zinc-900 dark:text-white truncate">
-                  {plugin.name}
-                </h3>
+                <div className="flex items-center gap-2">
+                  {plugin.isCategory && (
+                    <span className="text-blue-500 text-lg">📁</span>
+                  )}
+                  <h3 className="text-lg font-medium text-zinc-900 dark:text-white truncate">
+                    {plugin.name}
+                  </h3>
+                </div>
                 <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1 line-clamp-2">
                   {plugin.description}
                 </p>
               </div>
-            </div>
-
-            <div className="mt-3 flex items-center gap-2 text-xs text-zinc-500">
-              {plugin.version && (
-                <span className="px-2 py-0.5 bg-zinc-100 dark:bg-zinc-700 rounded">
-                  v{plugin.version}
+              {plugin.isCategory && plugin.childCount && (
+                <span className="ml-2 px-2 py-0.5 text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full whitespace-nowrap">
+                  {t("marketplace.itemCount", { count: plugin.childCount })}
                 </span>
               )}
-              {plugin.author && <span>by {plugin.author}</span>}
             </div>
 
+            {!plugin.isCategory && (
+              <div className="mt-3 flex items-center gap-2 text-xs text-zinc-500">
+                {plugin.version && (
+                  <span className="px-2 py-0.5 bg-zinc-100 dark:bg-zinc-700 rounded">
+                    v{plugin.version}
+                  </span>
+                )}
+                {plugin.author && <span>by {plugin.author}</span>}
+              </div>
+            )}
+
             <div className="mt-4 flex gap-2">
-              <button
-                onClick={() => handleViewDetail(plugin.name)}
-                className="flex-1 px-3 py-1.5 bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-white text-sm rounded-md hover:bg-zinc-300 dark:hover:bg-zinc-600"
-              >
-                {t("common.view")}
-              </button>
-              {(() => {
-                const status = pluginInstallStatus[plugin.name] || "idle";
-                const installed = isPluginInstalled(plugin.name);
-                const isInstalling = status === "installing";
-                const isSuccess = status === "success";
-                const isFailed = status === "failed";
-
-                let buttonClass =
-                  "flex-1 px-3 py-1.5 text-sm rounded-lg font-medium transition-colors ";
-                let buttonText = t("common.install");
-                let disabled = false;
-                let onClick: (() => void) | undefined = undefined;
-
-                if (isInstalling) {
-                  buttonClass +=
-                    "bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 opacity-50 cursor-not-allowed";
-                  buttonText = t("common.installing");
-                  disabled = true;
-                } else if (isSuccess) {
-                  buttonClass += "bg-green-600 text-white cursor-not-allowed";
-                  buttonText = "Installed ✓";
-                  disabled = true;
-                } else if (isFailed) {
-                  buttonClass += "bg-red-600 text-white hover:bg-red-700";
-                  buttonText = "Failed";
-                  disabled = false;
-                } else if (installed) {
-                  buttonClass += "bg-green-600 text-white hover:bg-red-600";
-                  buttonText = t("common.installed");
-                  disabled = false;
-                  onClick = () => {
-                    const pluginId = getInstalledPluginId(plugin.name);
-                    if (pluginId) handleUninstall(pluginId);
-                  };
-                } else {
-                  buttonClass +=
-                    "bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 hover:opacity-90";
-                  buttonText = t("common.install");
-                  disabled = false;
-                }
-
-                return (
+              {plugin.isCategory ? (
+                <button
+                  onClick={() =>
+                    handleBrowseCategory(
+                      plugin.categoryPath || "",
+                      plugin.name,
+                    )
+                  }
+                  className="flex-1 px-3 py-1.5 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700"
+                >
+                  {t("marketplace.browseCategory")}
+                </button>
+              ) : (
+                <>
                   <button
-                    onClick={onClick || (() => handleInstall(plugin.name))}
-                    disabled={disabled}
-                    className={buttonClass}
+                    onClick={() => handleViewDetail(plugin.name)}
+                    className="flex-1 px-3 py-1.5 bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-white text-sm rounded-md hover:bg-zinc-300 dark:hover:bg-zinc-600"
                   >
-                    {buttonText}
+                    {t("common.view")}
                   </button>
-                );
-              })()}
+                  {(() => {
+                    const status =
+                      pluginInstallStatus[plugin.name] || "idle";
+                    const installed = isPluginInstalled(plugin.name);
+                    const isInstalling = status === "installing";
+                    const isSuccess = status === "success";
+                    const isFailed = status === "failed";
+
+                    let buttonClass =
+                      "flex-1 px-3 py-1.5 text-sm rounded-lg font-medium transition-colors ";
+                    let buttonText = t("common.install");
+                    let disabled = false;
+                    let onClick: (() => void) | undefined = undefined;
+
+                    if (isInstalling) {
+                      buttonClass +=
+                        "bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 opacity-50 cursor-not-allowed";
+                      buttonText = t("common.installing");
+                      disabled = true;
+                    } else if (isSuccess) {
+                      buttonClass +=
+                        "bg-green-600 text-white cursor-not-allowed";
+                      buttonText = "Installed ✓";
+                      disabled = true;
+                    } else if (isFailed) {
+                      buttonClass +=
+                        "bg-red-600 text-white hover:bg-red-700";
+                      buttonText = "Failed";
+                      disabled = false;
+                    } else if (installed) {
+                      buttonClass +=
+                        "bg-green-600 text-white hover:bg-red-600";
+                      buttonText = t("common.installed");
+                      disabled = false;
+                      onClick = () => {
+                        const pluginId = getInstalledPluginId(plugin.name);
+                        if (pluginId) handleUninstall(pluginId);
+                      };
+                    } else {
+                      buttonClass +=
+                        "bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 hover:opacity-90";
+                      buttonText = t("common.install");
+                      disabled = false;
+                    }
+
+                    return (
+                      <button
+                        onClick={
+                          onClick || (() => handleInstall(plugin.name))
+                        }
+                        disabled={disabled}
+                        className={buttonClass}
+                      >
+                        {buttonText}
+                      </button>
+                    );
+                  })()}
+                </>
+              )}
             </div>
           </div>
         ))}

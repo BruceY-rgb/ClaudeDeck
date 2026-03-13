@@ -37,6 +37,39 @@ export class MarketplaceService {
   private readonly DEFAULT_MARKETPLACE_REPO =
     "https://github.com/anthropic/claude-code-plugins";
 
+  private static readonly SKIP = new Set([
+    ".git",
+    ".github",
+    ".vscode",
+    ".devcontainer",
+    ".claude",
+    ".claude-plugin",
+    "scripts",
+    "docs",
+    "examples",
+    "tests",
+    "schemas",
+    "Script",
+    "tools",
+    "node_modules",
+    "_images",
+    "assets",
+    "screenshots",
+    "spec",
+    "template",
+    "src",
+    "cli",
+    ".shared",
+    "bin",
+    "test",
+    ".husky",
+    ".cursor",
+    ".opencode",
+    ".codex",
+    ".agents",
+    ".cursor-plugin",
+  ]);
+
   async initializeDefaultMarketplace(): Promise<void> {
     try {
       const marketplaces = await this.listMarketplaces();
@@ -265,19 +298,35 @@ export class MarketplaceService {
           marketplace.installLocation,
           mp.source,
         );
-        const info = await this.extractPluginInfo(pluginDir, marketplaceId);
-        plugins.push(
-          info || {
+        // Always check if directory has browsable children first
+        const { isCategory, childCount } = await this.countChildren(pluginDir);
+        if (isCategory) {
+          plugins.push({
             id: `${mp.name}@${marketplaceId}`,
             name: mp.name,
-            description: mp.description || `Plugin: ${mp.name}`,
-            version: mp.version || "1.0.0",
+            description: mp.description || `${childCount} items`,
+            version: mp.version || "",
             author: authorName,
-            repository: undefined,
-            readmePath: path.join(pluginDir, "README.md"),
             marketplaceId,
-          },
-        );
+            isCategory: true,
+            childCount,
+            categoryPath: pluginDir,
+          });
+        } else {
+          const info = await this.extractPluginInfo(pluginDir, marketplaceId);
+          plugins.push(
+            info || {
+              id: `${mp.name}@${marketplaceId}`,
+              name: mp.name,
+              description: mp.description || `Plugin: ${mp.name}`,
+              version: mp.version || "1.0.0",
+              author: authorName,
+              repository: undefined,
+              readmePath: path.join(pluginDir, "README.md"),
+              marketplaceId,
+            },
+          );
+        }
       }
     } else {
       // No manifest — scan known subdirectories first
@@ -298,36 +347,34 @@ export class MarketplaceService {
 
       if (!scanDir) scanDir = marketplace.installLocation;
 
-      const SKIP = new Set([
-        ".git",
-        ".github",
-        ".vscode",
-        ".devcontainer",
-        ".claude",
-        ".claude-plugin",
-        "scripts",
-        "docs",
-        "examples",
-        "tests",
-        "schemas",
-        "Script",
-        "tools",
-        "node_modules",
-        "_images",
-        "assets",
-        "screenshots",
-      ]);
       const entries = await fs.readdir(scanDir, { withFileTypes: true });
       for (const entry of entries) {
         if (
           !entry.isDirectory() ||
           entry.name.startsWith(".") ||
-          SKIP.has(entry.name)
+          MarketplaceService.SKIP.has(entry.name)
         )
           continue;
         const pluginDir = path.join(scanDir, entry.name);
-        const plugin = await this.extractPluginInfo(pluginDir, marketplaceId);
-        if (plugin) plugins.push(plugin);
+        if (await this.isRealPlugin(pluginDir)) {
+          const plugin = await this.extractPluginInfo(pluginDir, marketplaceId);
+          if (plugin) plugins.push(plugin);
+        } else {
+          const { isCategory, childCount } = await this.countChildren(pluginDir);
+          if (isCategory) {
+            plugins.push({
+              id: `${entry.name}@${marketplaceId}`,
+              name: entry.name,
+              description: `${childCount} items`,
+              version: "",
+              author: "",
+              marketplaceId,
+              isCategory: true,
+              childCount,
+              categoryPath: pluginDir,
+            });
+          }
+        }
       }
     }
 
@@ -725,6 +772,174 @@ export class MarketplaceService {
     // e.g., https://github.com/anthropic/claude-code-plugins -> claude-code-plugins
     const match = repoUrl.match(/\/([^\/]+?)(?:\.git)?$/);
     return match ? match[1] : repoUrl;
+  }
+
+  private async isRealPlugin(dirPath: string): Promise<boolean> {
+    const checks = await Promise.all([
+      fs.access(path.join(dirPath, ".claude-plugin", "plugin.json")).then(() => true, () => false),
+      fs.access(path.join(dirPath, "SKILL.md")).then(() => true, () => false),
+      fs.access(path.join(dirPath, "hooks", "hooks.json")).then(() => true, () => false),
+    ]);
+    if (checks.some(Boolean)) return true;
+
+    // Check agents/*.md
+    try {
+      const agentFiles = await fs.readdir(path.join(dirPath, "agents"));
+      if (agentFiles.some((f) => f.endsWith(".md"))) return true;
+    } catch { /* ignore */ }
+
+    // Check commands/*.md
+    try {
+      const cmdFiles = await fs.readdir(path.join(dirPath, "commands"));
+      if (cmdFiles.some((f) => f.endsWith(".md"))) return true;
+    } catch { /* ignore */ }
+
+    return false;
+  }
+
+  private async countChildren(
+    dirPath: string,
+  ): Promise<{ isCategory: boolean; childCount: number }> {
+    try {
+      const entries = await fs.readdir(dirPath, { withFileTypes: true });
+      let count = 0;
+
+      // Count .md files (agent definitions), excluding README
+      count += entries.filter(
+        (e) =>
+          !e.isDirectory() &&
+          e.name.endsWith(".md") &&
+          e.name !== "README.md" &&
+          e.name !== "CONTRIBUTING.md",
+      ).length;
+
+      // Count subdirectories that are real plugins
+      for (const entry of entries) {
+        if (
+          entry.isDirectory() &&
+          !entry.name.startsWith(".") &&
+          !MarketplaceService.SKIP.has(entry.name)
+        ) {
+          if (await this.isRealPlugin(path.join(dirPath, entry.name))) {
+            count++;
+          }
+        }
+      }
+
+      return { isCategory: count > 0, childCount: count };
+    } catch {
+      return { isCategory: false, childCount: 0 };
+    }
+  }
+
+  private async extractMdDescription(mdPath: string): Promise<string> {
+    try {
+      const content = await fs.readFile(mdPath, "utf-8");
+      const lines = content.split("\n").filter((l) => l.trim());
+      for (const line of lines) {
+        if (line.startsWith("# ")) continue;
+        if (line.startsWith("---")) continue;
+        return line.trim().substring(0, 120);
+      }
+    } catch { /* ignore */ }
+    return "";
+  }
+
+  async browseCategory(
+    marketplaceId: string,
+    categoryPath: string,
+  ): Promise<MarketplacePlugin[]> {
+    const plugins: MarketplacePlugin[] = [];
+
+    try {
+      await fs.access(categoryPath);
+    } catch {
+      return plugins;
+    }
+
+    // Check for .claude-plugin/plugin.json with agents array
+    try {
+      const pluginJsonPath = path.join(
+        categoryPath,
+        ".claude-plugin",
+        "plugin.json",
+      );
+      const pluginJson = JSON.parse(
+        await fs.readFile(pluginJsonPath, "utf-8"),
+      );
+      if (pluginJson.agents?.length) {
+        for (const agentFile of pluginJson.agents) {
+          const agentPath = path.resolve(categoryPath, agentFile);
+          const agentName = path.basename(agentFile, ".md");
+          plugins.push({
+            id: `${agentName}@${marketplaceId}`,
+            name: agentName,
+            description: await this.extractMdDescription(agentPath),
+            version: pluginJson.version || "1.0.0",
+            author: typeof pluginJson.author === "string" ? pluginJson.author : pluginJson.author?.name || "",
+            marketplaceId,
+            readmePath: agentPath,
+          });
+        }
+        return plugins;
+      }
+    } catch { /* no plugin.json */ }
+
+    const entries = await fs.readdir(categoryPath, { withFileTypes: true });
+
+    // Collect .md files as agent cards
+    for (const entry of entries) {
+      if (
+        !entry.isDirectory() &&
+        entry.name.endsWith(".md") &&
+        entry.name !== "README.md" &&
+        entry.name !== "CONTRIBUTING.md"
+      ) {
+        const mdPath = path.join(categoryPath, entry.name);
+        const name = entry.name.replace(".md", "");
+        plugins.push({
+          id: `${name}@${marketplaceId}`,
+          name,
+          description: await this.extractMdDescription(mdPath),
+          version: "1.0.0",
+          author: "",
+          marketplaceId,
+          readmePath: mdPath,
+        });
+      }
+    }
+
+    // Collect subdirectories
+    for (const entry of entries) {
+      if (
+        !entry.isDirectory() ||
+        entry.name.startsWith(".") ||
+        MarketplaceService.SKIP.has(entry.name)
+      )
+        continue;
+      const subDir = path.join(categoryPath, entry.name);
+      if (await this.isRealPlugin(subDir)) {
+        const info = await this.extractPluginInfo(subDir, marketplaceId);
+        if (info) plugins.push(info);
+      } else {
+        const { isCategory, childCount } = await this.countChildren(subDir);
+        if (isCategory) {
+          plugins.push({
+            id: `${entry.name}@${marketplaceId}`,
+            name: entry.name,
+            description: `${childCount} items`,
+            version: "",
+            author: "",
+            marketplaceId,
+            isCategory: true,
+            childCount,
+            categoryPath: subDir,
+          });
+        }
+      }
+    }
+
+    return plugins;
   }
 
   private async extractPluginInfo(

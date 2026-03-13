@@ -157,6 +157,13 @@ export function registerHandlers(mainWindow: BrowserWindow): void {
   });
 
   ipcMain.handle(
+    IPC.MARKETPLACE_BROWSE_CATEGORY,
+    async (_e, marketplaceId: string, categoryPath: string) => {
+      return marketplaceService.browseCategory(marketplaceId, categoryPath);
+    },
+  );
+
+  ipcMain.handle(
     IPC.MARKETPLACE_PLUGIN_DETAIL,
     async (_e, marketplaceId: string, pluginName: string) => {
       return marketplaceService.getPluginDetails(marketplaceId, pluginName);

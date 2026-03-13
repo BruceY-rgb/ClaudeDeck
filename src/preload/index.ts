@@ -125,6 +125,15 @@ const api = {
       ipcRenderer.invoke(IPC.MARKETPLACE_REMOVE, id),
     browse: (marketplaceId: string): Promise<MarketplacePlugin[]> =>
       ipcRenderer.invoke(IPC.MARKETPLACE_BROWSE, marketplaceId),
+    browseCategory: (
+      marketplaceId: string,
+      categoryPath: string,
+    ): Promise<MarketplacePlugin[]> =>
+      ipcRenderer.invoke(
+        IPC.MARKETPLACE_BROWSE_CATEGORY,
+        marketplaceId,
+        categoryPath,
+      ),
     pluginDetail: (
       marketplaceId: string,
       pluginName: string,
