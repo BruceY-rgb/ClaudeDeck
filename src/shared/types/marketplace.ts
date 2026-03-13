@@ -17,6 +17,7 @@ export interface MarketplacePlugin {
   isCategory?: boolean
   childCount?: number
   categoryPath?: string
+  parentPluginName?: string
 }
 
 export interface MarketplacePluginDetail extends MarketplacePlugin {
@@ -25,6 +26,7 @@ export interface MarketplacePluginDetail extends MarketplacePlugin {
   commands: Array<{ name: string; path: string }>
   hooks: Array<{ name: string; path: string }>
   mcpConfigs: Array<{ name: string; path: string }>
+  readmeContent?: string
 }
 
 export interface InstalledPluginRecord {

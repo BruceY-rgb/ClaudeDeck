@@ -857,6 +857,26 @@ export class MarketplaceService {
       return plugins;
     }
 
+    // Resolve parent plugin name from manifest (so child agents know which plugin to install/view)
+    let parentPluginName = "";
+    try {
+      const marketplaces = await this.listMarketplaces();
+      const marketplace = marketplaces.find((m) => m.id === marketplaceId);
+      if (marketplace) {
+        const manifest = await this.readManifest(marketplace.installLocation);
+        if (manifest?.plugins) {
+          for (const mp of manifest.plugins) {
+            if (typeof mp.source !== "string") continue;
+            const resolved = path.resolve(marketplace.installLocation, mp.source);
+            if (resolved === categoryPath) {
+              parentPluginName = mp.name;
+              break;
+            }
+          }
+        }
+      }
+    } catch { /* ignore */ }
+
     // Check for .claude-plugin/plugin.json with agents array
     try {
       const pluginJsonPath = path.join(
@@ -879,6 +899,7 @@ export class MarketplaceService {
             author: typeof pluginJson.author === "string" ? pluginJson.author : pluginJson.author?.name || "",
             marketplaceId,
             readmePath: agentPath,
+            parentPluginName: parentPluginName || pluginJson.name || undefined,
           });
         }
         return plugins;
@@ -905,6 +926,7 @@ export class MarketplaceService {
           author: "",
           marketplaceId,
           readmePath: mdPath,
+          parentPluginName: parentPluginName || undefined,
         });
       }
     }
@@ -940,6 +962,75 @@ export class MarketplaceService {
     }
 
     return plugins;
+  }
+
+  async readFile(filePath: string): Promise<string | null> {
+    try {
+      return await fs.readFile(filePath, "utf-8");
+    } catch {
+      return null;
+    }
+  }
+
+  async installAgent(
+    marketplaceId: string,
+    agentName: string,
+    sourcePath: string,
+  ): Promise<InstalledPluginRecord> {
+    console.log(
+      `[INSTALL_AGENT] Starting: marketplace=${marketplaceId}, agent=${agentName}, source=${sourcePath}`,
+    );
+
+    const marketplaces = await this.listMarketplaces();
+    const marketplace = marketplaces.find((m) => m.id === marketplaceId);
+    if (!marketplace) {
+      throw new Error(`Marketplace ${marketplaceId} not found`);
+    }
+
+    // Verify source file exists
+    try {
+      await fs.access(sourcePath);
+    } catch {
+      throw new Error(`Agent file not found: ${sourcePath}`);
+    }
+
+    // Create a mini-plugin directory with just this agent
+    const installDir = path.join(MARKETPLACES_DIR, marketplaceId, agentName);
+    const agentsDir = path.join(installDir, "agents");
+    await fs.mkdir(agentsDir, { recursive: true });
+
+    // Copy the .md file
+    const destFile = path.join(agentsDir, `${agentName}.md`);
+    await fs.copyFile(sourcePath, destFile);
+    console.log(`[INSTALL_AGENT] Copied ${sourcePath} -> ${destFile}`);
+
+    // Get git commit SHA
+    let gitCommitSha = "";
+    try {
+      gitCommitSha = await gitService.getLastCommitSha(
+        marketplace.installLocation,
+      );
+    } catch {
+      /* ignore */
+    }
+
+    // Register as an individual agent plugin
+    const record: InstalledPluginRecord = {
+      id: `${agentName}@${marketplaceId}`,
+      name: agentName,
+      marketplace: marketplaceId,
+      version: "1.0.0",
+      installedAt: new Date().toISOString(),
+      lastUpdated: new Date().toISOString(),
+      installPath: installDir,
+      gitCommitSha,
+      isLocal: false,
+    };
+
+    await this.registerInstalledPlugin(record);
+    console.log(`[INSTALL_AGENT] Registered: ${record.id}`);
+
+    return record;
   }
 
   private async extractPluginInfo(

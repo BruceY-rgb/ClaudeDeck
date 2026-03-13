@@ -52,6 +52,8 @@ export const IPC = {
   MARKETPLACE_INSTALL: "marketplace:install",
   MARKETPLACE_BROWSE_CATEGORY: "marketplace:browseCategory",
   MARKETPLACE_GET_INSTALLED: "marketplace:getInstalled",
+  MARKETPLACE_READ_FILE: "marketplace:readFile",
+  MARKETPLACE_INSTALL_AGENT: "marketplace:installAgent",
 
   // CLI
   CLI_RUN: "cli:run",

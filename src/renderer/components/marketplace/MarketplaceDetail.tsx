@@ -12,8 +12,10 @@ export function MarketplaceDetail(): JSX.Element {
     plugins,
     loading,
     installPlugin,
+    installAgent,
     uninstallPlugin,
     getPluginDetail,
+    viewAgentDetail,
     installedPlugins,
     categoryStack,
     browseCategory,
@@ -41,9 +43,22 @@ export function MarketplaceDetail(): JSX.Element {
     }
   };
 
-  const handleViewDetail = async (pluginName: string) => {
+  const handleInstallAgent = async (agentName: string, sourcePath: string) => {
     if (!currentSource) return;
-    await getPluginDetail(currentSource.id, pluginName);
+    setPluginInstallStatus((prev) => ({ ...prev, [agentName]: "installing" }));
+    try {
+      await installAgent(currentSource.id, agentName, sourcePath);
+      setPluginInstallStatus((prev) => ({ ...prev, [agentName]: "success" }));
+      setTimeout(() => {
+        setPluginInstallStatus((prev) => ({ ...prev, [agentName]: "idle" }));
+      }, 1500);
+    } catch (error) {
+      console.error("Install agent failed:", error);
+      setPluginInstallStatus((prev) => ({ ...prev, [agentName]: "failed" }));
+      setTimeout(() => {
+        setPluginInstallStatus((prev) => ({ ...prev, [agentName]: "idle" }));
+      }, 2000);
+    }
   };
 
   const handleBrowseCategory = async (
@@ -54,17 +69,21 @@ export function MarketplaceDetail(): JSX.Element {
     await browseCategory(currentSource.id, categoryPath, categoryName);
   };
 
-  const isPluginInstalled = (pluginName: string) => {
+  const isPluginInstalled = (plugin: { name: string; parentPluginName?: string }) => {
     return installedPlugins.some(
-      (p) => p.name === pluginName && p.marketplace === currentSource?.id,
+      (p) =>
+        (p.name === plugin.name || p.name === plugin.parentPluginName) &&
+        p.marketplace === currentSource?.id,
     );
   };
 
-  const getInstalledPluginId = (pluginName: string) => {
-    const plugin = installedPlugins.find(
-      (p) => p.name === pluginName && p.marketplace === currentSource?.id,
+  const getInstalledPluginId = (plugin: { name: string; parentPluginName?: string }) => {
+    const installed = installedPlugins.find(
+      (p) =>
+        (p.name === plugin.name || p.name === plugin.parentPluginName) &&
+        p.marketplace === currentSource?.id,
     );
-    return plugin?.id;
+    return installed?.id;
   };
 
   const handleUninstall = async (pluginId: string) => {
@@ -132,7 +151,6 @@ export function MarketplaceDetail(): JSX.Element {
                 <button
                   onClick={async () => {
                     // Navigate to this level by popping back
-                    const store = useMarketplaceStore.getState();
                     const targetStack = categoryStack.slice(0, idx + 1);
                     const target = targetStack[targetStack.length - 1];
                     const plugins =
@@ -235,15 +253,23 @@ export function MarketplaceDetail(): JSX.Element {
               ) : (
                 <>
                   <button
-                    onClick={() => handleViewDetail(plugin.name)}
+                    onClick={() => {
+                      if (plugin.parentPluginName && plugin.readmePath) {
+                        viewAgentDetail(plugin);
+                      } else if (currentSource) {
+                        getPluginDetail(currentSource.id, plugin.name);
+                      }
+                    }}
                     className="flex-1 px-3 py-1.5 bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-white text-sm rounded-md hover:bg-zinc-300 dark:hover:bg-zinc-600"
                   >
                     {t("common.view")}
                   </button>
                   {(() => {
+                    const isIndividualAgent = !!(plugin.readmePath && plugin.parentPluginName);
+                    const statusKey = isIndividualAgent ? plugin.name : (plugin.parentPluginName || plugin.name);
                     const status =
-                      pluginInstallStatus[plugin.name] || "idle";
-                    const installed = isPluginInstalled(plugin.name);
+                      pluginInstallStatus[statusKey] || "idle";
+                    const installed = isPluginInstalled(plugin);
                     const isInstalling = status === "installing";
                     const isSuccess = status === "success";
                     const isFailed = status === "failed";
@@ -275,7 +301,7 @@ export function MarketplaceDetail(): JSX.Element {
                       buttonText = t("common.installed");
                       disabled = false;
                       onClick = () => {
-                        const pluginId = getInstalledPluginId(plugin.name);
+                        const pluginId = getInstalledPluginId(plugin);
                         if (pluginId) handleUninstall(pluginId);
                       };
                     } else {
@@ -285,11 +311,13 @@ export function MarketplaceDetail(): JSX.Element {
                       disabled = false;
                     }
 
+                    const defaultOnClick = isIndividualAgent
+                      ? () => handleInstallAgent(plugin.name, plugin.readmePath!)
+                      : () => handleInstall(statusKey);
+
                     return (
                       <button
-                        onClick={
-                          onClick || (() => handleInstall(plugin.name))
-                        }
+                        onClick={onClick || defaultOnClick}
                         disabled={disabled}
                         className={buttonClass}
                       >

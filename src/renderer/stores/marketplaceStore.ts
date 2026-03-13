@@ -34,10 +34,16 @@ interface MarketplaceStore {
   ) => Promise<void>;
   popCategory: () => Promise<void>;
   getPluginDetail: (marketplaceId: string, pluginName: string) => Promise<void>;
+  viewAgentDetail: (plugin: MarketplacePlugin) => Promise<void>;
   refreshMarketplace: (id: string) => Promise<void>;
   installPlugin: (
     marketplaceId: string,
     pluginName: string,
+  ) => Promise<InstalledPluginRecord>;
+  installAgent: (
+    marketplaceId: string,
+    agentName: string,
+    sourcePath: string,
   ) => Promise<InstalledPluginRecord>;
   uninstallPlugin: (pluginId: string) => Promise<void>;
   fetchInstalledPlugins: () => Promise<void>;
@@ -172,6 +178,27 @@ export const useMarketplaceStore = create<MarketplaceStore>((set, get) => ({
     }
   },
 
+  async viewAgentDetail(plugin: MarketplacePlugin) {
+    set({ loading: true });
+    try {
+      const content = plugin.readmePath
+        ? await window.electronAPI.marketplace.readFile(plugin.readmePath)
+        : null;
+      const detail: MarketplacePluginDetail = {
+        ...plugin,
+        agents: [],
+        skills: [],
+        commands: [],
+        hooks: [],
+        mcpConfigs: [],
+        readmeContent: content || undefined,
+      };
+      set({ currentPlugin: detail });
+    } finally {
+      set({ loading: false });
+    }
+  },
+
   async refreshMarketplace(id: string) {
     set({ loading: true });
     try {
@@ -191,6 +218,23 @@ export const useMarketplaceStore = create<MarketplaceStore>((set, get) => ({
         pluginName,
       );
       // Refresh installed plugins after install
+      const installedPlugins =
+        await window.electronAPI.marketplace.getInstalled();
+      set({ installedPlugins });
+      return result;
+    } finally {
+      set({ installing: false });
+    }
+  },
+
+  async installAgent(marketplaceId: string, agentName: string, sourcePath: string) {
+    set({ installing: true });
+    try {
+      const result = await window.electronAPI.marketplace.installAgent(
+        marketplaceId,
+        agentName,
+        sourcePath,
+      );
       const installedPlugins =
         await window.electronAPI.marketplace.getInstalled();
       set({ installedPlugins });

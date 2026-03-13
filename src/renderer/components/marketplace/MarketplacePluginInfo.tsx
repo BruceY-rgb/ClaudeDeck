@@ -1,4 +1,6 @@
 import { useState } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { Bot, Sparkles, Terminal, Webhook, Server } from "lucide-react";
 import { useMarketplaceStore } from "../../stores/marketplaceStore";
 import { PageHeader } from "../shared/PageHeader";
@@ -17,17 +19,21 @@ export function MarketplacePluginInfo({
   onBack,
 }: MarketplacePluginInfoProps): JSX.Element {
   const { t } = useTranslation();
-  const { currentSource, installPlugin, uninstallPlugin, installedPlugins } =
+  const { currentSource, installPlugin, installAgent, uninstallPlugin, installedPlugins } =
     useMarketplaceStore();
   const [installStatus, setInstallStatus] = useState<InstallStatus>("idle");
 
   const isInstalled = installedPlugins.some(
-    (p) => p.name === plugin.name && p.marketplace === currentSource?.id,
+    (p) =>
+      (p.name === plugin.name || p.name === plugin.parentPluginName) &&
+      p.marketplace === currentSource?.id,
   );
 
   const getInstalledPluginId = () => {
     const pluginRecord = installedPlugins.find(
-      (p) => p.name === plugin.name && p.marketplace === currentSource?.id,
+      (p) =>
+        (p.name === plugin.name || p.name === plugin.parentPluginName) &&
+        p.marketplace === currentSource?.id,
     );
     return pluginRecord?.id;
   };
@@ -52,7 +58,14 @@ export function MarketplacePluginInfo({
     if (!currentSource) return;
     setInstallStatus("installing");
     try {
-      await installPlugin(currentSource.id, plugin.name);
+      if (plugin.readmePath && plugin.parentPluginName) {
+        // Individual agent install
+        await installAgent(currentSource.id, plugin.name, plugin.readmePath);
+      } else {
+        // Whole plugin install
+        const installName = plugin.parentPluginName || plugin.name;
+        await installPlugin(currentSource.id, installName);
+      }
       setInstallStatus("success");
       setTimeout(() => {
         setInstallStatus("idle");
@@ -192,116 +205,139 @@ export function MarketplacePluginInfo({
           </div>
         )}
 
-        <div className="mt-6 pt-6 border-t border-zinc-200 dark:border-zinc-700">
-          <h3 className="text-lg font-medium text-zinc-900 dark:text-white mb-4">
-            Plugin Contents
-          </h3>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-            {pluginContents.map((content) => (
-              <div
-                key={content.label}
-                className="p-4 bg-zinc-50 dark:bg-zinc-700/50 rounded-lg text-center"
-              >
-                <div className="mb-1 flex justify-center">{content.icon}</div>
-                <div className="text-2xl font-bold text-zinc-900 dark:text-white">
-                  {content.count}
-                </div>
-                <div className="text-sm text-zinc-500 dark:text-zinc-400">
-                  {content.label}
+        {plugin.parentPluginName && (
+          <div className="mt-3">
+            <span className="text-xs text-zinc-500 dark:text-zinc-400">
+              Plugin: <span className="font-medium text-zinc-700 dark:text-zinc-300">{plugin.parentPluginName}</span>
+            </span>
+          </div>
+        )}
+
+        {plugin.readmeContent ? (
+          <div className="mt-6 pt-6 border-t border-zinc-200 dark:border-zinc-700">
+            <h3 className="text-lg font-medium text-zinc-900 dark:text-white mb-4">
+              Agent Definition
+            </h3>
+            <div className="p-4 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-lg text-sm text-zinc-700 dark:text-zinc-300 overflow-auto max-h-[600px] prose prose-sm dark:prose-invert prose-zinc max-w-none prose-headings:text-zinc-900 dark:prose-headings:text-white prose-code:bg-zinc-200 dark:prose-code:bg-zinc-700 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-pre:bg-zinc-200 dark:prose-pre:bg-zinc-800 prose-pre:border prose-pre:border-zinc-300 dark:prose-pre:border-zinc-600 prose-a:text-blue-600 dark:prose-a:text-blue-400">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {plugin.readmeContent}
+              </ReactMarkdown>
+            </div>
+          </div>
+        ) : (
+          <>
+            <div className="mt-6 pt-6 border-t border-zinc-200 dark:border-zinc-700">
+              <h3 className="text-lg font-medium text-zinc-900 dark:text-white mb-4">
+                Plugin Contents
+              </h3>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                {pluginContents.map((content) => (
+                  <div
+                    key={content.label}
+                    className="p-4 bg-zinc-50 dark:bg-zinc-700/50 rounded-lg text-center"
+                  >
+                    <div className="mb-1 flex justify-center">{content.icon}</div>
+                    <div className="text-2xl font-bold text-zinc-900 dark:text-white">
+                      {content.count}
+                    </div>
+                    <div className="text-sm text-zinc-500 dark:text-zinc-400">
+                      {content.label}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {plugin.agents.length > 0 && (
+              <div className="mt-6">
+                <h4 className="text-md font-medium text-zinc-900 dark:text-white mb-2">
+                  Agents
+                </h4>
+                <div className="flex flex-wrap gap-2">
+                  {plugin.agents.map((agent) => (
+                    <span
+                      key={agent.path}
+                      className="px-2 py-1 bg-zinc-100 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 text-sm rounded"
+                    >
+                      {agent.name}
+                    </span>
+                  ))}
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
+            )}
 
-        {plugin.agents.length > 0 && (
-          <div className="mt-6">
-            <h4 className="text-md font-medium text-zinc-900 dark:text-white mb-2">
-              Agents
-            </h4>
-            <div className="flex flex-wrap gap-2">
-              {plugin.agents.map((agent) => (
-                <span
-                  key={agent.path}
-                  className="px-2 py-1 bg-zinc-100 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 text-sm rounded"
-                >
-                  {agent.name}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
+            {plugin.skills.length > 0 && (
+              <div className="mt-4">
+                <h4 className="text-md font-medium text-zinc-900 dark:text-white mb-2">
+                  Skills
+                </h4>
+                <div className="flex flex-wrap gap-2">
+                  {plugin.skills.map((skill) => (
+                    <span
+                      key={skill.path}
+                      className="px-2 py-1 bg-zinc-100 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 text-sm rounded"
+                    >
+                      {skill.name}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
 
-        {plugin.skills.length > 0 && (
-          <div className="mt-4">
-            <h4 className="text-md font-medium text-zinc-900 dark:text-white mb-2">
-              Skills
-            </h4>
-            <div className="flex flex-wrap gap-2">
-              {plugin.skills.map((skill) => (
-                <span
-                  key={skill.path}
-                  className="px-2 py-1 bg-zinc-100 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 text-sm rounded"
-                >
-                  {skill.name}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
+            {plugin.commands.length > 0 && (
+              <div className="mt-4">
+                <h4 className="text-md font-medium text-zinc-900 dark:text-white mb-2">
+                  Commands
+                </h4>
+                <div className="flex flex-wrap gap-2">
+                  {plugin.commands.map((command) => (
+                    <span
+                      key={command.path}
+                      className="px-2 py-1 bg-zinc-100 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 text-sm rounded"
+                    >
+                      {command.name}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
 
-        {plugin.commands.length > 0 && (
-          <div className="mt-4">
-            <h4 className="text-md font-medium text-zinc-900 dark:text-white mb-2">
-              Commands
-            </h4>
-            <div className="flex flex-wrap gap-2">
-              {plugin.commands.map((command) => (
-                <span
-                  key={command.path}
-                  className="px-2 py-1 bg-zinc-100 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 text-sm rounded"
-                >
-                  {command.name}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
+            {plugin.hooks.length > 0 && (
+              <div className="mt-4">
+                <h4 className="text-md font-medium text-zinc-900 dark:text-white mb-2">
+                  Hooks
+                </h4>
+                <div className="flex flex-wrap gap-2">
+                  {plugin.hooks.map((hook) => (
+                    <span
+                      key={hook.path}
+                      className="px-2 py-1 bg-zinc-100 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 text-sm rounded"
+                    >
+                      {hook.path}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
 
-        {plugin.hooks.length > 0 && (
-          <div className="mt-4">
-            <h4 className="text-md font-medium text-zinc-900 dark:text-white mb-2">
-              Hooks
-            </h4>
-            <div className="flex flex-wrap gap-2">
-              {plugin.hooks.map((hook) => (
-                <span
-                  key={hook.path}
-                  className="px-2 py-1 bg-zinc-100 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 text-sm rounded"
-                >
-                  {hook.path}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {plugin.mcpConfigs.length > 0 && (
-          <div className="mt-4">
-            <h4 className="text-md font-medium text-zinc-900 dark:text-white mb-2">
-              MCP Configs
-            </h4>
-            <div className="flex flex-wrap gap-2">
-              {plugin.mcpConfigs.map((config) => (
-                <span
-                  key={config.path}
-                  className="px-2 py-1 bg-zinc-100 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 text-sm rounded"
-                >
-                  {config.name}
-                </span>
-              ))}
-            </div>
-          </div>
+            {plugin.mcpConfigs.length > 0 && (
+              <div className="mt-4">
+                <h4 className="text-md font-medium text-zinc-900 dark:text-white mb-2">
+                  MCP Configs
+                </h4>
+                <div className="flex flex-wrap gap-2">
+                  {plugin.mcpConfigs.map((config) => (
+                    <span
+                      key={config.path}
+                      className="px-2 py-1 bg-zinc-100 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 text-sm rounded"
+                    >
+                      {config.name}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

@@ -185,6 +185,17 @@ export function registerHandlers(mainWindow: BrowserWindow): void {
     return marketplaceService.getInstalledPlugins();
   });
 
+  ipcMain.handle(IPC.MARKETPLACE_READ_FILE, async (_e, filePath: string) => {
+    return marketplaceService.readFile(filePath);
+  });
+
+  ipcMain.handle(
+    IPC.MARKETPLACE_INSTALL_AGENT,
+    async (_e, marketplaceId: string, agentName: string, sourcePath: string) => {
+      return marketplaceService.installAgent(marketplaceId, agentName, sourcePath);
+    },
+  );
+
   // --- Hooks ---
   ipcMain.handle(IPC.HOOKS_LIST, async () => {
     return hookService.list();

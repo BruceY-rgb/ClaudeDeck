@@ -152,6 +152,14 @@ const api = {
       ipcRenderer.invoke(IPC.MARKETPLACE_INSTALL, marketplaceId, pluginName),
     getInstalled: (): Promise<InstalledPluginRecord[]> =>
       ipcRenderer.invoke(IPC.MARKETPLACE_GET_INSTALLED),
+    readFile: (filePath: string): Promise<string | null> =>
+      ipcRenderer.invoke(IPC.MARKETPLACE_READ_FILE, filePath),
+    installAgent: (
+      marketplaceId: string,
+      agentName: string,
+      sourcePath: string,
+    ): Promise<InstalledPluginRecord> =>
+      ipcRenderer.invoke(IPC.MARKETPLACE_INSTALL_AGENT, marketplaceId, agentName, sourcePath),
   },
   hooks: {
     list: (): Promise<HookDefinition[]> => ipcRenderer.invoke(IPC.HOOKS_LIST),
