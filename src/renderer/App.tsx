@@ -1,9 +1,11 @@
+import { lazy, Suspense } from "react";
 import { HashRouter, Routes, Route } from "react-router-dom";
 import { AppShell } from "./components/layout/AppShell";
 import { SearchCommand } from "./components/shared/SearchCommand";
 import { ToastProvider } from "./components/shared/Toast";
 import { LanguageProvider } from "./i18n/LanguageContext";
 import { useTheme } from "./hooks/useTheme";
+import { Loader2 } from "lucide-react";
 import { DashboardPage } from "./pages/DashboardPage";
 import { AgentsPage } from "./pages/AgentsPage";
 import { AgentDetailPage } from "./pages/AgentDetailPage";
@@ -22,6 +24,11 @@ import { SettingsPage } from "./pages/SettingsPage";
 import { ProjectsListPage } from "./pages/ProjectsListPage";
 import { ProjectDetailPage } from "./pages/ProjectDetailPage";
 import { PlansPage } from "./pages/PlansPage";
+import { SessionDetailPage } from "./pages/SessionDetailPage";
+
+const AnalyticsPage = lazy(() =>
+  import("./pages/AnalyticsPage").then((m) => ({ default: m.AnalyticsPage }))
+);
 
 function ThemedApp(): JSX.Element {
   // Initialize theme
@@ -53,6 +60,8 @@ function ThemedApp(): JSX.Element {
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/office" element={<ProjectsListPage />} />
             <Route path="/office/project/:projectDir" element={<ProjectDetailPage />} />
+            <Route path="/office/project/:projectDir/session/:sessionId" element={<SessionDetailPage />} />
+            <Route path="/analytics" element={<Suspense fallback={<div className="flex items-center justify-center h-full"><Loader2 className="w-5 h-5 animate-spin text-zinc-400" /></div>}><AnalyticsPage /></Suspense>} />
             <Route path="/plans" element={<PlansPage />} />
           </Route>
         </Routes>

@@ -10,11 +10,14 @@ import {
   Store,
   Settings,
   Layout,
+  BarChart3,
   FileStack,
+  PanelLeft,
+  PanelLeftClose,
   type LucideIcon,
 } from "lucide-react";
-import { ThemeToggle } from "../shared/ThemeToggle";
 import { useTranslation } from "../../i18n/LanguageContext";
+import { useSettingsStore } from "../../stores/settingsStore";
 import logoUrl from "../../assets/logo.svg?url";
 
 interface NavItem {
@@ -25,6 +28,7 @@ interface NavItem {
 
 export function Sidebar(): JSX.Element {
   const { t } = useTranslation();
+  const { sidebarCollapsed, toggleSidebar } = useSettingsStore();
 
   const navItems: NavItem[] = [
     { path: "/", label: t("sidebar.nav.dashboard"), icon: LayoutDashboard },
@@ -36,24 +40,35 @@ export function Sidebar(): JSX.Element {
     { path: "/mcp", label: t("sidebar.nav.mcp"), icon: Server },
     { path: "/marketplace", label: t("sidebar.nav.marketplace"), icon: Store },
     { path: "/office", label: t("sidebar.nav.office"), icon: Layout },
+    { path: "/analytics", label: t("sidebar.nav.analytics"), icon: BarChart3 },
     { path: "/plans", label: t("sidebar.nav.plans"), icon: FileStack },
     { path: "/settings", label: t("sidebar.nav.settings"), icon: Settings },
   ];
 
   return (
-    <aside className="fixed left-0 top-0 bottom-0 w-64 bg-zinc-100 dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-800 flex flex-col">
+    <aside
+      className={`fixed left-0 top-0 bottom-0 bg-zinc-100 dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-800 flex flex-col transition-all duration-300 ${
+        sidebarCollapsed ? "w-16" : "w-64"
+      }`}
+    >
       {/* Title / drag region */}
-      <div className="drag-region h-20 flex items-center gap-3 px-5 pt-8">
+      <div
+        className={`drag-region h-20 flex items-center gap-3 pt-8 transition-all duration-300 ${
+          sidebarCollapsed ? "justify-center px-2" : "px-5"
+        }`}
+      >
         <img src={logoUrl} alt="Logo" className="no-drag w-10 h-10 shrink-0" />
-        <h1
-          className="no-drag text-xl font-bold tracking-tight text-zinc-700 dark:text-zinc-300"
-          style={{
-            fontFamily:
-              "SF Pro Display, -apple-system, BlinkMacSystemFont, sans-serif",
-          }}
-        >
-          {t("sidebar.title")}
-        </h1>
+        {!sidebarCollapsed && (
+          <h1
+            className="no-drag text-xl font-bold tracking-tight text-zinc-700 dark:text-zinc-300 truncate"
+            style={{
+              fontFamily:
+                "SF Pro Display, -apple-system, BlinkMacSystemFont, sans-serif",
+            }}
+          >
+            {t("sidebar.title")}
+          </h1>
+        )}
       </div>
 
       {/* Navigation */}
@@ -65,25 +80,44 @@ export function Sidebar(): JSX.Element {
                 to={item.path}
                 end={item.path === "/"}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
+                  `flex items-center rounded-lg text-sm transition-colors ${
+                    sidebarCollapsed
+                      ? "justify-center px-2 py-2"
+                      : "gap-3 px-3 py-2"
+                  } ${
                     isActive
                       ? "bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 font-medium"
                       : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200/60 dark:hover:bg-zinc-800/60"
                   }`
                 }
+                title={sidebarCollapsed ? item.label : undefined}
               >
                 <item.icon className="w-4 h-4 shrink-0" />
-                <span>{item.label}</span>
+                {!sidebarCollapsed && <span>{item.label}</span>}
               </NavLink>
             </li>
           ))}
         </ul>
       </nav>
 
-      {/* Footer */}
-      <div className="flex items-center justify-between px-5 py-3 border-t border-zinc-200 dark:border-zinc-800">
-        <p className="text-xs text-zinc-400 dark:text-zinc-600">v1.0.0</p>
-        <ThemeToggle />
+      {/* Footer - Collapse Toggle Button */}
+      <div className="px-3 py-3 border-t border-zinc-200 dark:border-zinc-800">
+        <button
+          onClick={toggleSidebar}
+          className={`flex items-center gap-3 w-full px-3 py-2 rounded-lg text-sm text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200/60 dark:hover:bg-zinc-800/60 transition-colors ${
+            sidebarCollapsed ? "justify-center" : ""
+          }`}
+          title={sidebarCollapsed ? t("sidebar.expand") : t("sidebar.collapse")}
+        >
+          {sidebarCollapsed ? (
+            <PanelLeft className="w-4 h-4 shrink-0" />
+          ) : (
+            <>
+              <PanelLeftClose className="w-4 h-4 shrink-0" />
+              <span>{t("sidebar.collapse")}</span>
+            </>
+          )}
+        </button>
       </div>
     </aside>
   );

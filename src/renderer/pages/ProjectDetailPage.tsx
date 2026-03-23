@@ -11,9 +11,11 @@ import {
   FileText,
   Webhook,
   TerminalSquare,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { AgentList, type AgentInfo } from "../components/office/AgentList";
-import { ContextViewer } from "../components/office/ContextViewer";
+import { SessionDetailView } from "../components/session-detail";
 import { ProjectAgents } from "../components/office/ProjectAgents";
 import { ProjectSkills } from "../components/office/ProjectSkills";
 import { ProjectMCP } from "../components/office/ProjectMCP";
@@ -58,6 +60,7 @@ export function ProjectDetailPage(): JSX.Element {
   const [agents, setAgents] = useState<AgentInfo[]>([]);
   const [sessionsLoading, setSessionsLoading] = useState(true);
   const [selectedAgent, setSelectedAgent] = useState<AgentInfo | null>(null);
+  const [sessionListCollapsed, setSessionListCollapsed] = useState(false);
 
   // ─── Tab configuration ───────────────────────────────────
   const tabs: Array<{
@@ -266,21 +269,60 @@ export function ProjectDetailPage(): JSX.Element {
         return (
           <div className="flex-1 flex overflow-hidden">
             {/* Left - Agent List */}
-            <div className="w-80 border-r border-border p-4 overflow-y-auto">
-              <AgentList
-                agents={agents}
-                title={t("office.sessionList")}
-                selectedAgentId={selectedAgent?.id}
-                onSelectAgent={handleSelectAgent}
-                onJoinTerminal={handleJoinTerminal}
-                onDeleteAgent={handleDeleteAgent}
-                onBatchDelete={handleBatchDelete}
-              />
+            <div
+              className={`border-r border-border overflow-y-auto transition-all duration-300 ${
+                sessionListCollapsed ? "w-0 p-0" : "w-80 p-4"
+              }`}
+            >
+              {/* Agent List Content */}
+              {!sessionListCollapsed && (
+                <AgentList
+                  agents={agents}
+                  selectedAgentId={selectedAgent?.id}
+                  title={t("office.sessionList")}
+                  onSelectAgent={handleSelectAgent}
+                  onJoinTerminal={handleJoinTerminal}
+                  onDeleteAgent={handleDeleteAgent}
+                  onBatchDelete={handleBatchDelete}
+                />
+              )}
             </div>
 
-            {/* Right - Context Viewer */}
-            <div className="flex-1 overflow-hidden">
-              <ContextViewer agent={selectedAgent} />
+            {/* Collapse Toggle Button - Semi-circle on the border, vertically centered */}
+            <div className="relative">
+              <button
+                onClick={() => setSessionListCollapsed(!sessionListCollapsed)}
+                className={`absolute top-1/2 -translate-y-1/2 z-10 flex items-center justify-center w-4 h-8 bg-white dark:bg-zinc-800 border-y border-zinc-200 dark:border-zinc-700 shadow-sm hover:bg-zinc-50 dark:hover:bg-zinc-700 text-zinc-500 dark:text-zinc-400 transition-all ${
+                  sessionListCollapsed
+                    ? "left-0 rounded-r-full border-r"
+                    : "-left-4 rounded-l-full border-l"
+                }`}
+                title={
+                  sessionListCollapsed
+                    ? t("office.expandSessionList")
+                    : t("office.collapseSessionList")
+                }
+              >
+                {sessionListCollapsed ? (
+                  <ChevronRight className="w-3 h-3" />
+                ) : (
+                  <ChevronLeft className="w-3 h-3 -ml-0.5" />
+                )}
+              </button>
+            </div>
+
+            {/* Right - Session Detail */}
+            <div className="flex-1 relative overflow-hidden">
+              {selectedAgent ? (
+                <SessionDetailView
+                  projectDir={selectedAgent.projectDir}
+                  sessionId={selectedAgent.sessionId}
+                />
+              ) : (
+                <div className="flex items-center justify-center h-full text-zinc-400">
+                  {t("office.selectSessionToViewContext")}
+                </div>
+              )}
             </div>
           </div>
         );

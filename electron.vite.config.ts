@@ -5,7 +5,14 @@ import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
   main: {
-    plugins: [externalizeDepsPlugin({ exclude: ['execa'] })]
+    plugins: [externalizeDepsPlugin({ exclude: ['execa'] })],
+    build: {
+      rollupOptions: {
+        input: {
+          index: resolve('src/main/index.ts')
+        }
+      }
+    }
   },
   preload: {
     plugins: [externalizeDepsPlugin()]

@@ -15,6 +15,8 @@ import { projectDiscoveryService } from "../services/ProjectDiscoveryService";
 import { pixelOfficeService } from "../services/PixelOfficeService";
 import { planService } from "../services/PlanService";
 import { projectConfigService } from "../services/ProjectConfigService";
+import { sessionParserService } from "../services/SessionParserService";
+import { sessionAnalyticsService } from "../services/SessionAnalyticsService";
 import type { ProjectAgentFormData, ProjectSkillFormData, ProjectMCPFormData, ProjectCommandFormData, ProjectHookFormData } from "../../shared/types/project-config";
 
 let watcher: ReturnType<typeof watch> | null = null;
@@ -430,6 +432,24 @@ export function registerHandlers(mainWindow: BrowserWindow): void {
 
   ipcMain.handle(IPC.FILE_REVEAL_MCP_CONFIG, async () => {
     shell.showItemInFolder(CLAUDE_JSON_FILE);
+  });
+
+  // --- Session Detail ---
+  ipcMain.handle(IPC.SESSION_GET_DETAIL, async (_e, projectDir: string, sessionId: string) => {
+    return sessionParserService.parseSession(projectDir, sessionId);
+  });
+
+  // --- Analytics ---
+  ipcMain.handle(IPC.ANALYTICS_GET_SUMMARY, async (_e, timeRange: string) => {
+    return sessionAnalyticsService.getSummary(timeRange as "7d" | "30d" | "90d" | "year");
+  });
+
+  ipcMain.handle(IPC.ANALYTICS_GET_HEATMAP, async () => {
+    return sessionAnalyticsService.getHeatmap();
+  });
+
+  ipcMain.handle(IPC.ANALYTICS_GET_WRAPPED, async () => {
+    return sessionAnalyticsService.getWrapped();
   });
 
   // --- File Watcher ---

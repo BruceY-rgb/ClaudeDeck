@@ -60,3 +60,19 @@ body {
   border-left-color: theme('colors.zinc.600');
   color: theme('colors.zinc.400');
 }
+
+/* Heatmap colors */
+:root {
+  --heatmap-0: #ebedf0;
+  --heatmap-1: #9be9a8;
+  --heatmap-2: #40c463;
+  --heatmap-3: #30a14e;
+  --heatmap-4: #216e39;
+}
+.dark {
+  --heatmap-0: #161b22;
+  --heatmap-1: #0e4429;
+  --heatmap-2: #006d32;
+  --heatmap-3: #26a641;
+  --heatmap-4: #39d353;
+}

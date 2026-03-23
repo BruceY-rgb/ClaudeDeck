@@ -6,8 +6,13 @@ import { usePluginStore } from "../stores/pluginStore";
 import { useCommandStore } from "../stores/commandStore";
 import { useHookStore } from "../stores/hookStore";
 import { useMCPStore } from "../stores/mcpStore";
+import { useAnalyticsStore } from "../stores/analyticsStore";
 import { useFileWatcher } from "../hooks/useFileWatcher";
 import { PageHeader } from "../components/shared/PageHeader";
+import { TimeRangeTabs } from "../components/dashboard/TimeRangeTabs";
+import { OverviewStatCards } from "../components/dashboard/OverviewStatCards";
+import { CostChart } from "../components/dashboard/CostChart";
+import { ActivityHeatmap } from "../components/dashboard/ActivityHeatmap";
 import {
   Plus,
   Puzzle,
@@ -33,6 +38,15 @@ export function DashboardPage(): JSX.Element {
   const mcpServers = useMCPStore((s) => s.servers);
   const mcpFetch = useMCPStore((s) => s.fetchServers);
 
+  const analyticsData = useAnalyticsStore((s) => s.data);
+  const analyticsLoading = useAnalyticsStore((s) => s.loading);
+  const heatmapData = useAnalyticsStore((s) => s.heatmapData);
+  const heatmapLoading = useAnalyticsStore((s) => s.heatmapLoading);
+  const timeRange = useAnalyticsStore((s) => s.timeRange);
+  const setTimeRange = useAnalyticsStore((s) => s.setTimeRange);
+  const fetchAnalyticsSummary = useAnalyticsStore((s) => s.fetchSummary);
+  const fetchHeatmap = useAnalyticsStore((s) => s.fetchHeatmap);
+
   useEffect(() => {
     agentsFetch();
     skillsFetch();
@@ -40,6 +54,8 @@ export function DashboardPage(): JSX.Element {
     commandsFetch();
     hooksFetch();
     mcpFetch();
+    fetchAnalyticsSummary();
+    fetchHeatmap();
   }, [
     agentsFetch,
     skillsFetch,
@@ -47,6 +63,8 @@ export function DashboardPage(): JSX.Element {
     commandsFetch,
     hooksFetch,
     mcpFetch,
+    fetchAnalyticsSummary,
+    fetchHeatmap,
   ]);
 
   const refresh = useCallback(() => {
@@ -150,6 +168,19 @@ export function DashboardPage(): JSX.Element {
         title={t("dashboard.title")}
         description={t("dashboard.description")}
       />
+
+      {/* Analytics Overview */}
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-lg font-semibold">{t("dashboard.analytics.overview")}</h2>
+        <TimeRangeTabs value={timeRange} onChange={setTimeRange} />
+      </div>
+      <div className="mb-6">
+        <OverviewStatCards data={analyticsData} loading={analyticsLoading} />
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <CostChart data={analyticsData?.activityByDay ?? []} loading={analyticsLoading} />
+        <ActivityHeatmap data={heatmapData ?? []} loading={heatmapLoading} />
+      </div>
 
       {/* Quick Actions */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">

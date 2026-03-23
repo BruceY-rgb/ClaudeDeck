@@ -13,21 +13,21 @@ export interface AgentInfo {
 interface AgentListProps {
   agents: AgentInfo[];
   selectedAgentId?: number;
+  title?: string;
   onSelectAgent: (agent: AgentInfo) => void;
   onJoinTerminal: (projectDir: string, sessionId?: string) => void;
   onDeleteAgent: (projectDir: string, sessionId: string) => void;
   onBatchDelete?: (projectDir: string, sessionIds: string[]) => void;
-  title?: string;
 }
 
 export function AgentList({
   agents,
   selectedAgentId,
+  title,
   onSelectAgent,
   onJoinTerminal,
   onDeleteAgent,
   onBatchDelete,
-  title,
 }: AgentListProps): JSX.Element {
   const { t } = useTranslation();
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -99,10 +99,12 @@ export function AgentList({
 
   return (
     <div className="space-y-3">
-      {/* 标题和Batch操作工具栏 */}
+      {/* Header: Title + Batch Select */}
       <div className="flex items-center justify-between pb-2 border-b border-zinc-200 dark:border-zinc-800">
         <div className="flex items-center gap-2">
-          {title && <h2 className="font-semibold text-zinc-900 dark:text-zinc-100">{title}</h2>}
+          {title && (
+            <h3 className="font-semibold text-sm text-zinc-900 dark:text-zinc-100">{title}</h3>
+          )}
           {onBatchDelete && (
             <button
               className={`flex items-center gap-1 text-sm px-2 py-1 rounded ${

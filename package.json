@@ -74,7 +74,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@tanstack/react-virtual": "^3.13.23",
     "chokidar": "^5.0.0",
+    "echarts": "^6.0.0",
     "gray-matter": "^4.0.3",
     "rehype-highlight": "^7.0.2"
   },

@@ -121,4 +121,12 @@ export const IPC = {
   // File system
   FILE_REVEAL: "file:reveal",
   FILE_REVEAL_MCP_CONFIG: "file:reveal-mcp-config",
+
+  // Session detail
+  SESSION_GET_DETAIL: "session:get-detail",
+
+  // Analytics
+  ANALYTICS_GET_SUMMARY: "analytics:get-summary",
+  ANALYTICS_GET_HEATMAP: "analytics:get-heatmap",
+  ANALYTICS_GET_WRAPPED: "analytics:get-wrapped",
 } as const;

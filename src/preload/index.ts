@@ -27,6 +27,7 @@ import type {
   ProjectCommandFormData,
   ProjectHookFormData,
 } from "../shared/types/project-config";
+import type { ParsedSession, AnalyticsData, WrappedData, ActivityDay } from "../shared/types/session-detail";
 
 // Types for plugin detail
 interface PluginDetail {
@@ -354,6 +355,18 @@ const api = {
       ipcRenderer.invoke(IPC.PROJECT_CONFIG_COPY_GLOBAL_AGENT, projectDir, agentName),
     copyGlobalSkill: (projectDir: string, skillName: string): Promise<void> =>
       ipcRenderer.invoke(IPC.PROJECT_CONFIG_COPY_GLOBAL_SKILL, projectDir, skillName),
+  },
+  session: {
+    getDetail: (projectDir: string, sessionId: string): Promise<ParsedSession> =>
+      ipcRenderer.invoke(IPC.SESSION_GET_DETAIL, projectDir, sessionId),
+  },
+  analytics: {
+    getSummary: (timeRange: string): Promise<AnalyticsData> =>
+      ipcRenderer.invoke(IPC.ANALYTICS_GET_SUMMARY, timeRange),
+    getHeatmap: (): Promise<ActivityDay[]> =>
+      ipcRenderer.invoke(IPC.ANALYTICS_GET_HEATMAP),
+    getWrapped: (): Promise<WrappedData> =>
+      ipcRenderer.invoke(IPC.ANALYTICS_GET_WRAPPED),
   },
   file: {
     reveal: (filePath: string): Promise<void> =>
