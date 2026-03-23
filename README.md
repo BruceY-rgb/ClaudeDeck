@@ -5,74 +5,111 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/BruceY-rgb/ClaudeDeck/releases/latest">
-    <img src="https://img.shields.io/github/release/claude-skills-and-agents-manager/claude-skills-and-agents-manager.svg" alt="Latest Release" />
+  <strong>Take Full Control of Your Claude Code Setup</strong>
+</p>
+
+<p align="center">
+  A beautiful desktop application to manage agents, skills, plugins, and slash commands for Claude Code - all in one place.
+</p>
+
+<p align="center">
+  <a href="https://github.com/BruceY-rgb/ClaudeDeck/releases/tag/v2.0.0">
+    <img src="https://img.shields.io/github/v/release/BruceY-rgb/ClaudeDeck?include_prereleases&label=Version&color=6366f1" alt="Version" />
   </a>
-  <a href="https://github.com/BruceY-rgb/ClaudeDeck/releases/latest">
-    <img src="https://img.shields.io/github/downloads/claude-skills-and-agents-manager/claude-skills-and-agents-manager/total.svg" alt="Downloads" />
+  <a href="https://github.com/BruceY-rgb/ClaudeDeck/releases/tag/v2.0.0">
+    <img src="https://img.shields.io/github/downloads/BruceY-rgb/ClaudeDeck/total?label=Downloads&color=10b981" alt="Downloads" />
+  </a>
+  <a href="https://github.com/BruceY-rgb/ClaudeDeck">
+    <img src="https://img.shields.io/github/stars/BruceY-rgb/ClaudeDeck?label=Stars&color=f59e0b" alt="Stars" />
   </a>
   <a href="https://github.com/BruceY-rgb/ClaudeDeck/blob/master/LICENSE">
-    <img src="https://img.shields.io/github/license/claude-skills-and-agents-manager/claude-skills-and-agents-manager.svg" alt="License" />
+    <img src="https://img.shields.io/github/license/BruceY-rgb/ClaudeDeck?color=3b82f6" alt="License" />
+  </a>
+  <a href="#">
+    <img src="https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-8b5cf6" alt="Platform" />
   </a>
 </p>
 
 > English | [中文](./README-zh.md)
 
-A visual desktop application for managing Claude Code agents, skills, plugins, and slash commands. Built with Electron + React + TypeScript.
+---
 
 ## Features
 
-### 🎯 Agent Management
-- View all Claude Code agents in a visual interface
-- Configure agent settings and parameters
-- Monitor agent status and activity
+### Agent Management
+- View all Claude Code agents in a beautiful visual interface
+- Configure agent settings and parameters with ease
+- Monitor agent status and activity in real-time
 
-### 🛠️ Skills Management
-- Browse installed skills from the marketplace
-- Enable/disable skills with one click
-- View skill details and documentation
-- Create and edit custom skills
+### Skills Management
+- Browse and discover skills from the marketplace
+- Install or disable skills with a single click
+- View detailed documentation for each skill
+- Create your own custom skills
 
-### 🔌 Plugins Management
-- View all installed plugins
-- Configure plugin settings
-- Enable/disable plugins
+### Plugins Management
+- See all installed plugins at a glance
+- Configure plugin settings without leaving the app
+- Enable/disable plugins instantly
 
-### ⚡ Slash Commands
-- Browse available slash commands
-- View command descriptions and usage
+### Slash Commands
+- Explore all available slash commands
+- Read descriptions and usage examples
 - Quick access to command documentation
 
-### 📁 File Management
-- Monitor watched directories
+### File Monitoring
+- Watch directories for changes
 - Configure file system watching options
-- View file change history
+- Track file change history
 
-### 🖥️ System Integration
-- Native system tray support
-- System notifications
-- Global shortcuts
-- Dark/Light theme support
+### System Integration
+- System tray support with quick actions
+- Native notifications
+- Global keyboard shortcuts
+- Dark & Light theme support
 
-## Downloads
+---
 
-### Latest Release
-- **macOS**: [Claude Skills Manager-1.0.0-mac.dmg](https://github.com/BruceY-rgb/ClaudeDeck/releases/latest)
-- **Windows**: [Claude Skills Manager Setup 1.0.0.exe](https://github.com/BruceY-rgb/ClaudeDeck/releases/latest)
+## Screenshots
+
+![Dashboard](screenshots/dashboard.png)
+![Agents](screenshots/agent.png)
+![Plugins](screenshots/plugin.png)
+![Analystic](screenshots/analystic.png)
+![Plan](screenshots/plan.png)
+
+
+
+---
+
+## Quick Start
+
+### Download & Install
+
+**Latest Release (v2.0.0)**
+
+| Platform | Download |
+|----------|----------|
+| macOS | [Claude Skills Manager-2.0.0-mac.dmg](https://github.com/BruceY-rgb/ClaudeDeck/releases/tag/v2.0.0) |
+| Windows | [Claude Skills Manager Setup 2.0.0.exe](https://github.com/BruceY-rgb/ClaudeDeck/releases/tag/v2.0.0) |
+
+> **Note:** After downloading, macOS users may need to right-click and select "Open" to bypass Gatekeeper.
+
+---
 
 ## Development
 
 ### Prerequisites
+
 - Node.js 20+
 - npm 10+
-- Electron 40+
 
 ### Setup
 
 ```bash
 # Clone the repository
-git clone https://github.com/BruceY-rgb/ClaudeDeck/claude-skills-and-agents-manager.git
-cd claude-skills-and-agents-manager
+git clone https://github.com/BruceY-rgb/ClaudeDeck.git
+cd ClaudeDeck
 
 # Install dependencies
 npm install
@@ -94,7 +131,9 @@ npm run dist:mac
 npm run dist:win
 ```
 
-### Project Structure
+---
+
+## Project Structure
 
 ```
 claude-skills-and-agents-manager/
@@ -109,22 +148,24 @@ claude-skills-and-agents-manager/
 └── README.md
 ```
 
+---
+
 ## Tech Stack
 
-- **Framework**: Electron 40+
-- **Frontend**: React 19 + TypeScript
-- **Styling**: Tailwind CSS 4
-- **State Management**: Zustand
-- **Build Tool**: electron-vite + electron-builder
+- **Framework:** Electron 40+
+- **Frontend:** React 19 + TypeScript
+- **Styling:** Tailwind CSS 4
+- **State Management:** Zustand
+- **Build Tool:** electron-vite + electron-builder
+
+---
 
 ## License
 
 MIT License - see [LICENSE](LICENSE) for details.
 
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
 ---
 
-<p align="center">Built with ❤️ using Electron</p>
+<p align="center">
+  Built with Electron + React + TypeScript
+</p>

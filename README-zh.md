@@ -5,74 +5,118 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/BruceY-rgb/ClaudeDeck/releases/latest">
-    <img src="https://img.shields.io/github/release/claude-skills-and-agents-manager/claude-skills-and-agents-manager.svg" alt="最新版本" />
+  <strong>完全掌控你的 Claude Code 配置</strong>
+</p>
+
+<p align="center">
+  一个精美的桌面应用程序，可以在一个地方管理 Claude Code 的智能体、skills、插件和斜杠命令。
+</p>
+
+<p align="center">
+  <a href="https://github.com/BruceY-rgb/ClaudeDeck/releases/tag/v2.0.0">
+    <img src="https://img.shields.io/github/v/release/BruceY-rgb/ClaudeDeck?include_prereleases&label=Version&color=6366f1" alt="版本" />
   </a>
-  <a href="https://github.com/BruceY-rgb/ClaudeDeck/releases/latest">
-    <img src="https://img.shields.io/github/downloads/claude-skills-and-agents-manager/claude-skills-and-agents-manager/total.svg" alt="下载次数" />
+  <a href="https://github.com/BruceY-rgb/ClaudeDeck/releases/tag/v2.0.0">
+    <img src="https://img.shields.io/github/downloads/BruceY-rgb/ClaudeDeck/total?label=Downloads&color=10b981" alt="下载量" />
+  </a>
+  <a href="https://github.com/BruceY-rgb/ClaudeDeck">
+    <img src="https://img.shields.io/github/stars/BruceY-rgb/ClaudeDeck?label=Stars&color=f59e0b" alt="Stars" />
   </a>
   <a href="https://github.com/BruceY-rgb/ClaudeDeck/blob/master/LICENSE">
-    <img src="https://img.shields.io/github/license/claude-skills-and-agents-manager/claude-skills-and-agents-manager.svg" alt="许可证" />
+    <img src="https://img.shields.io/github/license/BruceY-rgb/ClaudeDeck?color=3b82f6" alt="许可证" />
+  </a>
+  <a href="#">
+    <img src="https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-8b5cf6" alt="平台" />
   </a>
 </p>
 
-> English | [中文](./README-zh.md)
+> [English](./README.md) | 中文
 
-一个用于管理 Claude Code 智能体、skills、插件和斜杠命令的可视化桌面应用程序。基于 Electron + React + TypeScript 构建。
+---
 
 ## 功能特性
 
-### 🎯 智能体管理
-- 在可视化界面中查看所有 Claude Code 智能体
-- 配置智能体设置和参数
-- 监控智能体状态和活动
+### 智能体管理
+- 在精美的可视化界面中查看所有 Claude Code 智能体
+- 轻松配置智能体设置和参数
+- 实时监控智能体状态和活动
 
-### 🛠️ Skills 管理
-- 浏览市场上已安装的 skills
-- 一键启用/禁用 skills
-- 查看 skills 详情和文档
-- 创建和编辑自定义 skills
+### Skills 管理
+- 从市场浏览和发现 skills
+- 一键安装或禁用 skills
+- 查看每个 skill 的详细文档
+- 创建自己的自定义 skills
 
-### 🔌 插件管理
-- 查看所有已安装的插件
-- 配置插件设置
-- 启用/禁用插件
+### 插件管理
+- 一目了然地查看所有已安装的插件
+- 无需离开应用即可配置插件设置
+- 即时启用/禁用插件
 
-### ⚡ 斜杠命令
-- 浏览可用的斜杠命令
-- 查看命令描述和使用方法
+### 斜杠命令
+- 探索所有可用的斜杠命令
+- 阅读描述和使用示例
 - 快速访问命令文档
 
-### 📁 文件管理
-- 监控观察的目录
+### 文件监控
+- 监控目录的文件变化
 - 配置文件系统监视选项
-- 查看文件变更历史
+- 跟踪文件变更历史
 
-### 🖥️ 系统集成
-- 原生系统托盘支持
-- 系统通知
-- 全局快捷键
-- 深色/浅色主题支持
+### 系统集成
+- 支持系统托盘和快捷操作
+- 原生系统通知
+- 全局键盘快捷键
+- 深色和浅色主题支持
 
-## 下载
+---
 
-### 最新版本
-- **macOS**: [Claude Skills Manager-1.0.0-mac.dmg](https://github.com/BruceY-rgb/ClaudeDeck/releases/latest)
-- **Windows**: [Claude Skills Manager Setup 1.0.0.exe](https://github.com/BruceY-rgb/ClaudeDeck/releases/latest)
+## 截图展示
+
+> **提示:** 在这里添加你的应用截图！
+>
+> 推荐添加的截图类型：
+> - 主仪表盘概览
+> - 智能体管理界面
+> - Skills 市场浏览器
+> - 设置/偏好设置页面
+
+<!--
+添加截图的方式如下：
+![仪表盘](screenshots/dashboard.png)
+![智能体](screenshots/agents.png)
+![Skills](screenshots/skills.png)
+-->
+
+---
+
+## 快速开始
+
+### 下载与安装
+
+**最新版本 (v2.0.0)**
+
+| 平台 | 下载 |
+|------|------|
+| macOS | [Claude Skills Manager-2.0.0-mac.dmg](https://github.com/BruceY-rgb/ClaudeDeck/releases/tag/v2.0.0) |
+| Windows | [Claude Skills Manager Setup 2.0.0.exe](https://github.com/BruceY-rgb/ClaudeDeck/releases/tag/v2.0.0) |
+
+> **注意:** macOS 用户下载后可能需要右键点击并选择"打开"来绕过 Gatekeeper。
+
+---
 
 ## 开发
 
 ### 环境要求
+
 - Node.js 20+
 - npm 10+
-- Electron 40+
 
 ### 安装步骤
 
 ```bash
 # 克隆仓库
-git clone https://github.com/BruceY-rgb/ClaudeDeck/claude-skills-and-agents-manager.git
-cd claude-skills-and-agents-manager
+git clone https://github.com/BruceY-rgb/ClaudeDeck.git
+cd ClaudeDeck
 
 # 安装依赖
 npm install
@@ -94,7 +138,9 @@ npm run dist:mac
 npm run dist:win
 ```
 
-### 项目结构
+---
+
+## 项目结构
 
 ```
 claude-skills-and-agents-manager/
@@ -103,28 +149,30 @@ claude-skills-and-agents-manager/
 │   ├── preload/        # 预加载脚本
 │   └── renderer/       # React 前端
 ├── resources/          # 应用资源（图标等）
-├── release/           # 构建后的安装包
+├── release/            # 构建后的安装包
 ├── electron.vite.config.ts
 ├── package.json
 └── README.md
 ```
 
+---
+
 ## 技术栈
 
-- **框架**: Electron 40+
-- **前端**: React 19 + TypeScript
-- **样式**: Tailwind CSS 4
-- **状态管理**: Zustand
-- **构建工具**: electron-vite + electron-builder
+- **框架:** Electron 40+
+- **前端:** React 19 + TypeScript
+- **样式:** Tailwind CSS 4
+- **状态管理:** Zustand
+- **构建工具:** electron-vite + electron-builder
+
+---
 
 ## 许可证
 
 MIT 许可证 - 详见 [LICENSE](LICENSE) 文件。
 
-## 贡献
-
-欢迎提交 Pull Request！
-
 ---
 
-<p align="center">使用 ❤️ 基于 Electron 构建</p>
+<p align="center">
+  使用 Electron + React + TypeScript 构建
+</p>
