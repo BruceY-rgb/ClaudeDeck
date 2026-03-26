@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { useTranslation } from "../../i18n/LanguageContext";
 import { useSettingsStore } from "../../stores/settingsStore";
-import logoUrl from "../../assets/logo.svg?url";
+import logoUrl from "../../assets/logo_HIMA.png?url";
 
 interface NavItem {
   path: string;

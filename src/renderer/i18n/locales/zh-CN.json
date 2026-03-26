@@ -1,5 +1,5 @@
 {
-  "sidebar.title": "AgentForge",
+  "sidebar.title": "HIMA AIP",
   "sidebar.nav.dashboard": "仪表盘",
   "sidebar.nav.agents": "智能体",
   "sidebar.nav.skills": "技能",
@@ -427,7 +427,7 @@
   "sessionDetail.scrollToBottom": "滚动到底部",
 
   "terminal.title": "终端",
-  "terminal.welcome": "Claude 技能管理器终端",
+  "terminal.welcome": "HIMA AIP 终端",
   "terminal.welcomeHint": "输入提示词并按回车运行，或使用上方按钮。",
   "terminal.promptPlaceholder": "输入提示词...",
   "terminal.processExited": "进程已退出，退出码 {{code}}",

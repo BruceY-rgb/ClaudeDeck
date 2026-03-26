@@ -1,7 +1,7 @@
 {
-  "name": "agent-forge",
+  "name": "hima-aip",
   "version": "2.0.1",
-  "description": "Visual manager for Claude Code agents, skills, plugins and more - AgentForge",
+  "description": "Visual manager for Claude Code agents, skills, plugins and more - HIMA AIP",
   "main": "./out/main/index.js",
   "scripts": {
     "dev": "electron-vite dev",
@@ -14,8 +14,8 @@
     "dist:mac": "npm run build && electron-builder --mac"
   },
   "build": {
-    "appId": "com.claude.manager",
-    "productName": "Claude Skills Manager",
+    "appId": "com.hima.aip",
+    "productName": "HIMA AIP",
     "directories": {
       "output": "release"
     },

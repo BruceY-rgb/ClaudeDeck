@@ -1,5 +1,5 @@
 {
-  "sidebar.title": "AgentForge",
+  "sidebar.title": "HIMA AIP",
   "sidebar.nav.dashboard": "Dashboard",
   "sidebar.nav.agents": "Agents",
   "sidebar.nav.skills": "Skills",
@@ -426,7 +426,7 @@
   "sessionDetail.scrollToBottom": "Scroll to bottom",
 
   "terminal.title": "Terminal",
-  "terminal.welcome": "Claude Skills Manager Terminal",
+  "terminal.welcome": "HIMA AIP Terminal",
   "terminal.welcomeHint": "Type a prompt and press Enter to run, or use the buttons above.",
   "terminal.promptPlaceholder": "Enter prompt...",
   "terminal.processExited": "Process exited with code {{code}}",
