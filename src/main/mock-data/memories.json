@@ -2,298 +2,1178 @@
   {
     "id": "mem-001",
     "title": "React useEffect Cleanup Pattern",
-    "summary": "When using useEffect with async operations, always return a cleanup function to prevent memory leaks and state updates on unmounted components.",
-    "category": "best-practice",
+    "content": "## Problem\nAsync operations in useEffect can cause state updates after component unmount, leading to memory leaks and React warnings.\n\n## Solution\n```typescript\nuseEffect(() => {\n  let cancelled = false;\n  async function fetchData() {\n    const result = await api.getData();\n    if (!cancelled) setState(result);\n  }\n  fetchData();\n  return () => { cancelled = true; };\n}, []);\n```\n\n## Key Insight\nThis pattern was discovered across 3 different projects where the same memory leak issue appeared. The AbortController approach is even better for fetch requests:\n```typescript\nuseEffect(() => {\n  const controller = new AbortController();\n  fetch(url, { signal: controller.signal }).then(...);\n  return () => controller.abort();\n}, [url]);\n```",
+    "category": "bug-fix",
+    "source": "local",
+    "contributor": {
+      "id": "user-alex",
+      "name": "Alex Chen",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=alex"
+    },
+    "project": {
+      "name": "HIMA-AIP",
+      "path": "/projects/hima-aip"
+    },
+    "sessionId": "sess-9935",
     "tags": [
       "react",
       "hooks",
       "memory-leak",
-      "cleanup"
+      "cleanup",
+      "useEffect"
     ],
-    "sourceType": "cross-session",
-    "sourceUser": "yangsmac",
-    "sourceProject": "HIMA-AIP",
-    "sourceSessionId": "sess-hima-0001",
-    "relatedSessions": [
-      "sess-hima-0002",
-      "sess-term-0001"
-    ],
-    "content": "## Problem\nAsync operations in useEffect can cause state updates after component unmount.\n\n## Solution\n```typescript\nuseEffect(() => {\n  let cancelled = false;\n  async function fetchData() {\n    const result = await api.getData();\n    if (!cancelled) setState(result);\n  }\n  fetchData();\n  return () => { cancelled = true; };\n}, []);\n```\n\n## Key Insight\nThis pattern was discovered across 3 different projects where the same memory leak issue appeared.",
-    "confidence": 0.95,
-    "usageCount": 12,
-    "createdAt": "2026-01-15T10:30:00Z",
-    "updatedAt": "2026-03-20T14:00:00Z"
+    "createdAt": "2026-01-05T16:46:00Z",
+    "updatedAt": "2026-03-23T00:54:00Z",
+    "useCount": 6,
+    "chainId": "chain-009",
+    "relevance": 0.84
   },
   {
     "id": "mem-002",
+    "title": "Electron IPC Serialization Pitfall",
+    "content": "## Problem\nPassing non-serializable objects (Date, Map, Set, class instances) through Electron IPC silently converts them to plain objects or drops them entirely.\n\n## Solution\nAlways serialize to JSON-safe types before sending over IPC:\n```typescript\n// Bad\nipcMain.handle('get-data', () => ({ date: new Date(), items: new Map() }));\n\n// Good\nipcMain.handle('get-data', () => ({\n  date: new Date().toISOString(),\n  items: Object.fromEntries(myMap)\n}));\n```\n\n## Impact\nThis bug caused silent data loss in 2 production features before we identified the root cause.",
+    "category": "bug-fix",
+    "source": "shared",
+    "contributor": {
+      "id": "user-yang",
+      "name": "Yang (yangsmac)",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=yang"
+    },
+    "project": {
+      "name": "HIMA-AIP",
+      "path": "/projects/hima-aip"
+    },
+    "sessionId": "sess-4257",
+    "tags": [
+      "electron",
+      "ipc",
+      "serialization",
+      "data-loss"
+    ],
+    "createdAt": "2026-02-21T17:46:00Z",
+    "updatedAt": "2026-03-17T04:59:00Z",
+    "useCount": 46,
+    "chainId": "chain-002",
+    "relevance": 0.86
+  },
+  {
+    "id": "mem-003",
+    "title": "Node.js Stream Backpressure Handling",
+    "content": "## Problem\nIgnoring backpressure when piping large files through Node.js streams causes memory exhaustion.\n\n## Solution\n```typescript\nconst readable = fs.createReadStream(inputPath);\nconst writable = fs.createWriteStream(outputPath);\n\nreadable.pipe(writable);\n\nwritable.on('drain', () => readable.resume());\nreadable.on('data', (chunk) => {\n  if (!writable.write(chunk)) readable.pause();\n});\n```\n\n## Key Insight\nAlways use pipeline() from stream/promises for automatic backpressure handling:\n```typescript\nimport { pipeline } from 'stream/promises';\nawait pipeline(readable, transform, writable);\n```",
+    "category": "bug-fix",
+    "source": "community",
+    "contributor": {
+      "id": "user-lisa",
+      "name": "Lisa Wang",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=lisa"
+    },
+    "project": {
+      "name": "E-Commerce Platform",
+      "path": "/projects/ecommerce"
+    },
+    "sessionId": "sess-7924",
+    "tags": [
+      "nodejs",
+      "streams",
+      "backpressure",
+      "memory"
+    ],
+    "createdAt": "2025-11-22T05:43:00Z",
+    "updatedAt": "2026-03-25T18:16:00Z",
+    "useCount": 22,
+    "chainId": null,
+    "relevance": 0.71
+  },
+  {
+    "id": "mem-004",
+    "title": "CSS Grid Auto-fit vs Auto-fill Confusion",
+    "content": "## Problem\n`auto-fit` and `auto-fill` behave identically when there are enough items to fill the row, but diverge when items are fewer than columns.\n\n## Key Difference\n- `auto-fill`: Creates empty tracks even when no items fill them\n- `auto-fit`: Collapses empty tracks to zero width\n\n```css\n/* Items stretch to fill available space */\ngrid-template-columns: repeat(auto-fit, minmax(250px, 1fr));\n\n/* Empty columns remain as gaps */\ngrid-template-columns: repeat(auto-fill, minmax(250px, 1fr));\n```\n\n## When to Use\nUse `auto-fit` for most responsive layouts. Use `auto-fill` when you need consistent column widths regardless of item count.",
+    "category": "bug-fix",
+    "source": "community",
+    "contributor": {
+      "id": "user-mike",
+      "name": "Mike Johnson",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=mike"
+    },
+    "project": {
+      "name": "Mobile App",
+      "path": "/projects/mobile-app"
+    },
+    "sessionId": "sess-6635",
+    "tags": [
+      "css",
+      "grid",
+      "responsive",
+      "layout"
+    ],
+    "createdAt": "2026-02-18T21:36:00Z",
+    "updatedAt": "2026-03-24T12:06:00Z",
+    "useCount": 39,
+    "chainId": null,
+    "relevance": 0.71
+  },
+  {
+    "id": "mem-005",
+    "title": "Electron IPC Error Handling Architecture",
+    "content": "## Problem\nUnhandled errors in Electron main process IPC handlers crash the entire application.\n\n## Solution\nWrap all IPC handlers in a standardized error boundary:\n```typescript\nfunction safeHandle(channel: string, handler: Function) {\n  ipcMain.handle(channel, async (event, ...args) => {\n    try {\n      return { success: true, data: await handler(event, ...args) };\n    } catch (error) {\n      console.error(`[IPC] ${channel} failed:`, error);\n      return { success: false, error: error.message };\n    }\n  });\n}\n```\n\n## Architecture Decision\nThis pattern was adopted project-wide after 3 crash incidents. All 47 IPC handlers now use this wrapper.",
+    "category": "architecture",
+    "source": "local",
+    "contributor": {
+      "id": "user-yang",
+      "name": "Yang (yangsmac)",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=yang"
+    },
+    "project": {
+      "name": "Data Dashboard",
+      "path": "/projects/data-dashboard"
+    },
+    "sessionId": "sess-5803",
+    "tags": [
+      "electron",
+      "ipc",
+      "error-handling",
+      "resilience"
+    ],
+    "createdAt": "2025-10-30T20:01:00Z",
+    "updatedAt": "2026-03-19T21:25:00Z",
+    "useCount": 41,
+    "chainId": "chain-002",
+    "relevance": 0.85
+  },
+  {
+    "id": "mem-006",
+    "title": "Zustand Store Slicing Strategy",
+    "content": "## Problem\nLarge monolithic Zustand stores cause unnecessary re-renders across unrelated components.\n\n## Solution\nUse selector-based slicing and separate stores per domain:\n```typescript\n// Instead of one giant store\nconst useStore = create((set) => ({ agents: [], skills: [], plugins: [], ... }));\n\n// Use domain-specific stores\nconst useAgentStore = create((set) => ({ items: [], loading: false, fetch: async () => {...} }));\nconst useSkillStore = create((set) => ({ personal: [], plugin: [], ... }));\n\n// Always use selectors\nconst agents = useAgentStore((s) => s.items); // Only re-renders when items change\n```\n\n## Impact\nReduced unnecessary re-renders by ~60% in the HIMA-AIP dashboard.",
+    "category": "architecture",
+    "source": "shared",
+    "contributor": {
+      "id": "user-david",
+      "name": "David Park",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=david"
+    },
+    "project": {
+      "name": "Real-time Chat",
+      "path": "/projects/realtime-chat"
+    },
+    "sessionId": "sess-5741",
+    "tags": [
+      "zustand",
+      "react",
+      "state-management",
+      "performance"
+    ],
+    "createdAt": "2026-01-26T01:56:00Z",
+    "updatedAt": "2026-03-25T02:46:00Z",
+    "useCount": 6,
+    "chainId": "chain-009",
+    "relevance": 0.94
+  },
+  {
+    "id": "mem-007",
+    "title": "Microservice Event-Driven Communication",
+    "content": "## Pattern\nUse event-driven architecture with message queues instead of synchronous HTTP calls between microservices.\n\n## Implementation\n```typescript\n// Publisher\nawait messageQueue.publish('order.created', {\n  orderId: order.id,\n  userId: order.userId,\n  items: order.items,\n  timestamp: new Date().toISOString()\n});\n\n// Consumer (separate service)\nmessageQueue.subscribe('order.created', async (event) => {\n  await inventoryService.reserveItems(event.items);\n  await notificationService.sendConfirmation(event.userId);\n});\n```\n\n## Key Insight\nThis decoupling reduced inter-service latency by 40% and eliminated cascading failures during peak traffic.",
+    "category": "architecture",
+    "source": "community",
+    "contributor": {
+      "id": "user-alex",
+      "name": "Alex Chen",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=alex"
+    },
+    "project": {
+      "name": "DevOps Toolkit",
+      "path": "/projects/devops-toolkit"
+    },
+    "sessionId": "sess-6820",
+    "tags": [
+      "microservices",
+      "event-driven",
+      "message-queue",
+      "decoupling"
+    ],
+    "createdAt": "2026-01-04T09:20:00Z",
+    "updatedAt": "2026-03-20T18:37:00Z",
+    "useCount": 14,
+    "chainId": "chain-010",
+    "relevance": 0.87
+  },
+  {
+    "id": "mem-008",
+    "title": "Plugin System Architecture with Dynamic Loading",
+    "content": "## Design\nHIMA-AIP's plugin system uses a manifest-based approach with lazy loading:\n\n```\nplugins/\n  my-plugin/\n    manifest.json    # Metadata, dependencies, entry points\n    agents/          # Plugin-provided agents\n    skills/          # Plugin-provided skills\n    commands/        # Plugin-provided commands\n```\n\n## Key Decisions\n1. **Manifest-first**: All plugin capabilities declared upfront for fast scanning\n2. **Lazy loading**: Plugin code only loaded when features are accessed\n3. **Sandboxed execution**: Plugins run in isolated contexts\n4. **Version pinning**: Each plugin locks its dependency versions\n\n## Lesson\nThe manifest approach reduced startup time from 4.2s to 1.1s compared to eager loading.",
+    "category": "architecture",
+    "source": "local",
+    "contributor": {
+      "id": "user-alex",
+      "name": "Alex Chen",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=alex"
+    },
+    "project": {
+      "name": "Real-time Chat",
+      "path": "/projects/realtime-chat"
+    },
+    "sessionId": "sess-7216",
+    "tags": [
+      "plugin-system",
+      "architecture",
+      "lazy-loading",
+      "electron"
+    ],
+    "createdAt": "2026-02-01T06:14:00Z",
+    "updatedAt": "2026-03-22T18:31:00Z",
+    "useCount": 18,
+    "chainId": "chain-002",
+    "relevance": 1.0
+  },
+  {
+    "id": "mem-009",
+    "title": "TypeScript Strict Mode Migration Strategy",
+    "content": "## Approach\nMigrate to strict TypeScript incrementally using per-file overrides:\n\n1. Enable `strict: true` in tsconfig.json\n2. Add `// @ts-nocheck` to all existing files\n3. Remove `@ts-nocheck` file by file, fixing errors\n4. Track progress with a script:\n```bash\necho \"Strict files: $(grep -rL '@ts-nocheck' src/ | wc -l) / $(find src/ -name '*.ts' -o -name '*.tsx' | wc -l)\"\n```\n\n## Key Insight\nStart with leaf modules (types, utils) and work inward. This approach converted 200+ files over 3 sprints without blocking feature work.",
+    "category": "best-practice",
+    "source": "shared",
+    "contributor": {
+      "id": "user-mike",
+      "name": "Mike Johnson",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=mike"
+    },
+    "project": {
+      "name": "Mobile App",
+      "path": "/projects/mobile-app"
+    },
+    "sessionId": "sess-5386",
+    "tags": [
+      "typescript",
+      "strict-mode",
+      "migration",
+      "incremental"
+    ],
+    "createdAt": "2026-03-02T16:08:00Z",
+    "updatedAt": "2026-03-25T13:35:00Z",
+    "useCount": 5,
+    "chainId": "chain-011",
+    "relevance": 0.68
+  },
+  {
+    "id": "mem-010",
+    "title": "Git Commit Message Convention",
+    "content": "## Convention\nUse Conventional Commits with scope:\n```\nfeat(agents): add batch delete functionality\nfix(ipc): correct serialization of Date objects\nrefactor(store): split monolithic store into domain slices\ndocs(readme): update installation instructions\ntest(skills): add unit tests for SKILL.md parser\n```\n\n## Automation\nCombine with commitlint and husky:\n```json\n// .husky/commit-msg\nnpx --no -- commitlint --edit $1\n```\n\n## Impact\nAutomated changelog generation and semantic versioning became possible after adopting this convention.",
+    "category": "best-practice",
+    "source": "community",
+    "contributor": {
+      "id": "user-david",
+      "name": "David Park",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=david"
+    },
+    "project": {
+      "name": "E-Commerce Platform",
+      "path": "/projects/ecommerce"
+    },
+    "sessionId": "sess-3287",
+    "tags": [
+      "git",
+      "commits",
+      "convention",
+      "automation"
+    ],
+    "createdAt": "2025-11-09T11:04:00Z",
+    "updatedAt": "2026-03-18T19:44:00Z",
+    "useCount": 16,
+    "chainId": "chain-006",
+    "relevance": 0.9
+  },
+  {
+    "id": "mem-011",
+    "title": "API Response Envelope Pattern",
+    "content": "## Pattern\nWrap all API responses in a consistent envelope:\n```typescript\ninterface ApiResponse<T> {\n  success: boolean;\n  data?: T;\n  error?: { code: string; message: string; details?: unknown };\n  meta?: { page: number; total: number; timestamp: string };\n}\n```\n\n## Benefits\n1. Consistent error handling on the client\n2. Pagination metadata always available\n3. Easy to add cross-cutting concerns (request ID, timing)\n\n## Implementation\nUse middleware to automatically wrap responses:\n```typescript\napp.use((req, res, next) => {\n  const originalJson = res.json.bind(res);\n  res.json = (data) => originalJson({ success: true, data, meta: { timestamp: new Date().toISOString() } });\n  next();\n});\n```",
+    "category": "best-practice",
+    "source": "shared",
+    "contributor": {
+      "id": "user-emma",
+      "name": "Emma Liu",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=emma"
+    },
+    "project": {
+      "name": "Real-time Chat",
+      "path": "/projects/realtime-chat"
+    },
+    "sessionId": "sess-9348",
+    "tags": [
+      "api",
+      "rest",
+      "response-format",
+      "middleware"
+    ],
+    "createdAt": "2025-11-27T05:35:00Z",
+    "updatedAt": "2026-03-20T16:52:00Z",
+    "useCount": 32,
+    "chainId": "chain-003",
+    "relevance": 0.64
+  },
+  {
+    "id": "mem-012",
+    "title": "Claude Code Agent Development Workflow",
+    "content": "## Workflow\n1. **Define**: Write agent spec in Markdown with clear role, tools, and constraints\n2. **Test locally**: Use `claude-code run --agent my-agent --test` for dry runs\n3. **Iterate**: Refine prompts based on test outputs\n4. **Share**: Push to team marketplace for peer review\n5. **Deploy**: Enable via HIMA-AIP plugin manager\n\n## Tips\n- Keep agent instructions under 2000 tokens for best performance\n- Always include example interactions in the agent spec\n- Use `{{project_context}}` template variables for dynamic context injection\n\n## Lesson\nAgents with clear constraints outperform verbose ones by ~30% in task completion rate.",
+    "category": "workflow",
+    "source": "local",
+    "contributor": {
+      "id": "user-yang",
+      "name": "Yang (yangsmac)",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=yang"
+    },
+    "project": {
+      "name": "API Gateway",
+      "path": "/projects/api-gateway"
+    },
+    "sessionId": "sess-7304",
+    "tags": [
+      "claude-code",
+      "agents",
+      "development",
+      "workflow"
+    ],
+    "createdAt": "2026-02-05T03:50:00Z",
+    "updatedAt": "2026-03-19T04:56:00Z",
+    "useCount": 25,
+    "chainId": "chain-007",
+    "relevance": 0.84
+  },
+  {
+    "id": "mem-013",
+    "title": "PR Review Checklist Automation",
+    "content": "## Workflow\nAutomate PR review checklists with GitHub Actions:\n```yaml\nname: PR Checklist\non: pull_request\njobs:\n  checklist:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - name: Check types\n        run: npx tsc --noEmit\n      - name: Check lint\n        run: npx eslint src/\n      - name: Check tests\n        run: npx vitest run\n      - name: Check bundle size\n        run: npx size-limit\n```\n\n## Key Insight\nAdding bundle size checks to CI prevented 12 accidental size regressions in Q1 2026.",
+    "category": "workflow",
+    "source": "community",
+    "contributor": {
+      "id": "user-james",
+      "name": "James Miller",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=james"
+    },
+    "project": {
+      "name": "Auth Service",
+      "path": "/projects/auth-service"
+    },
+    "sessionId": "sess-2876",
+    "tags": [
+      "github-actions",
+      "ci-cd",
+      "code-review",
+      "automation"
+    ],
+    "createdAt": "2026-01-11T06:05:00Z",
+    "updatedAt": "2026-03-25T02:14:00Z",
+    "useCount": 44,
+    "chainId": "chain-006",
+    "relevance": 0.95
+  },
+  {
+    "id": "mem-014",
+    "title": "Database Migration Safety Protocol",
+    "content": "## Protocol\n1. **Write migration**: Use reversible migrations only\n2. **Test locally**: Run against a copy of production data\n3. **Shadow deploy**: Apply migration to shadow database first\n4. **Monitor**: Watch query performance for 24h\n5. **Rollback plan**: Always have a tested rollback script ready\n\n```sql\n-- Migration: add_user_preferences\nALTER TABLE users ADD COLUMN preferences JSONB DEFAULT '{}';\nCREATE INDEX idx_users_preferences ON users USING gin(preferences);\n\n-- Rollback\nDROP INDEX IF EXISTS idx_users_preferences;\nALTER TABLE users DROP COLUMN IF EXISTS preferences;\n```\n\n## Lesson\nThe shadow deploy step caught a missing index that would have caused 10x query slowdown in production.",
+    "category": "workflow",
+    "source": "shared",
+    "contributor": {
+      "id": "user-emma",
+      "name": "Emma Liu",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=emma"
+    },
+    "project": {
+      "name": "Mobile App",
+      "path": "/projects/mobile-app"
+    },
+    "sessionId": "sess-5315",
+    "tags": [
+      "database",
+      "migration",
+      "safety",
+      "postgresql"
+    ],
+    "createdAt": "2026-02-16T14:33:00Z",
+    "updatedAt": "2026-03-23T10:00:00Z",
+    "useCount": 33,
+    "chainId": "chain-005",
+    "relevance": 0.9
+  },
+  {
+    "id": "mem-015",
+    "title": "Electron DevTools Remote Debugging Setup",
+    "content": "## Setup\nEnable remote debugging for Electron main process:\n```typescript\n// main/index.ts\napp.commandLine.appendSwitch('inspect', '5858');\n\n// Or for break-on-start\napp.commandLine.appendSwitch('inspect-brk', '5858');\n```\n\nConnect from Chrome:\n1. Open `chrome://inspect`\n2. Click \"Configure\" \u2192 Add `localhost:5858`\n3. Click \"inspect\" on the target\n\n## Tips\n- Use `--inspect` for main process, DevTools for renderer\n- Set conditional breakpoints in IPC handlers for targeted debugging\n- Use `console.time/timeEnd` for quick performance profiling",
+    "category": "debugging",
+    "source": "local",
+    "contributor": {
+      "id": "user-alex",
+      "name": "Alex Chen",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=alex"
+    },
+    "project": {
+      "name": "ML Pipeline",
+      "path": "/projects/ml-pipeline"
+    },
+    "sessionId": "sess-3646",
+    "tags": [
+      "electron",
+      "devtools",
+      "debugging",
+      "chrome"
+    ],
+    "createdAt": "2025-11-07T04:48:00Z",
+    "updatedAt": "2026-03-23T12:12:00Z",
+    "useCount": 35,
+    "chainId": "chain-002",
+    "relevance": 0.98
+  },
+  {
+    "id": "mem-016",
+    "title": "React Component Re-render Profiling",
+    "content": "## Technique\nUse React DevTools Profiler with \"Why did this render?\" enabled:\n\n1. Open React DevTools \u2192 Profiler tab\n2. Click gear \u2192 Enable \"Record why each component rendered\"\n3. Start profiling \u2192 Interact with the app \u2192 Stop\n4. Examine flame chart for unnecessary renders\n\n## Common Causes\n```typescript\n// Bad: New object reference every render\n<Child style={{ color: 'red' }} />\n\n// Good: Memoize or extract\nconst style = useMemo(() => ({ color: 'red' }), []);\n<Child style={style} />\n\n// Bad: Inline callback\n<Button onClick={() => handleClick(id)} />\n\n// Good: useCallback\nconst handleClickMemo = useCallback(() => handleClick(id), [id]);\n```\n\n## Impact\nProfiling revealed that the Dashboard page was re-rendering 47 times on initial load. After fixes, reduced to 3.",
+    "category": "debugging",
+    "source": "shared",
+    "contributor": {
+      "id": "user-yang",
+      "name": "Yang (yangsmac)",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=yang"
+    },
+    "project": {
+      "name": "Real-time Chat",
+      "path": "/projects/realtime-chat"
+    },
+    "sessionId": "sess-6038",
+    "tags": [
+      "react",
+      "profiling",
+      "performance",
+      "devtools"
+    ],
+    "createdAt": "2025-12-24T08:59:00Z",
+    "updatedAt": "2026-03-24T12:04:00Z",
+    "useCount": 16,
+    "chainId": "chain-001",
+    "relevance": 0.62
+  },
+  {
+    "id": "mem-017",
+    "title": "Network Request Debugging with mitmproxy",
+    "content": "## Setup\n```bash\npip install mitmproxy\nmitmproxy --mode regular --listen-port 8080\n\n# Configure app to use proxy\nexport HTTP_PROXY=http://localhost:8080\nexport HTTPS_PROXY=http://localhost:8080\n```\n\n## Use Cases\n1. Inspect API request/response bodies\n2. Modify responses on-the-fly for testing edge cases\n3. Simulate slow networks with `--set stream_large_bodies=1`\n4. Record and replay sessions for regression testing\n\n## Key Insight\nUsing mitmproxy to replay recorded API sessions made it possible to write deterministic integration tests for the marketplace service.",
+    "category": "debugging",
+    "source": "community",
+    "contributor": {
+      "id": "user-alex",
+      "name": "Alex Chen",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=alex"
+    },
+    "project": {
+      "name": "API Gateway",
+      "path": "/projects/api-gateway"
+    },
+    "sessionId": "sess-8787",
+    "tags": [
+      "networking",
+      "proxy",
+      "debugging",
+      "api"
+    ],
+    "createdAt": "2025-11-12T21:12:00Z",
+    "updatedAt": "2026-03-17T19:52:00Z",
+    "useCount": 36,
+    "chainId": null,
+    "relevance": 0.67
+  },
+  {
+    "id": "mem-018",
     "title": "Prisma N+1 Query Prevention",
-    "summary": "Always use include/select in Prisma queries to prevent N+1 problems. Use DataLoader pattern for GraphQL resolvers.",
+    "content": "## Problem\nPrisma's lazy loading causes N+1 queries when accessing relations in loops.\n\n## Solution\nAlways use `include` or `select` to eagerly load relations:\n```typescript\n// Bad: N+1\nconst users = await prisma.user.findMany();\nfor (const user of users) {\n  const posts = await prisma.post.findMany({ where: { authorId: user.id } });\n}\n\n// Good: Single query with join\nconst users = await prisma.user.findMany({\n  include: { posts: { select: { id: true, title: true } } }\n});\n```\n\n## Detection\nEnable Prisma query logging:\n```typescript\nconst prisma = new PrismaClient({ log: ['query'] });\n```\nLook for repeated similar queries in the log output.",
     "category": "performance",
+    "source": "shared",
+    "contributor": {
+      "id": "user-lisa",
+      "name": "Lisa Wang",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=lisa"
+    },
+    "project": {
+      "name": "E-Commerce Platform",
+      "path": "/projects/ecommerce"
+    },
+    "sessionId": "sess-7537",
     "tags": [
       "prisma",
       "database",
       "n+1",
       "optimization"
     ],
-    "sourceType": "cross-user",
-    "sourceUser": "alex_dev",
-    "sourceProject": "api-gateway",
-    "sourceSessionId": "sess-api-0003",
-    "relatedSessions": [
-      "sess-api-0001",
-      "sess-data-0002"
-    ],
-    "content": "## Problem\nGraphQL resolvers with Prisma cause N+1 queries when resolving relations.\n\n## Solution\nUse DataLoader to batch database queries:\n```typescript\nconst userLoader = new DataLoader(async (ids) => {\n  const users = await prisma.user.findMany({ where: { id: { in: ids } } });\n  return ids.map(id => users.find(u => u.id === id));\n});\n```\n\n## Impact\nReduced API response time from 2.3s to 180ms on the users endpoint.",
-    "confidence": 0.92,
-    "usageCount": 8,
-    "createdAt": "2026-02-01T09:00:00Z",
-    "updatedAt": "2026-03-15T11:00:00Z"
+    "createdAt": "2025-10-29T00:16:00Z",
+    "updatedAt": "2026-03-22T01:41:00Z",
+    "useCount": 43,
+    "chainId": "chain-005",
+    "relevance": 0.86
   },
   {
-    "id": "mem-003",
-    "title": "Electron IPC Error Handling Pattern",
-    "summary": "Wrap all IPC handlers in try-catch and return structured error objects. Never throw unhandled errors in main process.",
-    "category": "architecture",
+    "id": "mem-019",
+    "title": "Vite Build Optimization for Electron",
+    "content": "## Optimizations Applied\n1. **Code splitting**: Separate vendor chunks for React, UI libraries\n2. **Tree shaking**: Ensure `sideEffects: false` in package.json\n3. **Asset inlining**: Small images (<4KB) inlined as base64\n4. **Dependency externalization**: Node.js built-ins excluded from bundle\n\n```typescript\n// electron.vite.config.ts\nexport default defineConfig({\n  main: {\n    plugins: [externalizeDepsPlugin()],\n    build: {\n      rollupOptions: {\n        output: { manualChunks: { vendor: ['electron-store'] } }\n      }\n    }\n  },\n  renderer: {\n    build: {\n      rollupOptions: {\n        output: { manualChunks: { react: ['react', 'react-dom'], ui: ['lucide-react'] } }\n      }\n    }\n  }\n});\n```\n\n## Impact\nBundle size reduced from 12MB to 4.3MB. Cold start time improved by 1.8s.",
+    "category": "performance",
+    "source": "local",
+    "contributor": {
+      "id": "user-james",
+      "name": "James Miller",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=james"
+    },
+    "project": {
+      "name": "Auth Service",
+      "path": "/projects/auth-service"
+    },
+    "sessionId": "sess-1344",
     "tags": [
+      "vite",
       "electron",
-      "ipc",
-      "error-handling",
-      "desktop"
+      "bundling",
+      "optimization"
     ],
-    "sourceType": "cross-session",
-    "sourceUser": "yangsmac",
-    "sourceProject": "ClaudeDeck",
-    "sourceSessionId": "sess-clau-0001",
-    "relatedSessions": [
-      "sess-clau-0003",
-      "sess-hima-0004"
-    ],
-    "content": "## Problem\nUnhandled errors in Electron IPC handlers crash the main process silently.\n\n## Solution\nCreate a wrapper function for all IPC handlers:\n```typescript\nfunction safeHandle(channel: string, handler: Function) {\n  ipcMain.handle(channel, async (...args) => {\n    try {\n      return { success: true, data: await handler(...args) };\n    } catch (error) {\n      console.error(`[IPC] ${channel} error:`, error);\n      return { success: false, error: error.message };\n    }\n  });\n}\n```\n\n## Key Insight\nThis pattern prevents app crashes and provides consistent error reporting to the renderer process.",
-    "confidence": 0.98,
-    "usageCount": 15,
-    "createdAt": "2025-12-20T16:00:00Z",
-    "updatedAt": "2026-03-22T09:30:00Z"
+    "createdAt": "2025-11-21T20:45:00Z",
+    "updatedAt": "2026-03-22T21:39:00Z",
+    "useCount": 38,
+    "chainId": null,
+    "relevance": 0.82
   },
   {
-    "id": "mem-004",
-    "title": "Git Rebase Strategy for Feature Branches",
-    "summary": "Use interactive rebase to clean up commits before merging. Squash WIP commits and write meaningful commit messages.",
-    "category": "workflow",
+    "id": "mem-020",
+    "title": "React Virtual List for Large Datasets",
+    "content": "## Problem\nRendering 1000+ items in a list causes significant jank and high memory usage.\n\n## Solution\nUse `@tanstack/react-virtual` for virtualized rendering:\n```typescript\nimport { useVirtualizer } from '@tanstack/react-virtual';\n\nfunction VirtualList({ items }) {\n  const parentRef = useRef(null);\n  const virtualizer = useVirtualizer({\n    count: items.length,\n    getScrollElement: () => parentRef.current,\n    estimateSize: () => 60,\n    overscan: 5,\n  });\n\n  return (\n    <div ref={parentRef} style={{ height: '400px', overflow: 'auto' }}>\n      <div style={{ height: virtualizer.getTotalSize() }}>\n        {virtualizer.getVirtualItems().map((vi) => (\n          <div key={vi.key} style={{ transform: `translateY(${vi.start}px)` }}>\n            {items[vi.index].name}\n          </div>\n        ))}\n      </div>\n    </div>\n  );\n}\n```\n\n## Impact\nSession list rendering went from 2.3s to 16ms for 5000 items.",
+    "category": "performance",
+    "source": "community",
+    "contributor": {
+      "id": "user-mike",
+      "name": "Mike Johnson",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=mike"
+    },
+    "project": {
+      "name": "HIMA-AIP",
+      "path": "/projects/hima-aip"
+    },
+    "sessionId": "sess-1514",
     "tags": [
-      "git",
-      "rebase",
-      "workflow",
-      "collaboration"
+      "react",
+      "virtualization",
+      "large-list",
+      "tanstack"
     ],
-    "sourceType": "cross-user",
-    "sourceUser": "sarah_eng",
-    "sourceProject": "design-system",
-    "sourceSessionId": "sess-desi-0002",
-    "relatedSessions": [
-      "sess-desi-0001",
-      "sess-mobi-0003"
-    ],
-    "content": "## Workflow\n1. Create feature branch from main\n2. Make commits freely during development\n3. Before PR: `git rebase -i main`\n4. Squash WIP commits, keep meaningful ones\n5. Write conventional commit messages\n\n## Rules\n- Never rebase shared branches\n- Always force-push with lease: `git push --force-with-lease`\n- Keep PR commits atomic and reviewable\n\n## Benefit\nClean git history makes debugging with `git bisect` much more effective.",
-    "confidence": 0.88,
-    "usageCount": 20,
-    "createdAt": "2026-01-05T11:00:00Z",
-    "updatedAt": "2026-03-18T15:00:00Z"
+    "createdAt": "2026-02-26T01:20:00Z",
+    "updatedAt": "2026-03-25T16:56:00Z",
+    "useCount": 22,
+    "chainId": "chain-002",
+    "relevance": 0.63
   },
   {
-    "id": "mem-005",
-    "title": "TypeScript Strict Mode Migration Strategy",
-    "summary": "Migrate to strict TypeScript incrementally: start with strictNullChecks, then noImplicitAny, finally full strict mode.",
-    "category": "best-practice",
+    "id": "mem-021",
+    "title": "SQLite WAL Mode for Concurrent Reads",
+    "content": "## Problem\nDefault SQLite journal mode blocks reads during writes, causing UI freezes in Electron apps.\n\n## Solution\n```sql\nPRAGMA journal_mode = WAL;\nPRAGMA busy_timeout = 5000;\nPRAGMA synchronous = NORMAL;\n```\n\n## Benefits\n- Concurrent reads during writes\n- Better crash recovery\n- Reduced lock contention\n\n## Benchmark\n| Mode | Read during write | Write throughput |\n|------|-------------------|------------------|\n| DELETE | Blocked | 100 ops/s |\n| WAL | Non-blocking | 450 ops/s |",
+    "category": "performance",
+    "source": "shared",
+    "contributor": {
+      "id": "user-mike",
+      "name": "Mike Johnson",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=mike"
+    },
+    "project": {
+      "name": "ML Pipeline",
+      "path": "/projects/ml-pipeline"
+    },
+    "sessionId": "sess-8744",
     "tags": [
-      "typescript",
-      "migration",
-      "strict-mode",
-      "type-safety"
+      "sqlite",
+      "wal",
+      "concurrency",
+      "electron"
     ],
-    "sourceType": "cross-user",
-    "sourceUser": "mike_ts",
-    "sourceProject": "TermHub",
-    "sourceSessionId": "sess-term-0003",
-    "relatedSessions": [
-      "sess-term-0001",
-      "sess-hima-0002"
-    ],
-    "content": "## Strategy\n1. Enable `strictNullChecks` first (catches most bugs)\n2. Fix all null/undefined errors\n3. Enable `noImplicitAny`\n4. Add explicit types to all function parameters\n5. Enable full `strict` mode\n\n## Tips\n- Use `// @ts-expect-error` temporarily for complex cases\n- Create a `strict-migration.md` to track progress\n- Fix one module at a time\n\n## Result\nReduced runtime errors by 60% after full strict mode migration.",
-    "confidence": 0.91,
-    "usageCount": 6,
-    "createdAt": "2026-02-10T14:00:00Z",
-    "updatedAt": "2026-03-12T10:00:00Z"
+    "createdAt": "2025-11-12T17:26:00Z",
+    "updatedAt": "2026-03-23T00:01:00Z",
+    "useCount": 16,
+    "chainId": "chain-001",
+    "relevance": 0.91
   },
   {
-    "id": "mem-006",
-    "title": "Docker Multi-Stage Build Optimization",
-    "summary": "Use multi-stage Docker builds to reduce image size. Separate build dependencies from runtime dependencies.",
-    "category": "devops",
-    "tags": [
-      "docker",
-      "optimization",
-      "ci-cd",
-      "deployment"
-    ],
-    "sourceType": "cross-user",
-    "sourceUser": "ops_jenny",
-    "sourceProject": "api-gateway",
-    "sourceSessionId": "sess-api-0005",
-    "relatedSessions": [
-      "sess-mobi-0001"
-    ],
-    "content": "## Before\nSingle-stage Dockerfile: 1.2GB image\n\n## After\nMulti-stage build: 180MB image\n\n```dockerfile\n# Build stage\nFROM node:20-alpine AS builder\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci\nCOPY . .\nRUN npm run build\n\n# Production stage\nFROM node:20-alpine\nWORKDIR /app\nCOPY --from=builder /app/dist ./dist\nCOPY --from=builder /app/node_modules ./node_modules\nCMD [\"node\", \"dist/index.js\"]\n```\n\n## Impact\n- 85% reduction in image size\n- 3x faster deployment\n- Reduced attack surface",
-    "confidence": 0.94,
-    "usageCount": 9,
-    "createdAt": "2026-01-20T08:00:00Z",
-    "updatedAt": "2026-03-10T16:00:00Z"
-  },
-  {
-    "id": "mem-007",
-    "title": "Zustand Store Pattern for Electron Apps",
-    "summary": "Use Zustand with async IPC calls pattern: fetch \u2192 set loading \u2192 invoke IPC \u2192 set data \u2192 handle errors consistently.",
-    "category": "architecture",
-    "tags": [
-      "zustand",
-      "electron",
-      "state-management",
-      "react"
-    ],
-    "sourceType": "cross-session",
-    "sourceUser": "yangsmac",
-    "sourceProject": "ClaudeDeck",
-    "sourceSessionId": "sess-clau-0002",
-    "relatedSessions": [
-      "sess-clau-0001",
-      "sess-clau-0004",
-      "sess-hima-0003"
-    ],
-    "content": "## Pattern\n```typescript\nexport const useStore = create<StoreType>((set, get) => ({\n  items: [],\n  loading: false,\n  error: null,\n  fetch: async () => {\n    if (!window.electronAPI) return;\n    set({ loading: true, error: null });\n    try {\n      const items = await window.electronAPI.service.list();\n      set({ items, loading: false });\n    } catch (err) {\n      set({ error: err.message, loading: false });\n    }\n  },\n}));\n```\n\n## Key Points\n- Always check `window.electronAPI` exists\n- Set loading state before async call\n- Clear error state on new fetch\n- Handle errors gracefully\n\n## Applied In\nUsed consistently across 8 stores in ClaudeDeck project.",
-    "confidence": 0.97,
-    "usageCount": 18,
-    "createdAt": "2025-11-30T13:00:00Z",
-    "updatedAt": "2026-03-25T11:00:00Z"
-  },
-  {
-    "id": "mem-008",
-    "title": "API Rate Limiting with Token Bucket Algorithm",
-    "summary": "Implement rate limiting using token bucket algorithm for smooth traffic shaping instead of fixed window counters.",
+    "id": "mem-022",
+    "title": "Electron Content Security Policy Setup",
+    "content": "## Problem\nDefault Electron apps have no CSP, exposing users to XSS attacks.\n\n## Solution\nSet CSP in the main process:\n```typescript\nsession.defaultSession.webRequest.onHeadersReceived((details, callback) => {\n  callback({\n    responseHeaders: {\n      ...details.responseHeaders,\n      'Content-Security-Policy': [\n        \"default-src 'self';\",\n        \"script-src 'self';\",\n        \"style-src 'self' 'unsafe-inline';\",\n        \"img-src 'self' data: https:;\",\n        \"connect-src 'self' https://api.example.com;\"\n      ].join(' ')\n    }\n  });\n});\n```\n\n## Key Insight\nAlways test CSP in development mode. Use `report-uri` directive to catch violations before they break features.",
     "category": "security",
+    "source": "local",
+    "contributor": {
+      "id": "user-lisa",
+      "name": "Lisa Wang",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=lisa"
+    },
+    "project": {
+      "name": "E-Commerce Platform",
+      "path": "/projects/ecommerce"
+    },
+    "sessionId": "sess-7735",
     "tags": [
-      "rate-limiting",
-      "api",
-      "security",
-      "token-bucket"
+      "electron",
+      "csp",
+      "xss",
+      "security-headers"
     ],
-    "sourceType": "cross-user",
-    "sourceUser": "alex_dev",
-    "sourceProject": "api-gateway",
-    "sourceSessionId": "sess-api-0002",
-    "relatedSessions": [
-      "sess-api-0004"
-    ],
-    "content": "## Why Token Bucket?\nFixed window counters allow burst traffic at window boundaries. Token bucket provides smooth rate limiting.\n\n## Implementation\n```typescript\nclass TokenBucket {\n  private tokens: number;\n  private lastRefill: number;\n  constructor(private capacity: number, private refillRate: number) {\n    this.tokens = capacity;\n    this.lastRefill = Date.now();\n  }\n  consume(): boolean {\n    this.refill();\n    if (this.tokens > 0) { this.tokens--; return true; }\n    return false;\n  }\n  private refill() {\n    const now = Date.now();\n    const elapsed = (now - this.lastRefill) / 1000;\n    this.tokens = Math.min(this.capacity, this.tokens + elapsed * this.refillRate);\n    this.lastRefill = now;\n  }\n}\n```",
-    "confidence": 0.9,
-    "usageCount": 5,
-    "createdAt": "2026-02-15T10:00:00Z",
-    "updatedAt": "2026-03-08T14:00:00Z"
+    "createdAt": "2026-02-20T20:18:00Z",
+    "updatedAt": "2026-03-19T12:33:00Z",
+    "useCount": 30,
+    "chainId": "chain-005",
+    "relevance": 0.95
   },
   {
-    "id": "mem-009",
-    "title": "Tailwind CSS Dark Mode Implementation",
-    "summary": "Use class-based dark mode with system preference detection. Store user preference in localStorage for persistence.",
-    "category": "frontend",
+    "id": "mem-023",
+    "title": "API Key Management in Electron Apps",
+    "content": "## Problem\nStoring API keys in renderer process code exposes them in DevTools and source maps.\n\n## Solution\n1. Store keys in main process only (never in renderer)\n2. Use `electron-store` with encryption:\n```typescript\nimport Store from 'electron-store';\nconst store = new Store({ encryptionKey: 'your-encryption-key' });\nstore.set('apiKey', key);\n```\n3. Proxy API calls through main process:\n```typescript\nipcMain.handle('api:call', async (_, endpoint, params) => {\n  const key = store.get('apiKey');\n  return fetch(endpoint, { headers: { Authorization: `Bearer ${key}` }, ...params });\n});\n```\n\n## Never Do\n- Hardcode keys in source code\n- Pass keys to renderer via preload\n- Store keys in localStorage or sessionStorage",
+    "category": "security",
+    "source": "shared",
+    "contributor": {
+      "id": "user-yang",
+      "name": "Yang (yangsmac)",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=yang"
+    },
+    "project": {
+      "name": "API Gateway",
+      "path": "/projects/api-gateway"
+    },
+    "sessionId": "sess-4139",
     "tags": [
-      "tailwind",
-      "dark-mode",
-      "css",
-      "theming"
+      "api-keys",
+      "electron",
+      "encryption",
+      "secrets"
     ],
-    "sourceType": "cross-session",
-    "sourceUser": "yangsmac",
-    "sourceProject": "HIMA-AIP",
-    "sourceSessionId": "sess-hima-0003",
-    "relatedSessions": [
-      "sess-desi-0001",
-      "sess-clau-0002"
-    ],
-    "content": "## Setup\n1. Configure Tailwind: `darkMode: 'class'`\n2. Add theme toggle component\n3. Detect system preference on load\n4. Persist user choice in localStorage\n\n## Pattern\n```typescript\nfunction useTheme() {\n  const [theme, setTheme] = useState(() => {\n    const saved = localStorage.getItem('theme');\n    if (saved) return saved;\n    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';\n  });\n  useEffect(() => {\n    document.documentElement.classList.toggle('dark', theme === 'dark');\n    localStorage.setItem('theme', theme);\n  }, [theme]);\n  return { theme, setTheme };\n}\n```\n\n## Gotcha\nAlways use `dark:` prefix consistently. Missing dark variants cause jarring visual switches.",
-    "confidence": 0.93,
-    "usageCount": 11,
-    "createdAt": "2026-01-08T15:00:00Z",
-    "updatedAt": "2026-03-19T09:00:00Z"
+    "createdAt": "2026-03-01T11:14:00Z",
+    "updatedAt": "2026-03-20T20:45:00Z",
+    "useCount": 13,
+    "chainId": "chain-003",
+    "relevance": 0.81
   },
   {
-    "id": "mem-010",
-    "title": "Monorepo Dependency Management with pnpm",
-    "summary": "Use pnpm workspaces for monorepo management. Configure shared dependencies at root and package-specific ones locally.",
+    "id": "mem-024",
+    "title": "Input Sanitization for Plugin System",
+    "content": "## Problem\nPlugins can inject malicious content through agent descriptions, skill bodies, or command outputs.\n\n## Solution\nSanitize all plugin-provided content before rendering:\n```typescript\nimport DOMPurify from 'dompurify';\n\nfunction renderPluginContent(html: string): string {\n  return DOMPurify.sanitize(html, {\n    ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'code', 'pre', 'ul', 'ol', 'li', 'a', 'h1', 'h2', 'h3'],\n    ALLOWED_ATTR: ['href', 'class'],\n    ALLOW_DATA_ATTR: false,\n  });\n}\n```\n\n## Key Insight\nAlways sanitize on the rendering side, not the storage side. This preserves the original content for legitimate use cases while preventing XSS.",
+    "category": "security",
+    "source": "community",
+    "contributor": {
+      "id": "user-sarah",
+      "name": "Sarah Kim",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=sarah"
+    },
+    "project": {
+      "name": "DevOps Toolkit",
+      "path": "/projects/devops-toolkit"
+    },
+    "sessionId": "sess-2604",
+    "tags": [
+      "xss",
+      "sanitization",
+      "plugins",
+      "dompurify"
+    ],
+    "createdAt": "2026-01-29T15:31:00Z",
+    "updatedAt": "2026-03-22T21:32:00Z",
+    "useCount": 4,
+    "chainId": "chain-003",
+    "relevance": 0.86
+  },
+  {
+    "id": "mem-025",
+    "title": "Vitest Snapshot Testing for IPC Handlers",
+    "content": "## Approach\nUse snapshot tests to catch unintended changes in IPC response shapes:\n```typescript\nimport { describe, it, expect } from 'vitest';\nimport { registerHandlers } from '../ipc/registerHandlers';\n\ndescribe('IPC Handlers', () => {\n  it('AGENTS_LIST returns correct shape', async () => {\n    const result = await simulateIPC('agents:list');\n    expect(result).toMatchSnapshot();\n  });\n\n  it('SKILLS_LIST returns personal and plugin arrays', async () => {\n    const result = await simulateIPC('skills:list');\n    expect(result).toHaveProperty('personal');\n    expect(result).toHaveProperty('plugin');\n    expect(Array.isArray(result.personal)).toBe(true);\n  });\n});\n```\n\n## Key Insight\nSnapshot tests caught 5 breaking changes in IPC contracts during the mock migration.",
+    "category": "testing",
+    "source": "local",
+    "contributor": {
+      "id": "user-yang",
+      "name": "Yang (yangsmac)",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=yang"
+    },
+    "project": {
+      "name": "API Gateway",
+      "path": "/projects/api-gateway"
+    },
+    "sessionId": "sess-7570",
+    "tags": [
+      "vitest",
+      "snapshot",
+      "ipc",
+      "testing"
+    ],
+    "createdAt": "2026-01-15T18:34:00Z",
+    "updatedAt": "2026-03-18T08:47:00Z",
+    "useCount": 4,
+    "chainId": null,
+    "relevance": 0.67
+  },
+  {
+    "id": "mem-026",
+    "title": "E2E Testing Electron Apps with Playwright",
+    "content": "## Setup\n```typescript\nimport { _electron as electron } from 'playwright';\n\nconst app = await electron.launch({ args: ['./out/main/index.js'] });\nconst window = await app.firstWindow();\n\n// Test navigation\nawait window.click('[data-testid=\"nav-agents\"]');\nawait expect(window.locator('h1')).toHaveText('Agents');\n\n// Test agent creation\nawait window.click('[data-testid=\"create-agent\"]');\nawait window.fill('[data-testid=\"agent-name\"]', 'test-agent');\nawait window.click('[data-testid=\"save-agent\"]');\nawait expect(window.locator('[data-testid=\"agent-list\"]')).toContainText('test-agent');\n\nawait app.close();\n```\n\n## Tips\n- Use `data-testid` attributes for stable selectors\n- Run tests in CI with `xvfb-run` on Linux\n- Take screenshots on failure for debugging",
+    "category": "testing",
+    "source": "shared",
+    "contributor": {
+      "id": "user-yang",
+      "name": "Yang (yangsmac)",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=yang"
+    },
+    "project": {
+      "name": "DevOps Toolkit",
+      "path": "/projects/devops-toolkit"
+    },
+    "sessionId": "sess-8973",
+    "tags": [
+      "playwright",
+      "e2e",
+      "electron",
+      "testing"
+    ],
+    "createdAt": "2026-01-08T09:42:00Z",
+    "updatedAt": "2026-03-19T01:14:00Z",
+    "useCount": 10,
+    "chainId": "chain-004",
+    "relevance": 0.68
+  },
+  {
+    "id": "mem-027",
+    "title": "Mock Service Worker for API Testing",
+    "content": "## Pattern\nUse MSW to intercept network requests in tests:\n```typescript\nimport { setupServer } from 'msw/node';\nimport { http, HttpResponse } from 'msw';\n\nconst server = setupServer(\n  http.get('/api/agents', () => {\n    return HttpResponse.json([\n      { name: 'test-agent', description: 'A test agent' }\n    ]);\n  }),\n  http.post('/api/agents', async ({ request }) => {\n    const body = await request.json();\n    return HttpResponse.json({ ...body, id: 'new-id' }, { status: 201 });\n  })\n);\n\nbeforeAll(() => server.listen());\nafterEach(() => server.resetHandlers());\nafterAll(() => server.close());\n```\n\n## Advantage\nMSW works at the network level, so it tests the full request/response cycle including serialization.",
+    "category": "testing",
+    "source": "community",
+    "contributor": {
+      "id": "user-mike",
+      "name": "Mike Johnson",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=mike"
+    },
+    "project": {
+      "name": "HIMA-AIP",
+      "path": "/projects/hima-aip"
+    },
+    "sessionId": "sess-8811",
+    "tags": [
+      "msw",
+      "mocking",
+      "api-testing",
+      "vitest"
+    ],
+    "createdAt": "2025-10-29T22:13:00Z",
+    "updatedAt": "2026-03-20T22:57:00Z",
+    "useCount": 33,
+    "chainId": "chain-004",
+    "relevance": 0.97
+  },
+  {
+    "id": "mem-028",
+    "title": "Claude Code MCP Server Configuration",
+    "content": "## Setup\nConfigure MCP servers in Claude Code settings:\n```json\n{\n  \"mcpServers\": {\n    \"filesystem\": {\n      \"command\": \"npx\",\n      \"args\": [\"-y\", \"@anthropic/mcp-filesystem\", \"/home/user/projects\"],\n      \"env\": {}\n    },\n    \"github\": {\n      \"command\": \"npx\",\n      \"args\": [\"-y\", \"@anthropic/mcp-github\"],\n      \"env\": { \"GITHUB_TOKEN\": \"ghp_xxx\" }\n    }\n  }\n}\n```\n\n## Best Practices\n- Limit filesystem access to project directories only\n- Use environment variables for secrets, never hardcode\n- Test each MCP server independently before combining\n- Monitor MCP server logs for unexpected errors",
     "category": "tooling",
+    "source": "local",
+    "contributor": {
+      "id": "user-sarah",
+      "name": "Sarah Kim",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=sarah"
+    },
+    "project": {
+      "name": "HIMA-AIP",
+      "path": "/projects/hima-aip"
+    },
+    "sessionId": "sess-2113",
+    "tags": [
+      "mcp",
+      "claude-code",
+      "configuration",
+      "servers"
+    ],
+    "createdAt": "2025-11-06T21:06:00Z",
+    "updatedAt": "2026-03-23T21:22:00Z",
+    "useCount": 44,
+    "chainId": "chain-004",
+    "relevance": 0.94
+  },
+  {
+    "id": "mem-029",
+    "title": "pnpm Workspace Monorepo Setup",
+    "content": "## Structure\n```yaml\n# pnpm-workspace.yaml\npackages:\n  - 'packages/*'\n  - 'apps/*'\n```\n\n## Key Commands\n```bash\n# Install all dependencies\npnpm install\n\n# Run command in specific package\npnpm --filter @myorg/api dev\n\n# Run command in all packages\npnpm -r build\n\n# Add dependency to specific package\npnpm --filter @myorg/web add react\n```\n\n## Benefits\n- Shared dependencies deduplicated\n- Consistent versions across packages\n- Fast installs with content-addressable storage\n\n## Lesson\nMigrating from npm workspaces to pnpm reduced `node_modules` size by 40% and install time by 60%.",
+    "category": "tooling",
+    "source": "shared",
+    "contributor": {
+      "id": "user-lisa",
+      "name": "Lisa Wang",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=lisa"
+    },
+    "project": {
+      "name": "API Gateway",
+      "path": "/projects/api-gateway"
+    },
+    "sessionId": "sess-7868",
     "tags": [
       "pnpm",
       "monorepo",
-      "dependencies",
-      "workspace"
+      "workspace",
+      "package-manager"
     ],
-    "sourceType": "cross-user",
-    "sourceUser": "sarah_eng",
-    "sourceProject": "design-system",
-    "sourceSessionId": "sess-desi-0003",
-    "relatedSessions": [
-      "sess-term-0002"
-    ],
-    "content": "## Structure\n```\nroot/\n  pnpm-workspace.yaml\n  packages/\n    shared/     # Shared utilities\n    ui/         # Component library\n    app/        # Main application\n```\n\n## Key Config\n```yaml\n# pnpm-workspace.yaml\npackages:\n  - 'packages/*'\n```\n\n## Best Practices\n- Pin shared dependency versions at root\n- Use `workspace:*` protocol for internal packages\n- Configure `.npmrc` with `shamefully-hoist=true` for compatibility\n- Run scripts with `pnpm -r run build` for all packages\n\n## Benefit\nReduced `node_modules` size by 45% compared to npm workspaces.",
-    "confidence": 0.89,
-    "usageCount": 7,
-    "createdAt": "2026-02-20T11:00:00Z",
-    "updatedAt": "2026-03-14T13:00:00Z"
+    "createdAt": "2026-01-12T05:22:00Z",
+    "updatedAt": "2026-03-25T04:55:00Z",
+    "useCount": 43,
+    "chainId": "chain-007",
+    "relevance": 0.83
   },
   {
-    "id": "mem-011",
-    "title": "WebSocket Reconnection with Exponential Backoff",
-    "summary": "Implement automatic WebSocket reconnection using exponential backoff with jitter to prevent thundering herd.",
-    "category": "networking",
+    "id": "mem-030",
+    "title": "VS Code Extension Recommendations for Team",
+    "content": "## .vscode/extensions.json\n```json\n{\n  \"recommendations\": [\n    \"dbaeumer.vscode-eslint\",\n    \"esbenp.prettier-vscode\",\n    \"bradlc.vscode-tailwindcss\",\n    \"ms-vscode.vscode-typescript-next\",\n    \"vitest.explorer\",\n    \"eamodio.gitlens\",\n    \"usernamehw.errorlens\",\n    \"christian-kohler.path-intellisense\"\n  ]\n}\n```\n\n## Settings Sync\nAlso include `.vscode/settings.json` for consistent formatting:\n```json\n{\n  \"editor.formatOnSave\": true,\n  \"editor.defaultFormatter\": \"esbenp.prettier-vscode\",\n  \"typescript.preferences.importModuleSpecifier\": \"relative\"\n}\n```\n\n## Impact\nNew team members can set up their environment in under 5 minutes with these recommendations.",
+    "category": "tooling",
+    "source": "community",
+    "contributor": {
+      "id": "user-david",
+      "name": "David Park",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=david"
+    },
+    "project": {
+      "name": "ML Pipeline",
+      "path": "/projects/ml-pipeline"
+    },
+    "sessionId": "sess-7484",
+    "tags": [
+      "vscode",
+      "extensions",
+      "team",
+      "dx"
+    ],
+    "createdAt": "2026-01-23T02:15:00Z",
+    "updatedAt": "2026-03-20T16:44:00Z",
+    "useCount": 9,
+    "chainId": "chain-011",
+    "relevance": 0.87
+  },
+  {
+    "id": "mem-031",
+    "title": "Docker Multi-stage Build for Node.js",
+    "content": "## Dockerfile\n```dockerfile\n# Build stage\nFROM node:20-alpine AS builder\nWORKDIR /app\nCOPY package.json pnpm-lock.yaml ./\nRUN corepack enable && pnpm install --frozen-lockfile\nCOPY . .\nRUN pnpm build\n\n# Production stage\nFROM node:20-alpine AS runner\nWORKDIR /app\nCOPY --from=builder /app/dist ./dist\nCOPY --from=builder /app/node_modules ./node_modules\nCOPY --from=builder /app/package.json ./\n\nEXPOSE 3000\nCMD [\"node\", \"dist/index.js\"]\n```\n\n## Optimization\n- Use `.dockerignore` to exclude `node_modules`, `.git`, `out/`\n- Pin exact Node.js version for reproducibility\n- Use `--frozen-lockfile` to prevent unexpected updates\n\n## Result\nImage size reduced from 1.2GB to 180MB with multi-stage builds.",
+    "category": "tooling",
+    "source": "shared",
+    "contributor": {
+      "id": "user-emma",
+      "name": "Emma Liu",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=emma"
+    },
+    "project": {
+      "name": "Data Dashboard",
+      "path": "/projects/data-dashboard"
+    },
+    "sessionId": "sess-2638",
+    "tags": [
+      "docker",
+      "multi-stage",
+      "nodejs",
+      "optimization"
+    ],
+    "createdAt": "2025-12-26T22:00:00Z",
+    "updatedAt": "2026-03-18T04:24:00Z",
+    "useCount": 5,
+    "chainId": "chain-011",
+    "relevance": 0.82
+  },
+  {
+    "id": "mem-032",
+    "title": "Cross-User Knowledge Sharing Protocol",
+    "content": "## Protocol\nWhen sharing knowledge across Claude Code users:\n\n1. **Extract**: Identify reusable insights from session history\n2. **Generalize**: Remove project-specific details, keep universal patterns\n3. **Validate**: Test the pattern in at least 2 different contexts\n4. **Document**: Write clear title, problem, solution, and impact\n5. **Share**: Publish to community memory hub with appropriate tags\n\n## Quality Criteria\n- Is the insight actionable? (Not just \"be careful with X\")\n- Is it generalizable? (Works beyond the original context)\n- Is it verified? (Tested in multiple scenarios)\n- Is it well-documented? (Others can apply it without context)\n\n## Impact\nTeams that actively share memories report 25% faster onboarding for new members.",
+    "category": "general",
+    "source": "community",
+    "contributor": {
+      "id": "user-emma",
+      "name": "Emma Liu",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=emma"
+    },
+    "project": {
+      "name": "ClaudeDeck",
+      "path": "/projects/claudedeck"
+    },
+    "sessionId": "sess-3584",
+    "tags": [
+      "knowledge-sharing",
+      "community",
+      "documentation",
+      "onboarding"
+    ],
+    "createdAt": "2025-12-17T21:04:00Z",
+    "updatedAt": "2026-03-22T12:42:00Z",
+    "useCount": 29,
+    "chainId": "chain-011",
+    "relevance": 0.93
+  },
+  {
+    "id": "mem-033",
+    "title": "Effective Claude Code Session Management",
+    "content": "## Best Practices\n1. **One task per session**: Keep sessions focused on a single objective\n2. **Clear context**: Start each session with project context and goal\n3. **Checkpoint often**: Save progress at logical breakpoints\n4. **Review before commit**: Always review generated code before committing\n\n## Session Naming Convention\n```\n[date]-[project]-[task]\n2026-03-15-hima-aip-fix-ipc-handlers\n2026-03-16-api-gateway-add-rate-limiting\n```\n\n## Lesson\nWell-organized sessions are 3x more likely to produce reusable memories than chaotic ones.",
+    "category": "general",
+    "source": "local",
+    "contributor": {
+      "id": "user-emma",
+      "name": "Emma Liu",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=emma"
+    },
+    "project": {
+      "name": "Real-time Chat",
+      "path": "/projects/realtime-chat"
+    },
+    "sessionId": "sess-2697",
+    "tags": [
+      "claude-code",
+      "sessions",
+      "productivity",
+      "organization"
+    ],
+    "createdAt": "2025-11-01T23:18:00Z",
+    "updatedAt": "2026-03-17T14:01:00Z",
+    "useCount": 9,
+    "chainId": "chain-008",
+    "relevance": 0.71
+  },
+  {
+    "id": "mem-034",
+    "title": "Technical Debt Tracking System",
+    "content": "## System\nTrack technical debt with structured TODO comments:\n```typescript\n// DEBT: [HIGH] Replace manual JSON parsing with zod schema validation\n// Context: Current parsing silently drops unknown fields\n// Effort: 2 story points\n// Issue: #142\n\n// DEBT: [LOW] Migrate from moment.js to date-fns\n// Context: moment.js adds 70KB to bundle\n// Effort: 5 story points\n// Issue: #89\n```\n\n## Automation\nExtract debt items with a script:\n```bash\ngrep -rn 'DEBT:' src/ | sort | awk -F'DEBT:' '{print $2}'\n```\n\n## Key Insight\nMaking debt visible and prioritized prevents it from accumulating silently. Teams that track debt explicitly resolve 40% more of it per quarter.",
+    "category": "general",
+    "source": "shared",
+    "contributor": {
+      "id": "user-alex",
+      "name": "Alex Chen",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=alex"
+    },
+    "project": {
+      "name": "Auth Service",
+      "path": "/projects/auth-service"
+    },
+    "sessionId": "sess-4335",
+    "tags": [
+      "technical-debt",
+      "tracking",
+      "code-quality",
+      "maintenance"
+    ],
+    "createdAt": "2026-02-05T15:42:00Z",
+    "updatedAt": "2026-03-22T01:39:00Z",
+    "useCount": 44,
+    "chainId": "chain-007",
+    "relevance": 0.85
+  },
+  {
+    "id": "mem-035",
+    "title": "Onboarding Checklist for New Developers",
+    "content": "## Day 1\n- [ ] Clone all repositories\n- [ ] Install dependencies (`pnpm install`)\n- [ ] Set up environment variables (`.env.local`)\n- [ ] Run the app locally (`pnpm dev`)\n- [ ] Read architecture documentation\n\n## Week 1\n- [ ] Complete a \"good first issue\" task\n- [ ] Set up IDE with team extensions\n- [ ] Review 3 recent PRs to understand code style\n- [ ] Pair program with a senior developer\n- [ ] Read the Memory Hub for common patterns\n\n## Week 2\n- [ ] Own a small feature end-to-end\n- [ ] Write your first memory for the hub\n- [ ] Present a 5-minute knowledge share\n\n## Impact\nThis checklist reduced onboarding time from 2 weeks to 4 days.",
+    "category": "general",
+    "source": "community",
+    "contributor": {
+      "id": "user-emma",
+      "name": "Emma Liu",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=emma"
+    },
+    "project": {
+      "name": "Auth Service",
+      "path": "/projects/auth-service"
+    },
+    "sessionId": "sess-7939",
+    "tags": [
+      "onboarding",
+      "checklist",
+      "team",
+      "productivity"
+    ],
+    "createdAt": "2025-11-11T15:03:00Z",
+    "updatedAt": "2026-03-25T21:20:00Z",
+    "useCount": 18,
+    "chainId": "chain-008",
+    "relevance": 0.62
+  },
+  {
+    "id": "mem-036",
+    "title": "WebSocket Reconnection Strategy",
+    "content": "## Problem\nWebSocket connections drop silently, leaving the UI in a stale state.\n\n## Solution\nImplement exponential backoff reconnection:\n```typescript\nclass ReconnectingWebSocket {\n  private retries = 0;\n  private maxRetries = 10;\n  private baseDelay = 1000;\n\n  connect() {\n    this.ws = new WebSocket(this.url);\n    this.ws.onclose = () => {\n      if (this.retries < this.maxRetries) {\n        const delay = this.baseDelay * Math.pow(2, this.retries) + Math.random() * 1000;\n        setTimeout(() => this.connect(), delay);\n        this.retries++;\n      }\n    };\n    this.ws.onopen = () => { this.retries = 0; };\n  }\n}\n```\n\n## Key Insight\nAdding jitter (random delay) prevents thundering herd when the server restarts and all clients reconnect simultaneously.",
+    "category": "architecture",
+    "source": "shared",
+    "contributor": {
+      "id": "user-david",
+      "name": "David Park",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=david"
+    },
+    "project": {
+      "name": "ClaudeDeck",
+      "path": "/projects/claudedeck"
+    },
+    "sessionId": "sess-8007",
     "tags": [
       "websocket",
       "reconnection",
-      "backoff",
-      "resilience"
+      "resilience",
+      "real-time"
     ],
-    "sourceType": "cross-user",
-    "sourceUser": "mike_ts",
-    "sourceProject": "TermHub",
-    "sourceSessionId": "sess-term-0004",
-    "relatedSessions": [
-      "sess-api-0003"
-    ],
-    "content": "## Pattern\n```typescript\nclass ReconnectingWebSocket {\n  private retryCount = 0;\n  private maxRetries = 10;\n  private baseDelay = 1000;\n  \n  connect() {\n    this.ws = new WebSocket(this.url);\n    this.ws.onclose = () => this.scheduleReconnect();\n  }\n  \n  private scheduleReconnect() {\n    if (this.retryCount >= this.maxRetries) return;\n    const delay = Math.min(\n      this.baseDelay * Math.pow(2, this.retryCount) + Math.random() * 1000,\n      30000\n    );\n    setTimeout(() => { this.retryCount++; this.connect(); }, delay);\n  }\n}\n```\n\n## Why Jitter?\nWithout jitter, all disconnected clients reconnect simultaneously, overwhelming the server.",
-    "confidence": 0.91,
-    "usageCount": 4,
-    "createdAt": "2026-03-01T10:00:00Z",
-    "updatedAt": "2026-03-21T16:00:00Z"
+    "createdAt": "2026-01-08T18:13:00Z",
+    "updatedAt": "2026-03-18T06:15:00Z",
+    "useCount": 36,
+    "chainId": "chain-010",
+    "relevance": 0.6
   },
   {
-    "id": "mem-012",
-    "title": "Error Boundary Pattern for React Applications",
-    "summary": "Implement granular error boundaries to prevent full-page crashes. Use different boundaries for different UI sections.",
-    "category": "frontend",
+    "id": "mem-037",
+    "title": "Tailwind CSS Dark Mode Implementation",
+    "content": "## Approach\nUse class-based dark mode with system preference detection:\n```typescript\n// tailwind.config.js\nmodule.exports = { darkMode: 'class' };\n\n// ThemeProvider.tsx\nuseEffect(() => {\n  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');\n  const stored = localStorage.getItem('theme');\n  \n  if (stored === 'dark' || (!stored && prefersDark.matches)) {\n    document.documentElement.classList.add('dark');\n  }\n  \n  prefersDark.addEventListener('change', (e) => {\n    if (!localStorage.getItem('theme')) {\n      document.documentElement.classList.toggle('dark', e.matches);\n    }\n  });\n}, []);\n```\n\n## Tips\n- Use CSS variables for theme-specific colors\n- Test both modes in CI with visual regression tools\n- Provide a manual toggle that overrides system preference",
+    "category": "best-practice",
+    "source": "local",
+    "contributor": {
+      "id": "user-alex",
+      "name": "Alex Chen",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=alex"
+    },
+    "project": {
+      "name": "ClaudeDeck",
+      "path": "/projects/claudedeck"
+    },
+    "sessionId": "sess-3426",
+    "tags": [
+      "tailwindcss",
+      "dark-mode",
+      "theming",
+      "css"
+    ],
+    "createdAt": "2025-10-28T22:07:00Z",
+    "updatedAt": "2026-03-20T05:25:00Z",
+    "useCount": 28,
+    "chainId": "chain-009",
+    "relevance": 0.65
+  },
+  {
+    "id": "mem-038",
+    "title": "Error Boundary Pattern for React Pages",
+    "content": "## Implementation\n```typescript\nclass ErrorBoundary extends React.Component<\n  { fallback: React.ReactNode; children: React.ReactNode },\n  { hasError: boolean; error: Error | null }\n> {\n  state = { hasError: false, error: null };\n\n  static getDerivedStateFromError(error: Error) {\n    return { hasError: true, error };\n  }\n\n  componentDidCatch(error: Error, info: React.ErrorInfo) {\n    console.error('ErrorBoundary caught:', error, info);\n    // Send to error tracking service\n  }\n\n  render() {\n    if (this.state.hasError) return this.props.fallback;\n    return this.props.children;\n  }\n}\n```\n\n## Usage\nWrap each route/page in its own boundary:\n```tsx\n<ErrorBoundary fallback={<ErrorPage />}>\n  <DashboardPage />\n</ErrorBoundary>\n```\n\n## Key Insight\nPer-page error boundaries prevent a crash in one feature from taking down the entire app.",
+    "category": "best-practice",
+    "source": "community",
+    "contributor": {
+      "id": "user-emma",
+      "name": "Emma Liu",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=emma"
+    },
+    "project": {
+      "name": "Mobile App",
+      "path": "/projects/mobile-app"
+    },
+    "sessionId": "sess-6794",
     "tags": [
       "react",
       "error-boundary",
       "resilience",
       "ux"
     ],
-    "sourceType": "cross-session",
-    "sourceUser": "yangsmac",
-    "sourceProject": "HIMA-AIP",
-    "sourceSessionId": "sess-hima-0005",
-    "relatedSessions": [
-      "sess-clau-0003",
-      "sess-desi-0002"
+    "createdAt": "2026-03-06T12:47:00Z",
+    "updatedAt": "2026-03-22T02:54:00Z",
+    "useCount": 50,
+    "chainId": "chain-006",
+    "relevance": 0.82
+  },
+  {
+    "id": "mem-039",
+    "title": "Automated Dependency Update Workflow",
+    "content": "## Setup with Renovate\n```json\n// renovate.json\n{\n  \"extends\": [\"config:recommended\"],\n  \"schedule\": [\"every weekend\"],\n  \"automerge\": true,\n  \"automergeType\": \"pr\",\n  \"packageRules\": [\n    { \"matchUpdateTypes\": [\"patch\"], \"automerge\": true },\n    { \"matchUpdateTypes\": [\"minor\"], \"automerge\": true, \"requiredStatusChecks\": [\"ci\"] },\n    { \"matchUpdateTypes\": [\"major\"], \"automerge\": false }\n  ]\n}\n```\n\n## Key Insight\nAuto-merging patch and minor updates (with CI checks) keeps dependencies fresh without manual effort. Only major updates require human review.",
+    "category": "workflow",
+    "source": "shared",
+    "contributor": {
+      "id": "user-lisa",
+      "name": "Lisa Wang",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=lisa"
+    },
+    "project": {
+      "name": "Real-time Chat",
+      "path": "/projects/realtime-chat"
+    },
+    "sessionId": "sess-7755",
+    "tags": [
+      "renovate",
+      "dependencies",
+      "automation",
+      "ci-cd"
     ],
-    "content": "## Strategy\nDon't wrap the entire app in one error boundary. Use granular boundaries:\n\n```tsx\n<AppErrorBoundary>           {/* Catches catastrophic errors */}\n  <Layout>\n    <Sidebar />               {/* Own boundary */}\n    <SectionErrorBoundary>    {/* Catches page-level errors */}\n      <Outlet />\n    </SectionErrorBoundary>\n  </Layout>\n</AppErrorBoundary>\n```\n\n## Key Insight\nWhen a chart component crashes, only the chart section shows an error state. The rest of the app remains functional.\n\n## Recovery\nProvide a 'Retry' button in error fallback UI that resets the error boundary state.",
-    "confidence": 0.96,
-    "usageCount": 14,
-    "createdAt": "2026-01-25T09:00:00Z",
-    "updatedAt": "2026-03-23T10:00:00Z"
+    "createdAt": "2026-02-05T16:05:00Z",
+    "updatedAt": "2026-03-23T18:04:00Z",
+    "useCount": 2,
+    "chainId": null,
+    "relevance": 0.67
+  },
+  {
+    "id": "mem-040",
+    "title": "Structured Logging with Pino",
+    "content": "## Setup\n```typescript\nimport pino from 'pino';\n\nconst logger = pino({\n  level: process.env.LOG_LEVEL || 'info',\n  transport: process.env.NODE_ENV === 'development'\n    ? { target: 'pino-pretty' }\n    : undefined,\n  serializers: {\n    err: pino.stdSerializers.err,\n    req: pino.stdSerializers.req,\n  },\n});\n\n// Usage\nlogger.info({ userId: user.id, action: 'login' }, 'User logged in');\nlogger.error({ err, requestId }, 'Payment processing failed');\n```\n\n## Benefits\n- JSON output for machine parsing in production\n- Pretty output for human reading in development\n- Structured fields enable powerful log queries\n- 5x faster than Winston in benchmarks",
+    "category": "tooling",
+    "source": "community",
+    "contributor": {
+      "id": "user-david",
+      "name": "David Park",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=david"
+    },
+    "project": {
+      "name": "DevOps Toolkit",
+      "path": "/projects/devops-toolkit"
+    },
+    "sessionId": "sess-1634",
+    "tags": [
+      "logging",
+      "pino",
+      "observability",
+      "nodejs"
+    ],
+    "createdAt": "2026-01-12T15:50:00Z",
+    "updatedAt": "2026-03-24T11:05:00Z",
+    "useCount": 31,
+    "chainId": "chain-003",
+    "relevance": 0.69
+  },
+  {
+    "id": "mem-041",
+    "title": "Rate Limiting Implementation Pattern",
+    "content": "## Token Bucket Algorithm\n```typescript\nclass RateLimiter {\n  private tokens: number;\n  private lastRefill: number;\n\n  constructor(\n    private maxTokens: number,\n    private refillRate: number // tokens per second\n  ) {\n    this.tokens = maxTokens;\n    this.lastRefill = Date.now();\n  }\n\n  tryConsume(count = 1): boolean {\n    this.refill();\n    if (this.tokens >= count) {\n      this.tokens -= count;\n      return true;\n    }\n    return false;\n  }\n\n  private refill() {\n    const now = Date.now();\n    const elapsed = (now - this.lastRefill) / 1000;\n    this.tokens = Math.min(this.maxTokens, this.tokens + elapsed * this.refillRate);\n    this.lastRefill = now;\n  }\n}\n```\n\n## Key Insight\nToken bucket is preferred over fixed window because it handles burst traffic gracefully while maintaining average rate limits.",
+    "category": "security",
+    "source": "shared",
+    "contributor": {
+      "id": "user-james",
+      "name": "James Miller",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=james"
+    },
+    "project": {
+      "name": "Mobile App",
+      "path": "/projects/mobile-app"
+    },
+    "sessionId": "sess-7528",
+    "tags": [
+      "rate-limiting",
+      "token-bucket",
+      "api",
+      "security"
+    ],
+    "createdAt": "2025-12-28T16:46:00Z",
+    "updatedAt": "2026-03-25T02:48:00Z",
+    "useCount": 22,
+    "chainId": "chain-010",
+    "relevance": 0.71
+  },
+  {
+    "id": "mem-042",
+    "title": "Graceful Shutdown in Node.js Services",
+    "content": "## Implementation\n```typescript\nconst server = app.listen(3000);\n\nprocess.on('SIGTERM', async () => {\n  console.log('SIGTERM received, shutting down gracefully...');\n  \n  // Stop accepting new connections\n  server.close();\n  \n  // Wait for in-flight requests (max 30s)\n  await Promise.race([\n    new Promise(resolve => server.on('close', resolve)),\n    new Promise(resolve => setTimeout(resolve, 30000))\n  ]);\n  \n  // Close database connections\n  await prisma.$disconnect();\n  \n  // Close message queue connections\n  await messageQueue.close();\n  \n  process.exit(0);\n});\n```\n\n## Key Insight\nAlways set a maximum shutdown timeout. Without it, a stuck connection can prevent the process from ever exiting, causing deployment failures.",
+    "category": "architecture",
+    "source": "local",
+    "contributor": {
+      "id": "user-alex",
+      "name": "Alex Chen",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=alex"
+    },
+    "project": {
+      "name": "ML Pipeline",
+      "path": "/projects/ml-pipeline"
+    },
+    "sessionId": "sess-9785",
+    "tags": [
+      "nodejs",
+      "graceful-shutdown",
+      "deployment",
+      "reliability"
+    ],
+    "createdAt": "2025-12-17T03:28:00Z",
+    "updatedAt": "2026-03-19T02:07:00Z",
+    "useCount": 22,
+    "chainId": null,
+    "relevance": 0.98
   }
 ]

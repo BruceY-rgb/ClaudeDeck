@@ -2,44 +2,194 @@
   {
     "id": "chain-001",
     "title": "React Performance Optimization Journey",
-    "description": "A series of discoveries about React performance across multiple projects",
+    "description": "Evolution of React performance patterns from basic memoization to advanced virtualization, tracked across multiple projects and team members.",
     "memoryIds": [
       "mem-001",
-      "mem-009",
-      "mem-012"
+      "mem-016",
+      "mem-021",
+      "mem-037"
     ],
-    "createdAt": "2026-01-15T10:30:00Z"
+    "tags": [
+      "react",
+      "performance",
+      "optimization"
+    ],
+    "createdAt": "2026-01-11T15:49:00Z",
+    "updatedAt": "2026-03-07T15:58:00Z"
   },
   {
     "id": "chain-002",
-    "title": "API Architecture Best Practices",
-    "description": "Accumulated knowledge about building robust APIs",
+    "title": "Electron Desktop App Best Practices",
+    "description": "Accumulated wisdom on building robust Electron applications, from IPC architecture to security hardening and build optimization.",
     "memoryIds": [
       "mem-002",
+      "mem-005",
       "mem-008",
-      "mem-011"
+      "mem-015",
+      "mem-020",
+      "mem-022"
     ],
-    "createdAt": "2026-02-01T09:00:00Z"
+    "tags": [
+      "electron",
+      "desktop",
+      "architecture"
+    ],
+    "createdAt": "2026-01-12T04:33:00Z",
+    "updatedAt": "2026-03-14T00:10:00Z"
   },
   {
     "id": "chain-003",
-    "title": "Electron Desktop App Patterns",
-    "description": "Patterns learned from building Electron applications",
+    "title": "API Design & Security Patterns",
+    "description": "Cross-team knowledge on designing secure and well-structured APIs, from response formats to rate limiting and key management.",
     "memoryIds": [
-      "mem-003",
-      "mem-007"
+      "mem-011",
+      "mem-023",
+      "mem-024",
+      "mem-040"
     ],
-    "createdAt": "2025-12-20T16:00:00Z"
+    "tags": [
+      "api",
+      "security",
+      "design"
+    ],
+    "createdAt": "2025-12-16T10:22:00Z",
+    "updatedAt": "2026-03-09T20:36:00Z"
   },
   {
     "id": "chain-004",
-    "title": "DevOps & Deployment Workflow",
-    "description": "Best practices for deployment and infrastructure",
+    "title": "Testing Strategy Evolution",
+    "description": "How our testing approach evolved from basic unit tests to comprehensive E2E testing with Playwright and MSW.",
     "memoryIds": [
-      "mem-004",
-      "mem-006",
-      "mem-010"
+      "mem-026",
+      "mem-027",
+      "mem-028"
     ],
-    "createdAt": "2026-01-05T11:00:00Z"
+    "tags": [
+      "testing",
+      "e2e",
+      "automation"
+    ],
+    "createdAt": "2025-11-13T17:44:00Z",
+    "updatedAt": "2026-03-24T01:33:00Z"
+  },
+  {
+    "id": "chain-005",
+    "title": "Database Performance & Safety",
+    "description": "Lessons learned about database query optimization, migration safety, and concurrency handling across different projects.",
+    "memoryIds": [
+      "mem-014",
+      "mem-018",
+      "mem-022"
+    ],
+    "tags": [
+      "database",
+      "performance",
+      "migration"
+    ],
+    "createdAt": "2026-01-25T07:01:00Z",
+    "updatedAt": "2026-02-28T06:17:00Z"
+  },
+  {
+    "id": "chain-006",
+    "title": "CI/CD & Automation Pipeline",
+    "description": "Building a comprehensive automation pipeline from commit conventions to PR checks and dependency updates.",
+    "memoryIds": [
+      "mem-010",
+      "mem-013",
+      "mem-038"
+    ],
+    "tags": [
+      "ci-cd",
+      "automation",
+      "devops"
+    ],
+    "createdAt": "2025-11-01T17:37:00Z",
+    "updatedAt": "2026-03-12T21:18:00Z"
+  },
+  {
+    "id": "chain-007",
+    "title": "Claude Code Ecosystem Mastery",
+    "description": "Comprehensive guide to the Claude Code ecosystem including agent development, MCP configuration, and session management.",
+    "memoryIds": [
+      "mem-012",
+      "mem-029",
+      "mem-034"
+    ],
+    "tags": [
+      "claude-code",
+      "agents",
+      "mcp"
+    ],
+    "createdAt": "2025-12-14T04:40:00Z",
+    "updatedAt": "2026-03-04T20:14:00Z"
+  },
+  {
+    "id": "chain-008",
+    "title": "Team Productivity & Knowledge Sharing",
+    "description": "Practices that accelerate team productivity through structured onboarding, knowledge sharing, and technical debt management.",
+    "memoryIds": [
+      "mem-033",
+      "mem-035",
+      "mem-036"
+    ],
+    "tags": [
+      "team",
+      "productivity",
+      "onboarding"
+    ],
+    "createdAt": "2025-12-18T07:41:00Z",
+    "updatedAt": "2026-03-04T10:40:00Z"
+  },
+  {
+    "id": "chain-009",
+    "title": "State Management Architecture",
+    "description": "Evolution from monolithic stores to domain-sliced Zustand stores with proper selector patterns.",
+    "memoryIds": [
+      "mem-006",
+      "mem-001",
+      "mem-037"
+    ],
+    "tags": [
+      "zustand",
+      "state-management",
+      "react"
+    ],
+    "createdAt": "2025-12-05T01:42:00Z",
+    "updatedAt": "2026-03-08T19:48:00Z"
+  },
+  {
+    "id": "chain-010",
+    "title": "Microservice Communication Patterns",
+    "description": "From synchronous HTTP to event-driven architecture, including WebSocket reconnection and graceful shutdown.",
+    "memoryIds": [
+      "mem-007",
+      "mem-036",
+      "mem-041"
+    ],
+    "tags": [
+      "microservices",
+      "event-driven",
+      "websocket"
+    ],
+    "createdAt": "2025-12-03T02:36:00Z",
+    "updatedAt": "2026-03-04T00:03:00Z"
+  },
+  {
+    "id": "chain-011",
+    "title": "Developer Experience Optimization",
+    "description": "Tools and configurations that make development faster and more enjoyable for the entire team.",
+    "memoryIds": [
+      "mem-030",
+      "mem-031",
+      "mem-032",
+      "mem-009"
+    ],
+    "tags": [
+      "dx",
+      "tooling",
+      "vscode"
+    ],
+    "createdAt": "2026-01-03T04:24:00Z",
+    "updatedAt": "2026-03-16T11:25:00Z"
   }
 ]
