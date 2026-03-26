@@ -1,7 +1,6 @@
 import { join } from 'path'
 import { existsSync, readFileSync, writeFileSync, mkdirSync } from 'fs'
 import { homedir } from 'os'
-import { is } from '@electron-toolkit/utils'
 import { fsService } from './FileSystemService'
 import { parserService } from './ParserService'
 import type {
@@ -55,10 +54,9 @@ export class CommunityService {
   }
 
   private getDataPath(): string {
-    if (is.dev) {
-      return join(__dirname, '../../resources/demo-data/community.json')
-    }
-    return join(process.resourcesPath, 'resources/demo-data/community.json')
+    // After Vite bundling, all main process code is in out/main/index.js
+    // and mock JSON files are copied to out/main/mock-data/ by copyMockDataPlugin
+    return join(__dirname, 'mock-data', 'community.json')
   }
 
   /**

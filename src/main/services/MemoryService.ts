@@ -16,7 +16,9 @@ import type {
 } from "../../shared/types/memory"
 
 function resolveMockDir(): string {
-  return join(__dirname, "..", "mock-data")
+  // After Vite bundling, all main process code is in out/main/index.js
+  // and mock JSON files are copied to out/main/mock-data/ by copyMockDataPlugin
+  return join(__dirname, "mock-data")
 }
 
 function loadJSON<T>(fileName: string): T {
