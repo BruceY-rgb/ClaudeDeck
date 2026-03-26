@@ -1,0 +1,22 @@
+[
+  {
+    "fileName": "api-v2-migration.md",
+    "content": "# API v2 Migration Plan\n\n## Phase 1: Assessment\n- Audit all v1 endpoints\n- Identify breaking changes\n- Document deprecation timeline\n\n## Phase 2: Implementation\n- Create v2 route handlers\n- Implement backward compatibility layer\n- Update OpenAPI specs\n\n## Phase 3: Testing\n- Integration test suite\n- Load testing with k6\n- Client SDK compatibility\n\n## Phase 4: Rollout\n- Canary deployment (5%)\n- Gradual rollout (25% \u2192 50% \u2192 100%)\n- Monitor error rates and latency"
+  },
+  {
+    "fileName": "frontend-redesign.md",
+    "content": "# Frontend Redesign Plan\n\n## Goals\n- Modernize UI with design system\n- Improve accessibility (WCAG 2.1 AA)\n- Reduce bundle size by 40%\n\n## Timeline\n- Week 1-2: Design system foundation\n- Week 3-4: Core component migration\n- Week 5-6: Page-level refactoring\n- Week 7-8: Testing and polish\n\n## Tech Stack\n- React 19 + TypeScript\n- Tailwind CSS + Radix UI\n- Vite + SWC\n- Playwright for E2E"
+  },
+  {
+    "fileName": "database-optimization.md",
+    "content": "# Database Optimization Plan\n\n## Current Issues\n- Slow queries on user_sessions table (>2s p99)\n- Missing indexes on frequently joined columns\n- N+1 queries in GraphQL resolvers\n\n## Actions\n1. Add composite indexes on (user_id, created_at)\n2. Implement DataLoader for batch loading\n3. Add read replicas for analytics queries\n4. Set up query monitoring with pg_stat_statements\n5. Implement connection pooling with PgBouncer"
+  },
+  {
+    "fileName": "security-hardening.md",
+    "content": "# Security Hardening Plan\n\n## Priority 1 (Critical)\n- Enable CSP headers\n- Implement rate limiting on auth endpoints\n- Rotate all API keys\n\n## Priority 2 (High)\n- Add CSRF protection\n- Implement request signing\n- Set up WAF rules\n\n## Priority 3 (Medium)\n- Dependency vulnerability scanning in CI\n- Implement audit logging\n- Set up SIEM integration"
+  },
+  {
+    "fileName": "mobile-app-launch.md",
+    "content": "# Mobile App Launch Plan\n\n## Phase 1: MVP (4 weeks)\n- Core authentication flow\n- Dashboard view\n- Push notifications\n\n## Phase 2: Feature Parity (3 weeks)\n- Full CRUD operations\n- Offline support\n- Biometric authentication\n\n## Phase 3: Launch (2 weeks)\n- App Store submission\n- Play Store submission\n- Marketing materials\n- Analytics integration"
+  }
+]

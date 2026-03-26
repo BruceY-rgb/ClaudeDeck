@@ -1,0 +1,105 @@
+[
+  {
+    "pluginId": "claude-code-power-pack",
+    "pluginName": "Claude Code Power Pack",
+    "event": "PreToolUse",
+    "matchers": [
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "eslint --fix $FILE",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "pluginId": "claude-code-power-pack",
+    "pluginName": "Claude Code Power Pack",
+    "event": "PostToolUse",
+    "matchers": [
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "prettier --write $FILE",
+            "timeout": 15
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "pluginId": "testing-framework",
+    "pluginName": "Testing Framework Pro",
+    "event": "PostToolUse",
+    "matchers": [
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jest --findRelatedTests $FILE --passWithNoTests",
+            "timeout": 60
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "pluginId": "devops-toolkit",
+    "pluginName": "DevOps Toolkit",
+    "event": "SessionStart",
+    "matchers": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "git fetch origin",
+            "async": true,
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "pluginId": "db-tools",
+    "pluginName": "Database Tools Suite",
+    "event": "PreToolUse",
+    "matchers": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'Checking DB connection...'",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "pluginId": "ui-ux-pro-max-skill",
+    "pluginName": "UI/UX Pro Max Skill",
+    "event": "Stop",
+    "matchers": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'Session ended. Remember to commit your changes!'",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+]

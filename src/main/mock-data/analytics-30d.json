@@ -1,0 +1,204 @@
+{
+  "totalSessions": 179,
+  "totalCostUsd": 67.24,
+  "totalInputTokens": 7228076,
+  "totalOutputTokens": 2777842,
+  "totalCacheReadTokens": 3728594,
+  "totalCacheCreationTokens": 739074,
+  "totalDurationSeconds": 53709,
+  "averageCostPerSession": 0.3757,
+  "averageDurationSeconds": 300,
+  "activityByDay": [
+    {
+      "date": "2026-02-25",
+      "count": 9
+    },
+    {
+      "date": "2026-02-26",
+      "count": 6
+    },
+    {
+      "date": "2026-02-27",
+      "count": 6
+    },
+    {
+      "date": "2026-02-28",
+      "count": 4
+    },
+    {
+      "date": "2026-03-01",
+      "count": 0
+    },
+    {
+      "date": "2026-03-02",
+      "count": 5
+    },
+    {
+      "date": "2026-03-03",
+      "count": 10
+    },
+    {
+      "date": "2026-03-04",
+      "count": 3
+    },
+    {
+      "date": "2026-03-05",
+      "count": 11
+    },
+    {
+      "date": "2026-03-06",
+      "count": 4
+    },
+    {
+      "date": "2026-03-07",
+      "count": 2
+    },
+    {
+      "date": "2026-03-08",
+      "count": 2
+    },
+    {
+      "date": "2026-03-09",
+      "count": 6
+    },
+    {
+      "date": "2026-03-10",
+      "count": 8
+    },
+    {
+      "date": "2026-03-11",
+      "count": 11
+    },
+    {
+      "date": "2026-03-12",
+      "count": 5
+    },
+    {
+      "date": "2026-03-13",
+      "count": 10
+    },
+    {
+      "date": "2026-03-14",
+      "count": 0
+    },
+    {
+      "date": "2026-03-15",
+      "count": 2
+    },
+    {
+      "date": "2026-03-16",
+      "count": 5
+    },
+    {
+      "date": "2026-03-17",
+      "count": 11
+    },
+    {
+      "date": "2026-03-18",
+      "count": 12
+    },
+    {
+      "date": "2026-03-19",
+      "count": 3
+    },
+    {
+      "date": "2026-03-20",
+      "count": 3
+    },
+    {
+      "date": "2026-03-21",
+      "count": 3
+    },
+    {
+      "date": "2026-03-22",
+      "count": 4
+    },
+    {
+      "date": "2026-03-23",
+      "count": 10
+    },
+    {
+      "date": "2026-03-24",
+      "count": 8
+    },
+    {
+      "date": "2026-03-25",
+      "count": 10
+    },
+    {
+      "date": "2026-03-26",
+      "count": 6
+    }
+  ],
+  "modelUsage": {
+    "claude-sonnet-4-20250514": 98,
+    "claude-opus-4-20250514": 35,
+    "claude-haiku-3.5-20241022": 26,
+    "claude-sonnet-3.5-20241022": 17
+  },
+  "topProjects": [
+    {
+      "projectPath": "/Users/demo/Desktop/DingYuefeng",
+      "sessionCount": 76,
+      "totalCost": 125.26
+    },
+    {
+      "projectPath": "/Users/demo/Desktop/data-pipeline",
+      "sessionCount": 73,
+      "totalCost": 145.72
+    },
+    {
+      "projectPath": "/Users/demo/Desktop/mobile-app",
+      "sessionCount": 61,
+      "totalCost": 90.94
+    },
+    {
+      "projectPath": "/Users/demo/Desktop/BruceY-rgb",
+      "sessionCount": 48,
+      "totalCost": 37.56
+    },
+    {
+      "projectPath": "/Users/demo/Desktop/TermHub",
+      "sessionCount": 45,
+      "totalCost": 65.74
+    },
+    {
+      "projectPath": "/Users/demo/Desktop/ClaudeDeck",
+      "sessionCount": 45,
+      "totalCost": 40.13
+    },
+    {
+      "projectPath": "/Users/demo/Desktop/infra-config",
+      "sessionCount": 43,
+      "totalCost": 80.0
+    },
+    {
+      "projectPath": "/Users/demo/Desktop/design-system",
+      "sessionCount": 27,
+      "totalCost": 42.71
+    },
+    {
+      "projectPath": "/Users/demo/Desktop/HIMA-AIP",
+      "sessionCount": 18,
+      "totalCost": 18.08
+    },
+    {
+      "projectPath": "/Users/demo/Desktop/api-gateway",
+      "sessionCount": 17,
+      "totalCost": 29.04
+    }
+  ],
+  "toolUsage": {
+    "Read": 1398,
+    "Write": 452,
+    "Edit": 303,
+    "Bash": 1023,
+    "Glob": 391,
+    "Grep": 587,
+    "WebFetch": 122,
+    "WebSearch": 68,
+    "Task": 63,
+    "TodoWrite": 16,
+    "NotebookEdit": 20
+  }
+}

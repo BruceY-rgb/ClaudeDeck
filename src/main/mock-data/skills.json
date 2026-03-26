@@ -1,0 +1,99 @@
+{
+  "personal": [
+    {
+      "name": "git-workflow",
+      "description": "Advanced Git workflow management including branching strategies and conflict resolution",
+      "userInvocable": true,
+      "body": "# Git Workflow Skill\n\nManage complex Git workflows including:\n- Feature branch creation and management\n- Interactive rebase and squash\n- Conflict resolution strategies\n- Cherry-pick and bisect operations\n- Conventional commit message formatting",
+      "hasReference": false,
+      "hasTemplates": false
+    },
+    {
+      "name": "api-design-patterns",
+      "description": "RESTful API design patterns and OpenAPI specification generation",
+      "userInvocable": true,
+      "body": "# API Design Patterns\n\nDesign and document APIs following best practices:\n- RESTful resource naming conventions\n- Pagination, filtering, and sorting\n- Error response standardization\n- Rate limiting and versioning\n- OpenAPI 3.0 spec generation",
+      "hasReference": true,
+      "hasTemplates": true
+    },
+    {
+      "name": "debug-helper",
+      "description": "Systematic debugging methodology for complex issues",
+      "userInvocable": true,
+      "body": "# Debug Helper\n\nSystematic approach to debugging:\n1. Reproduce the issue consistently\n2. Isolate the failing component\n3. Analyze stack traces and logs\n4. Form and test hypotheses\n5. Implement and verify the fix\n6. Add regression tests",
+      "hasReference": false,
+      "hasTemplates": false
+    },
+    {
+      "name": "doc-site-generator",
+      "description": "Generate documentation sites from source code and markdown files",
+      "userInvocable": true,
+      "body": "# Documentation Site Generator\n\nAutomatically generate documentation sites:\n- Extract JSDoc/TSDoc comments\n- Generate API reference pages\n- Create navigation structure\n- Build search index\n- Deploy to GitHub Pages or Vercel",
+      "hasReference": true,
+      "hasTemplates": true
+    },
+    {
+      "name": "testing-strategy",
+      "description": "Comprehensive testing strategy including unit, integration, and e2e tests",
+      "userInvocable": false,
+      "body": "# Testing Strategy\n\nImplement comprehensive testing:\n- Unit tests with Jest/Vitest\n- Integration tests with Supertest\n- E2E tests with Playwright/Cypress\n- Snapshot testing for UI components\n- Coverage reporting and thresholds",
+      "hasReference": false,
+      "hasTemplates": true
+    },
+    {
+      "name": "performance-profiling",
+      "description": "Application performance profiling and optimization techniques",
+      "userInvocable": true,
+      "body": "# Performance Profiling\n\nProfile and optimize application performance:\n- CPU profiling with Chrome DevTools\n- Memory leak detection\n- Bundle size analysis\n- Lighthouse audits\n- Database query optimization",
+      "hasReference": false,
+      "hasTemplates": false
+    }
+  ],
+  "plugin": [
+    {
+      "name": "react-component-gen",
+      "description": "Generate React components with TypeScript, tests, and Storybook stories",
+      "userInvocable": true,
+      "pluginId": "ui-ux-pro-max-skill",
+      "body": "# React Component Generator\n\nGenerate production-ready React components:\n- TypeScript interfaces and props\n- CSS Modules or Tailwind styles\n- Unit tests with React Testing Library\n- Storybook stories\n- Accessibility attributes",
+      "hasReference": true,
+      "hasTemplates": true
+    },
+    {
+      "name": "prisma-workflow",
+      "description": "Prisma ORM workflow management for database operations",
+      "userInvocable": true,
+      "pluginId": "db-tools",
+      "body": "# Prisma Workflow\n\nManage Prisma ORM workflows:\n- Schema design and migration\n- Seed data generation\n- Query optimization\n- Relation management\n- Type-safe client usage",
+      "hasReference": false,
+      "hasTemplates": true
+    },
+    {
+      "name": "docker-compose-builder",
+      "description": "Build and manage Docker Compose configurations",
+      "userInvocable": true,
+      "pluginId": "claude-code-power-pack",
+      "body": "# Docker Compose Builder\n\nCreate and manage Docker environments:\n- Multi-service composition\n- Network configuration\n- Volume management\n- Environment variables\n- Health checks and dependencies",
+      "hasReference": false,
+      "hasTemplates": true
+    },
+    {
+      "name": "tailwind-design-system",
+      "description": "Create consistent design systems with Tailwind CSS",
+      "userInvocable": true,
+      "pluginId": "ui-ux-pro-max-skill",
+      "body": "# Tailwind Design System\n\nBuild design systems with Tailwind:\n- Custom theme configuration\n- Component variants with CVA\n- Dark mode support\n- Responsive breakpoints\n- Animation utilities",
+      "hasReference": true,
+      "hasTemplates": true
+    },
+    {
+      "name": "graphql-schema-builder",
+      "description": "Design and implement GraphQL schemas with resolvers",
+      "userInvocable": true,
+      "pluginId": "claude-code-power-pack",
+      "body": "# GraphQL Schema Builder\n\nDesign GraphQL APIs:\n- Type definitions\n- Query and mutation resolvers\n- Subscription setup\n- DataLoader for N+1 prevention\n- Schema stitching and federation",
+      "hasReference": false,
+      "hasTemplates": true
+    }
+  ]
+}

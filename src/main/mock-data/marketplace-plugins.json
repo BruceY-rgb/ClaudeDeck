@@ -1,0 +1,96 @@
+{
+  "official": [
+    {
+      "id": "ui-ux-pro-max-skill",
+      "name": "UI/UX Pro Max Skill",
+      "description": "Professional UI/UX design tools and component generation",
+      "version": "2.1.0",
+      "author": "Anthropic",
+      "marketplaceId": "official"
+    },
+    {
+      "id": "claude-code-power-pack",
+      "name": "Claude Code Power Pack",
+      "description": "Essential power tools for Claude Code development",
+      "version": "1.8.3",
+      "author": "Anthropic",
+      "marketplaceId": "official"
+    },
+    {
+      "id": "testing-framework",
+      "name": "Testing Framework Pro",
+      "description": "Comprehensive testing tools and generators",
+      "version": "3.0.1",
+      "author": "Anthropic",
+      "marketplaceId": "official"
+    },
+    {
+      "id": "security-scanner",
+      "name": "Security Scanner",
+      "description": "Automated security vulnerability detection",
+      "version": "1.2.0",
+      "author": "Anthropic",
+      "marketplaceId": "official"
+    },
+    {
+      "id": "perf-monitor",
+      "name": "Performance Monitor",
+      "description": "Real-time performance monitoring and profiling",
+      "version": "0.8.0",
+      "author": "Anthropic",
+      "marketplaceId": "official"
+    }
+  ],
+  "community": [
+    {
+      "id": "db-tools",
+      "name": "Database Tools Suite",
+      "description": "Database management and optimization tools",
+      "version": "1.3.0",
+      "author": "dbmaster",
+      "marketplaceId": "community"
+    },
+    {
+      "id": "devops-toolkit",
+      "name": "DevOps Toolkit",
+      "description": "CI/CD and infrastructure management tools",
+      "version": "0.9.2",
+      "author": "cloudops",
+      "marketplaceId": "community"
+    },
+    {
+      "id": "react-helpers",
+      "name": "React Helpers",
+      "description": "React development utilities and generators",
+      "version": "2.0.0",
+      "author": "reactdev",
+      "marketplaceId": "community"
+    },
+    {
+      "id": "api-mocker",
+      "name": "API Mocker",
+      "description": "Mock API server generation and management",
+      "version": "1.1.0",
+      "author": "mockmaster",
+      "marketplaceId": "community"
+    }
+  ],
+  "awesome-claude": [
+    {
+      "id": "awesome-prompts",
+      "name": "Awesome Prompts Collection",
+      "description": "Curated collection of effective prompts",
+      "version": "1.0.0",
+      "author": "nicekid1",
+      "marketplaceId": "awesome-claude"
+    },
+    {
+      "id": "code-snippets",
+      "name": "Code Snippets Library",
+      "description": "Reusable code snippet collection",
+      "version": "0.5.0",
+      "author": "nicekid1",
+      "marketplaceId": "awesome-claude"
+    }
+  ]
+}

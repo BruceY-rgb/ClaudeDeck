@@ -1,0 +1,45 @@
+[
+  {
+    "id": "chain-001",
+    "title": "React Performance Optimization Journey",
+    "description": "A series of discoveries about React performance across multiple projects",
+    "memoryIds": [
+      "mem-001",
+      "mem-009",
+      "mem-012"
+    ],
+    "createdAt": "2026-01-15T10:30:00Z"
+  },
+  {
+    "id": "chain-002",
+    "title": "API Architecture Best Practices",
+    "description": "Accumulated knowledge about building robust APIs",
+    "memoryIds": [
+      "mem-002",
+      "mem-008",
+      "mem-011"
+    ],
+    "createdAt": "2026-02-01T09:00:00Z"
+  },
+  {
+    "id": "chain-003",
+    "title": "Electron Desktop App Patterns",
+    "description": "Patterns learned from building Electron applications",
+    "memoryIds": [
+      "mem-003",
+      "mem-007"
+    ],
+    "createdAt": "2025-12-20T16:00:00Z"
+  },
+  {
+    "id": "chain-004",
+    "title": "DevOps & Deployment Workflow",
+    "description": "Best practices for deployment and infrastructure",
+    "memoryIds": [
+      "mem-004",
+      "mem-006",
+      "mem-010"
+    ],
+    "createdAt": "2026-01-05T11:00:00Z"
+  }
+]

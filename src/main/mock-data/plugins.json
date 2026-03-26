@@ -1,0 +1,74 @@
+[
+  {
+    "id": "ui-ux-pro-max-skill",
+    "name": "UI/UX Pro Max Skill",
+    "marketplace": "official",
+    "version": "2.1.0",
+    "installedAt": "2025-12-15T10:30:00Z",
+    "lastUpdated": "2026-02-20T14:00:00Z",
+    "installPath": "/mock/plugins/ui-ux-pro-max-skill",
+    "gitCommitSha": "a1b2c3d4e5f6",
+    "isLocal": false,
+    "enabled": true
+  },
+  {
+    "id": "claude-code-power-pack",
+    "name": "Claude Code Power Pack",
+    "marketplace": "official",
+    "version": "1.8.3",
+    "installedAt": "2025-11-20T08:15:00Z",
+    "lastUpdated": "2026-03-01T09:00:00Z",
+    "installPath": "/mock/plugins/claude-code-power-pack",
+    "gitCommitSha": "b2c3d4e5f6a7",
+    "isLocal": false,
+    "enabled": true
+  },
+  {
+    "id": "db-tools",
+    "name": "Database Tools Suite",
+    "marketplace": "community",
+    "version": "1.3.0",
+    "installedAt": "2026-01-10T16:45:00Z",
+    "lastUpdated": "2026-02-28T11:30:00Z",
+    "installPath": "/mock/plugins/db-tools",
+    "gitCommitSha": "c3d4e5f6a7b8",
+    "isLocal": false,
+    "enabled": true
+  },
+  {
+    "id": "devops-toolkit",
+    "name": "DevOps Toolkit",
+    "marketplace": "community",
+    "version": "0.9.2",
+    "installedAt": "2026-02-05T12:00:00Z",
+    "lastUpdated": "2026-03-10T15:20:00Z",
+    "installPath": "/mock/plugins/devops-toolkit",
+    "gitCommitSha": "d4e5f6a7b8c9",
+    "isLocal": false,
+    "enabled": true
+  },
+  {
+    "id": "local-project-helper",
+    "name": "Local Project Helper",
+    "marketplace": "local",
+    "version": "0.1.0",
+    "installedAt": "2026-03-15T09:00:00Z",
+    "lastUpdated": "2026-03-15T09:00:00Z",
+    "installPath": "/mock/plugins/local-project-helper",
+    "gitCommitSha": "",
+    "isLocal": true,
+    "enabled": true
+  },
+  {
+    "id": "testing-framework",
+    "name": "Testing Framework Pro",
+    "marketplace": "official",
+    "version": "3.0.1",
+    "installedAt": "2025-10-01T07:30:00Z",
+    "lastUpdated": "2026-01-15T10:00:00Z",
+    "installPath": "/mock/plugins/testing-framework",
+    "gitCommitSha": "e5f6a7b8c9d0",
+    "isLocal": false,
+    "enabled": false
+  }
+]

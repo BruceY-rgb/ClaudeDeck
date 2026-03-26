@@ -1,0 +1,299 @@
+[
+  {
+    "id": "mem-001",
+    "title": "React useEffect Cleanup Pattern",
+    "summary": "When using useEffect with async operations, always return a cleanup function to prevent memory leaks and state updates on unmounted components.",
+    "category": "best-practice",
+    "tags": [
+      "react",
+      "hooks",
+      "memory-leak",
+      "cleanup"
+    ],
+    "sourceType": "cross-session",
+    "sourceUser": "yangsmac",
+    "sourceProject": "HIMA-AIP",
+    "sourceSessionId": "sess-hima-0001",
+    "relatedSessions": [
+      "sess-hima-0002",
+      "sess-term-0001"
+    ],
+    "content": "## Problem\nAsync operations in useEffect can cause state updates after component unmount.\n\n## Solution\n```typescript\nuseEffect(() => {\n  let cancelled = false;\n  async function fetchData() {\n    const result = await api.getData();\n    if (!cancelled) setState(result);\n  }\n  fetchData();\n  return () => { cancelled = true; };\n}, []);\n```\n\n## Key Insight\nThis pattern was discovered across 3 different projects where the same memory leak issue appeared.",
+    "confidence": 0.95,
+    "usageCount": 12,
+    "createdAt": "2026-01-15T10:30:00Z",
+    "updatedAt": "2026-03-20T14:00:00Z"
+  },
+  {
+    "id": "mem-002",
+    "title": "Prisma N+1 Query Prevention",
+    "summary": "Always use include/select in Prisma queries to prevent N+1 problems. Use DataLoader pattern for GraphQL resolvers.",
+    "category": "performance",
+    "tags": [
+      "prisma",
+      "database",
+      "n+1",
+      "optimization"
+    ],
+    "sourceType": "cross-user",
+    "sourceUser": "alex_dev",
+    "sourceProject": "api-gateway",
+    "sourceSessionId": "sess-api-0003",
+    "relatedSessions": [
+      "sess-api-0001",
+      "sess-data-0002"
+    ],
+    "content": "## Problem\nGraphQL resolvers with Prisma cause N+1 queries when resolving relations.\n\n## Solution\nUse DataLoader to batch database queries:\n```typescript\nconst userLoader = new DataLoader(async (ids) => {\n  const users = await prisma.user.findMany({ where: { id: { in: ids } } });\n  return ids.map(id => users.find(u => u.id === id));\n});\n```\n\n## Impact\nReduced API response time from 2.3s to 180ms on the users endpoint.",
+    "confidence": 0.92,
+    "usageCount": 8,
+    "createdAt": "2026-02-01T09:00:00Z",
+    "updatedAt": "2026-03-15T11:00:00Z"
+  },
+  {
+    "id": "mem-003",
+    "title": "Electron IPC Error Handling Pattern",
+    "summary": "Wrap all IPC handlers in try-catch and return structured error objects. Never throw unhandled errors in main process.",
+    "category": "architecture",
+    "tags": [
+      "electron",
+      "ipc",
+      "error-handling",
+      "desktop"
+    ],
+    "sourceType": "cross-session",
+    "sourceUser": "yangsmac",
+    "sourceProject": "ClaudeDeck",
+    "sourceSessionId": "sess-clau-0001",
+    "relatedSessions": [
+      "sess-clau-0003",
+      "sess-hima-0004"
+    ],
+    "content": "## Problem\nUnhandled errors in Electron IPC handlers crash the main process silently.\n\n## Solution\nCreate a wrapper function for all IPC handlers:\n```typescript\nfunction safeHandle(channel: string, handler: Function) {\n  ipcMain.handle(channel, async (...args) => {\n    try {\n      return { success: true, data: await handler(...args) };\n    } catch (error) {\n      console.error(`[IPC] ${channel} error:`, error);\n      return { success: false, error: error.message };\n    }\n  });\n}\n```\n\n## Key Insight\nThis pattern prevents app crashes and provides consistent error reporting to the renderer process.",
+    "confidence": 0.98,
+    "usageCount": 15,
+    "createdAt": "2025-12-20T16:00:00Z",
+    "updatedAt": "2026-03-22T09:30:00Z"
+  },
+  {
+    "id": "mem-004",
+    "title": "Git Rebase Strategy for Feature Branches",
+    "summary": "Use interactive rebase to clean up commits before merging. Squash WIP commits and write meaningful commit messages.",
+    "category": "workflow",
+    "tags": [
+      "git",
+      "rebase",
+      "workflow",
+      "collaboration"
+    ],
+    "sourceType": "cross-user",
+    "sourceUser": "sarah_eng",
+    "sourceProject": "design-system",
+    "sourceSessionId": "sess-desi-0002",
+    "relatedSessions": [
+      "sess-desi-0001",
+      "sess-mobi-0003"
+    ],
+    "content": "## Workflow\n1. Create feature branch from main\n2. Make commits freely during development\n3. Before PR: `git rebase -i main`\n4. Squash WIP commits, keep meaningful ones\n5. Write conventional commit messages\n\n## Rules\n- Never rebase shared branches\n- Always force-push with lease: `git push --force-with-lease`\n- Keep PR commits atomic and reviewable\n\n## Benefit\nClean git history makes debugging with `git bisect` much more effective.",
+    "confidence": 0.88,
+    "usageCount": 20,
+    "createdAt": "2026-01-05T11:00:00Z",
+    "updatedAt": "2026-03-18T15:00:00Z"
+  },
+  {
+    "id": "mem-005",
+    "title": "TypeScript Strict Mode Migration Strategy",
+    "summary": "Migrate to strict TypeScript incrementally: start with strictNullChecks, then noImplicitAny, finally full strict mode.",
+    "category": "best-practice",
+    "tags": [
+      "typescript",
+      "migration",
+      "strict-mode",
+      "type-safety"
+    ],
+    "sourceType": "cross-user",
+    "sourceUser": "mike_ts",
+    "sourceProject": "TermHub",
+    "sourceSessionId": "sess-term-0003",
+    "relatedSessions": [
+      "sess-term-0001",
+      "sess-hima-0002"
+    ],
+    "content": "## Strategy\n1. Enable `strictNullChecks` first (catches most bugs)\n2. Fix all null/undefined errors\n3. Enable `noImplicitAny`\n4. Add explicit types to all function parameters\n5. Enable full `strict` mode\n\n## Tips\n- Use `// @ts-expect-error` temporarily for complex cases\n- Create a `strict-migration.md` to track progress\n- Fix one module at a time\n\n## Result\nReduced runtime errors by 60% after full strict mode migration.",
+    "confidence": 0.91,
+    "usageCount": 6,
+    "createdAt": "2026-02-10T14:00:00Z",
+    "updatedAt": "2026-03-12T10:00:00Z"
+  },
+  {
+    "id": "mem-006",
+    "title": "Docker Multi-Stage Build Optimization",
+    "summary": "Use multi-stage Docker builds to reduce image size. Separate build dependencies from runtime dependencies.",
+    "category": "devops",
+    "tags": [
+      "docker",
+      "optimization",
+      "ci-cd",
+      "deployment"
+    ],
+    "sourceType": "cross-user",
+    "sourceUser": "ops_jenny",
+    "sourceProject": "api-gateway",
+    "sourceSessionId": "sess-api-0005",
+    "relatedSessions": [
+      "sess-mobi-0001"
+    ],
+    "content": "## Before\nSingle-stage Dockerfile: 1.2GB image\n\n## After\nMulti-stage build: 180MB image\n\n```dockerfile\n# Build stage\nFROM node:20-alpine AS builder\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci\nCOPY . .\nRUN npm run build\n\n# Production stage\nFROM node:20-alpine\nWORKDIR /app\nCOPY --from=builder /app/dist ./dist\nCOPY --from=builder /app/node_modules ./node_modules\nCMD [\"node\", \"dist/index.js\"]\n```\n\n## Impact\n- 85% reduction in image size\n- 3x faster deployment\n- Reduced attack surface",
+    "confidence": 0.94,
+    "usageCount": 9,
+    "createdAt": "2026-01-20T08:00:00Z",
+    "updatedAt": "2026-03-10T16:00:00Z"
+  },
+  {
+    "id": "mem-007",
+    "title": "Zustand Store Pattern for Electron Apps",
+    "summary": "Use Zustand with async IPC calls pattern: fetch \u2192 set loading \u2192 invoke IPC \u2192 set data \u2192 handle errors consistently.",
+    "category": "architecture",
+    "tags": [
+      "zustand",
+      "electron",
+      "state-management",
+      "react"
+    ],
+    "sourceType": "cross-session",
+    "sourceUser": "yangsmac",
+    "sourceProject": "ClaudeDeck",
+    "sourceSessionId": "sess-clau-0002",
+    "relatedSessions": [
+      "sess-clau-0001",
+      "sess-clau-0004",
+      "sess-hima-0003"
+    ],
+    "content": "## Pattern\n```typescript\nexport const useStore = create<StoreType>((set, get) => ({\n  items: [],\n  loading: false,\n  error: null,\n  fetch: async () => {\n    if (!window.electronAPI) return;\n    set({ loading: true, error: null });\n    try {\n      const items = await window.electronAPI.service.list();\n      set({ items, loading: false });\n    } catch (err) {\n      set({ error: err.message, loading: false });\n    }\n  },\n}));\n```\n\n## Key Points\n- Always check `window.electronAPI` exists\n- Set loading state before async call\n- Clear error state on new fetch\n- Handle errors gracefully\n\n## Applied In\nUsed consistently across 8 stores in ClaudeDeck project.",
+    "confidence": 0.97,
+    "usageCount": 18,
+    "createdAt": "2025-11-30T13:00:00Z",
+    "updatedAt": "2026-03-25T11:00:00Z"
+  },
+  {
+    "id": "mem-008",
+    "title": "API Rate Limiting with Token Bucket Algorithm",
+    "summary": "Implement rate limiting using token bucket algorithm for smooth traffic shaping instead of fixed window counters.",
+    "category": "security",
+    "tags": [
+      "rate-limiting",
+      "api",
+      "security",
+      "token-bucket"
+    ],
+    "sourceType": "cross-user",
+    "sourceUser": "alex_dev",
+    "sourceProject": "api-gateway",
+    "sourceSessionId": "sess-api-0002",
+    "relatedSessions": [
+      "sess-api-0004"
+    ],
+    "content": "## Why Token Bucket?\nFixed window counters allow burst traffic at window boundaries. Token bucket provides smooth rate limiting.\n\n## Implementation\n```typescript\nclass TokenBucket {\n  private tokens: number;\n  private lastRefill: number;\n  constructor(private capacity: number, private refillRate: number) {\n    this.tokens = capacity;\n    this.lastRefill = Date.now();\n  }\n  consume(): boolean {\n    this.refill();\n    if (this.tokens > 0) { this.tokens--; return true; }\n    return false;\n  }\n  private refill() {\n    const now = Date.now();\n    const elapsed = (now - this.lastRefill) / 1000;\n    this.tokens = Math.min(this.capacity, this.tokens + elapsed * this.refillRate);\n    this.lastRefill = now;\n  }\n}\n```",
+    "confidence": 0.9,
+    "usageCount": 5,
+    "createdAt": "2026-02-15T10:00:00Z",
+    "updatedAt": "2026-03-08T14:00:00Z"
+  },
+  {
+    "id": "mem-009",
+    "title": "Tailwind CSS Dark Mode Implementation",
+    "summary": "Use class-based dark mode with system preference detection. Store user preference in localStorage for persistence.",
+    "category": "frontend",
+    "tags": [
+      "tailwind",
+      "dark-mode",
+      "css",
+      "theming"
+    ],
+    "sourceType": "cross-session",
+    "sourceUser": "yangsmac",
+    "sourceProject": "HIMA-AIP",
+    "sourceSessionId": "sess-hima-0003",
+    "relatedSessions": [
+      "sess-desi-0001",
+      "sess-clau-0002"
+    ],
+    "content": "## Setup\n1. Configure Tailwind: `darkMode: 'class'`\n2. Add theme toggle component\n3. Detect system preference on load\n4. Persist user choice in localStorage\n\n## Pattern\n```typescript\nfunction useTheme() {\n  const [theme, setTheme] = useState(() => {\n    const saved = localStorage.getItem('theme');\n    if (saved) return saved;\n    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';\n  });\n  useEffect(() => {\n    document.documentElement.classList.toggle('dark', theme === 'dark');\n    localStorage.setItem('theme', theme);\n  }, [theme]);\n  return { theme, setTheme };\n}\n```\n\n## Gotcha\nAlways use `dark:` prefix consistently. Missing dark variants cause jarring visual switches.",
+    "confidence": 0.93,
+    "usageCount": 11,
+    "createdAt": "2026-01-08T15:00:00Z",
+    "updatedAt": "2026-03-19T09:00:00Z"
+  },
+  {
+    "id": "mem-010",
+    "title": "Monorepo Dependency Management with pnpm",
+    "summary": "Use pnpm workspaces for monorepo management. Configure shared dependencies at root and package-specific ones locally.",
+    "category": "tooling",
+    "tags": [
+      "pnpm",
+      "monorepo",
+      "dependencies",
+      "workspace"
+    ],
+    "sourceType": "cross-user",
+    "sourceUser": "sarah_eng",
+    "sourceProject": "design-system",
+    "sourceSessionId": "sess-desi-0003",
+    "relatedSessions": [
+      "sess-term-0002"
+    ],
+    "content": "## Structure\n```\nroot/\n  pnpm-workspace.yaml\n  packages/\n    shared/     # Shared utilities\n    ui/         # Component library\n    app/        # Main application\n```\n\n## Key Config\n```yaml\n# pnpm-workspace.yaml\npackages:\n  - 'packages/*'\n```\n\n## Best Practices\n- Pin shared dependency versions at root\n- Use `workspace:*` protocol for internal packages\n- Configure `.npmrc` with `shamefully-hoist=true` for compatibility\n- Run scripts with `pnpm -r run build` for all packages\n\n## Benefit\nReduced `node_modules` size by 45% compared to npm workspaces.",
+    "confidence": 0.89,
+    "usageCount": 7,
+    "createdAt": "2026-02-20T11:00:00Z",
+    "updatedAt": "2026-03-14T13:00:00Z"
+  },
+  {
+    "id": "mem-011",
+    "title": "WebSocket Reconnection with Exponential Backoff",
+    "summary": "Implement automatic WebSocket reconnection using exponential backoff with jitter to prevent thundering herd.",
+    "category": "networking",
+    "tags": [
+      "websocket",
+      "reconnection",
+      "backoff",
+      "resilience"
+    ],
+    "sourceType": "cross-user",
+    "sourceUser": "mike_ts",
+    "sourceProject": "TermHub",
+    "sourceSessionId": "sess-term-0004",
+    "relatedSessions": [
+      "sess-api-0003"
+    ],
+    "content": "## Pattern\n```typescript\nclass ReconnectingWebSocket {\n  private retryCount = 0;\n  private maxRetries = 10;\n  private baseDelay = 1000;\n  \n  connect() {\n    this.ws = new WebSocket(this.url);\n    this.ws.onclose = () => this.scheduleReconnect();\n  }\n  \n  private scheduleReconnect() {\n    if (this.retryCount >= this.maxRetries) return;\n    const delay = Math.min(\n      this.baseDelay * Math.pow(2, this.retryCount) + Math.random() * 1000,\n      30000\n    );\n    setTimeout(() => { this.retryCount++; this.connect(); }, delay);\n  }\n}\n```\n\n## Why Jitter?\nWithout jitter, all disconnected clients reconnect simultaneously, overwhelming the server.",
+    "confidence": 0.91,
+    "usageCount": 4,
+    "createdAt": "2026-03-01T10:00:00Z",
+    "updatedAt": "2026-03-21T16:00:00Z"
+  },
+  {
+    "id": "mem-012",
+    "title": "Error Boundary Pattern for React Applications",
+    "summary": "Implement granular error boundaries to prevent full-page crashes. Use different boundaries for different UI sections.",
+    "category": "frontend",
+    "tags": [
+      "react",
+      "error-boundary",
+      "resilience",
+      "ux"
+    ],
+    "sourceType": "cross-session",
+    "sourceUser": "yangsmac",
+    "sourceProject": "HIMA-AIP",
+    "sourceSessionId": "sess-hima-0005",
+    "relatedSessions": [
+      "sess-clau-0003",
+      "sess-desi-0002"
+    ],
+    "content": "## Strategy\nDon't wrap the entire app in one error boundary. Use granular boundaries:\n\n```tsx\n<AppErrorBoundary>           {/* Catches catastrophic errors */}\n  <Layout>\n    <Sidebar />               {/* Own boundary */}\n    <SectionErrorBoundary>    {/* Catches page-level errors */}\n      <Outlet />\n    </SectionErrorBoundary>\n  </Layout>\n</AppErrorBoundary>\n```\n\n## Key Insight\nWhen a chart component crashes, only the chart section shows an error state. The rest of the app remains functional.\n\n## Recovery\nProvide a 'Retry' button in error fallback UI that resets the error boundary state.",
+    "confidence": 0.96,
+    "usageCount": 14,
+    "createdAt": "2026-01-25T09:00:00Z",
+    "updatedAt": "2026-03-23T10:00:00Z"
+  }
+]

@@ -13,6 +13,7 @@ import {
   BarChart3,
   FileStack,
   Users,
+  Brain,
   PanelLeft,
   PanelLeftClose,
   type LucideIcon,
@@ -44,6 +45,7 @@ export function Sidebar(): JSX.Element {
     { path: "/analytics", label: t("sidebar.nav.analytics"), icon: BarChart3 },
     { path: "/plans", label: t("sidebar.nav.plans"), icon: FileStack },
     { path: "/community", label: t("sidebar.nav.community"), icon: Users },
+    { path: "/memory", label: t("sidebar.nav.memory"), icon: Brain },
     { path: "/settings", label: t("sidebar.nav.settings"), icon: Settings },
   ];
 

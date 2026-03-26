@@ -1,0 +1,112 @@
+{
+  "totalSessions": 37,
+  "totalCostUsd": 15.4,
+  "totalInputTokens": 1708679,
+  "totalOutputTokens": 626836,
+  "totalCacheReadTokens": 861150,
+  "totalCacheCreationTokens": 162443,
+  "totalDurationSeconds": 9342,
+  "averageCostPerSession": 0.4161,
+  "averageDurationSeconds": 252,
+  "activityByDay": [
+    {
+      "date": "2026-03-20",
+      "count": 9
+    },
+    {
+      "date": "2026-03-21",
+      "count": 1
+    },
+    {
+      "date": "2026-03-22",
+      "count": 1
+    },
+    {
+      "date": "2026-03-23",
+      "count": 8
+    },
+    {
+      "date": "2026-03-24",
+      "count": 3
+    },
+    {
+      "date": "2026-03-25",
+      "count": 3
+    },
+    {
+      "date": "2026-03-26",
+      "count": 12
+    }
+  ],
+  "modelUsage": {
+    "claude-sonnet-4-20250514": 20,
+    "claude-opus-4-20250514": 7,
+    "claude-haiku-3.5-20241022": 5,
+    "claude-sonnet-3.5-20241022": 3
+  },
+  "topProjects": [
+    {
+      "projectPath": "/Users/demo/Desktop/data-pipeline",
+      "sessionCount": 68,
+      "totalCost": 61.73
+    },
+    {
+      "projectPath": "/Users/demo/Desktop/BruceY-rgb",
+      "sessionCount": 66,
+      "totalCost": 127.55
+    },
+    {
+      "projectPath": "/Users/demo/Desktop/design-system",
+      "sessionCount": 61,
+      "totalCost": 67.12
+    },
+    {
+      "projectPath": "/Users/demo/Desktop/infra-config",
+      "sessionCount": 59,
+      "totalCost": 90.56
+    },
+    {
+      "projectPath": "/Users/demo/Desktop/mobile-app",
+      "sessionCount": 53,
+      "totalCost": 41.04
+    },
+    {
+      "projectPath": "/Users/demo/Desktop/DingYuefeng",
+      "sessionCount": 44,
+      "totalCost": 79.98
+    },
+    {
+      "projectPath": "/Users/demo/Desktop/ClaudeDeck",
+      "sessionCount": 31,
+      "totalCost": 30.78
+    },
+    {
+      "projectPath": "/Users/demo/Desktop/TermHub",
+      "sessionCount": 27,
+      "totalCost": 40.37
+    },
+    {
+      "projectPath": "/Users/demo/Desktop/api-gateway",
+      "sessionCount": 21,
+      "totalCost": 22.24
+    },
+    {
+      "projectPath": "/Users/demo/Desktop/HIMA-AIP",
+      "sessionCount": 15,
+      "totalCost": 7.72
+    }
+  ],
+  "toolUsage": {
+    "Read": 851,
+    "Write": 451,
+    "Edit": 389,
+    "Bash": 540,
+    "Glob": 348,
+    "Grep": 484,
+    "WebFetch": 130,
+    "WebSearch": 84,
+    "Task": 67,
+    "TodoWrite": 17,
+    "NotebookEdit": 8
+  }
+}

@@ -1,0 +1,315 @@
+[
+  {
+    "projectDir": "/Users/demo/Desktop/HIMA-AIP",
+    "projectName": "HIMA-AIP",
+    "agentCount": 3,
+    "activeCount": 1,
+    "lastActivity": "2026-03-21T20:26:00",
+    "sessions": [
+      {
+        "sessionId": "sess-hima-0000",
+        "projectDir": "/Users/demo/Desktop/HIMA-AIP",
+        "jsonlFile": "sess-hima-0000.jsonl",
+        "isActive": true,
+        "lastModified": "2026-03-21T20:26:00"
+      },
+      {
+        "sessionId": "sess-hima-0001",
+        "projectDir": "/Users/demo/Desktop/HIMA-AIP",
+        "jsonlFile": "sess-hima-0001.jsonl",
+        "isActive": false,
+        "lastModified": "2026-03-21T13:14:00"
+      },
+      {
+        "sessionId": "sess-hima-0002",
+        "projectDir": "/Users/demo/Desktop/HIMA-AIP",
+        "jsonlFile": "sess-hima-0002.jsonl",
+        "isActive": false,
+        "lastModified": "2026-03-09T14:03:00"
+      },
+      {
+        "sessionId": "sess-hima-0003",
+        "projectDir": "/Users/demo/Desktop/HIMA-AIP",
+        "jsonlFile": "sess-hima-0003.jsonl",
+        "isActive": false,
+        "lastModified": "2026-03-25T14:02:00"
+      }
+    ]
+  },
+  {
+    "projectDir": "/Users/demo/Desktop/TermHub",
+    "projectName": "TermHub",
+    "agentCount": 4,
+    "activeCount": 1,
+    "lastActivity": "2026-03-01T11:42:00",
+    "sessions": [
+      {
+        "sessionId": "sess-term-0000",
+        "projectDir": "/Users/demo/Desktop/TermHub",
+        "jsonlFile": "sess-term-0000.jsonl",
+        "isActive": true,
+        "lastModified": "2026-03-01T11:42:00"
+      },
+      {
+        "sessionId": "sess-term-0001",
+        "projectDir": "/Users/demo/Desktop/TermHub",
+        "jsonlFile": "sess-term-0001.jsonl",
+        "isActive": false,
+        "lastModified": "2026-03-24T22:23:00"
+      },
+      {
+        "sessionId": "sess-term-0002",
+        "projectDir": "/Users/demo/Desktop/TermHub",
+        "jsonlFile": "sess-term-0002.jsonl",
+        "isActive": false,
+        "lastModified": "2026-03-13T15:38:00"
+      },
+      {
+        "sessionId": "sess-term-0003",
+        "projectDir": "/Users/demo/Desktop/TermHub",
+        "jsonlFile": "sess-term-0003.jsonl",
+        "isActive": false,
+        "lastModified": "2026-03-08T19:58:00"
+      },
+      {
+        "sessionId": "sess-term-0004",
+        "projectDir": "/Users/demo/Desktop/TermHub",
+        "jsonlFile": "sess-term-0004.jsonl",
+        "isActive": false,
+        "lastModified": "2026-03-05T15:39:00"
+      },
+      {
+        "sessionId": "sess-term-0005",
+        "projectDir": "/Users/demo/Desktop/TermHub",
+        "jsonlFile": "sess-term-0005.jsonl",
+        "isActive": false,
+        "lastModified": "2026-03-26T16:56:00"
+      }
+    ]
+  },
+  {
+    "projectDir": "/Users/demo/Desktop/ClaudeDeck",
+    "projectName": "ClaudeDeck",
+    "agentCount": 3,
+    "activeCount": 1,
+    "lastActivity": "2026-03-25T18:10:00",
+    "sessions": [
+      {
+        "sessionId": "sess-clau-0000",
+        "projectDir": "/Users/demo/Desktop/ClaudeDeck",
+        "jsonlFile": "sess-clau-0000.jsonl",
+        "isActive": true,
+        "lastModified": "2026-03-25T18:10:00"
+      },
+      {
+        "sessionId": "sess-clau-0001",
+        "projectDir": "/Users/demo/Desktop/ClaudeDeck",
+        "jsonlFile": "sess-clau-0001.jsonl",
+        "isActive": false,
+        "lastModified": "2026-03-08T17:33:00"
+      },
+      {
+        "sessionId": "sess-clau-0002",
+        "projectDir": "/Users/demo/Desktop/ClaudeDeck",
+        "jsonlFile": "sess-clau-0002.jsonl",
+        "isActive": false,
+        "lastModified": "2026-03-10T15:49:00"
+      },
+      {
+        "sessionId": "sess-clau-0003",
+        "projectDir": "/Users/demo/Desktop/ClaudeDeck",
+        "jsonlFile": "sess-clau-0003.jsonl",
+        "isActive": false,
+        "lastModified": "2026-03-03T14:38:00"
+      },
+      {
+        "sessionId": "sess-clau-0004",
+        "projectDir": "/Users/demo/Desktop/ClaudeDeck",
+        "jsonlFile": "sess-clau-0004.jsonl",
+        "isActive": false,
+        "lastModified": "2026-03-01T14:04:00"
+      },
+      {
+        "sessionId": "sess-clau-0005",
+        "projectDir": "/Users/demo/Desktop/ClaudeDeck",
+        "jsonlFile": "sess-clau-0005.jsonl",
+        "isActive": false,
+        "lastModified": "2026-03-18T09:45:00"
+      },
+      {
+        "sessionId": "sess-clau-0006",
+        "projectDir": "/Users/demo/Desktop/ClaudeDeck",
+        "jsonlFile": "sess-clau-0006.jsonl",
+        "isActive": false,
+        "lastModified": "2026-03-25T10:49:00"
+      },
+      {
+        "sessionId": "sess-clau-0007",
+        "projectDir": "/Users/demo/Desktop/ClaudeDeck",
+        "jsonlFile": "sess-clau-0007.jsonl",
+        "isActive": false,
+        "lastModified": "2026-03-21T08:23:00"
+      }
+    ]
+  },
+  {
+    "projectDir": "/Users/demo/Desktop/api-gateway",
+    "projectName": "api-gateway",
+    "agentCount": 5,
+    "activeCount": 1,
+    "lastActivity": "2026-03-09T15:41:00",
+    "sessions": [
+      {
+        "sessionId": "sess-api--0000",
+        "projectDir": "/Users/demo/Desktop/api-gateway",
+        "jsonlFile": "sess-api--0000.jsonl",
+        "isActive": true,
+        "lastModified": "2026-03-09T15:41:00"
+      },
+      {
+        "sessionId": "sess-api--0001",
+        "projectDir": "/Users/demo/Desktop/api-gateway",
+        "jsonlFile": "sess-api--0001.jsonl",
+        "isActive": false,
+        "lastModified": "2026-03-26T22:21:00"
+      },
+      {
+        "sessionId": "sess-api--0002",
+        "projectDir": "/Users/demo/Desktop/api-gateway",
+        "jsonlFile": "sess-api--0002.jsonl",
+        "isActive": false,
+        "lastModified": "2026-03-10T21:34:00"
+      },
+      {
+        "sessionId": "sess-api--0003",
+        "projectDir": "/Users/demo/Desktop/api-gateway",
+        "jsonlFile": "sess-api--0003.jsonl",
+        "isActive": false,
+        "lastModified": "2026-03-20T13:58:00"
+      },
+      {
+        "sessionId": "sess-api--0004",
+        "projectDir": "/Users/demo/Desktop/api-gateway",
+        "jsonlFile": "sess-api--0004.jsonl",
+        "isActive": false,
+        "lastModified": "2026-03-10T21:30:00"
+      },
+      {
+        "sessionId": "sess-api--0005",
+        "projectDir": "/Users/demo/Desktop/api-gateway",
+        "jsonlFile": "sess-api--0005.jsonl",
+        "isActive": false,
+        "lastModified": "2026-03-17T15:24:00"
+      }
+    ]
+  },
+  {
+    "projectDir": "/Users/demo/Desktop/mobile-app",
+    "projectName": "mobile-app",
+    "agentCount": 3,
+    "activeCount": 1,
+    "lastActivity": "2026-03-18T22:43:00",
+    "sessions": [
+      {
+        "sessionId": "sess-mobi-0000",
+        "projectDir": "/Users/demo/Desktop/mobile-app",
+        "jsonlFile": "sess-mobi-0000.jsonl",
+        "isActive": true,
+        "lastModified": "2026-03-18T22:43:00"
+      },
+      {
+        "sessionId": "sess-mobi-0001",
+        "projectDir": "/Users/demo/Desktop/mobile-app",
+        "jsonlFile": "sess-mobi-0001.jsonl",
+        "isActive": false,
+        "lastModified": "2026-03-20T17:42:00"
+      },
+      {
+        "sessionId": "sess-mobi-0002",
+        "projectDir": "/Users/demo/Desktop/mobile-app",
+        "jsonlFile": "sess-mobi-0002.jsonl",
+        "isActive": false,
+        "lastModified": "2026-03-26T17:08:00"
+      },
+      {
+        "sessionId": "sess-mobi-0003",
+        "projectDir": "/Users/demo/Desktop/mobile-app",
+        "jsonlFile": "sess-mobi-0003.jsonl",
+        "isActive": false,
+        "lastModified": "2026-03-16T13:05:00"
+      },
+      {
+        "sessionId": "sess-mobi-0004",
+        "projectDir": "/Users/demo/Desktop/mobile-app",
+        "jsonlFile": "sess-mobi-0004.jsonl",
+        "isActive": false,
+        "lastModified": "2026-03-23T15:21:00"
+      },
+      {
+        "sessionId": "sess-mobi-0005",
+        "projectDir": "/Users/demo/Desktop/mobile-app",
+        "jsonlFile": "sess-mobi-0005.jsonl",
+        "isActive": false,
+        "lastModified": "2026-03-18T16:39:00"
+      },
+      {
+        "sessionId": "sess-mobi-0006",
+        "projectDir": "/Users/demo/Desktop/mobile-app",
+        "jsonlFile": "sess-mobi-0006.jsonl",
+        "isActive": false,
+        "lastModified": "2026-03-21T09:16:00"
+      },
+      {
+        "sessionId": "sess-mobi-0007",
+        "projectDir": "/Users/demo/Desktop/mobile-app",
+        "jsonlFile": "sess-mobi-0007.jsonl",
+        "isActive": false,
+        "lastModified": "2026-03-21T12:59:00"
+      }
+    ]
+  },
+  {
+    "projectDir": "/Users/demo/Desktop/design-system",
+    "projectName": "design-system",
+    "agentCount": 3,
+    "activeCount": 1,
+    "lastActivity": "2026-03-20T16:14:00",
+    "sessions": [
+      {
+        "sessionId": "sess-desi-0000",
+        "projectDir": "/Users/demo/Desktop/design-system",
+        "jsonlFile": "sess-desi-0000.jsonl",
+        "isActive": true,
+        "lastModified": "2026-03-20T16:14:00"
+      },
+      {
+        "sessionId": "sess-desi-0001",
+        "projectDir": "/Users/demo/Desktop/design-system",
+        "jsonlFile": "sess-desi-0001.jsonl",
+        "isActive": false,
+        "lastModified": "2026-03-11T22:57:00"
+      },
+      {
+        "sessionId": "sess-desi-0002",
+        "projectDir": "/Users/demo/Desktop/design-system",
+        "jsonlFile": "sess-desi-0002.jsonl",
+        "isActive": false,
+        "lastModified": "2026-03-11T22:15:00"
+      },
+      {
+        "sessionId": "sess-desi-0003",
+        "projectDir": "/Users/demo/Desktop/design-system",
+        "jsonlFile": "sess-desi-0003.jsonl",
+        "isActive": false,
+        "lastModified": "2026-03-19T11:22:00"
+      },
+      {
+        "sessionId": "sess-desi-0004",
+        "projectDir": "/Users/demo/Desktop/design-system",
+        "jsonlFile": "sess-desi-0004.jsonl",
+        "isActive": false,
+        "lastModified": "2026-03-10T11:52:00"
+      }
+    ]
+  }
+]

@@ -2,8 +2,6 @@ import { app, shell, BrowserWindow, nativeImage } from "electron";
 import { join } from "path";
 import { electronApp, optimizer, is } from "@electron-toolkit/utils";
 import { registerHandlers, cleanupHandlers } from "./ipc/registerHandlers";
-import { marketplaceService } from "./services/MarketplaceService";
-import { demoDataService } from "./services/DemoDataService";
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -67,17 +65,8 @@ app.whenReady().then(async () => {
     }
   }
 
-  // Seed demo data on first launch
-  await demoDataService.initialize();
-
-  // Initialize default marketplace
-  await marketplaceService.initializeDefaultMarketplace();
-
-  // Sync plugins from Claude Code on startup
-  const synced = await marketplaceService.syncFromCC();
-  if (synced.length > 0) {
-    console.log(`[CSAM] Synced ${synced.length} plugins from Claude Code`);
-  }
+  // Demo mode — no file system initialization needed
+  console.log("[HIMA AIP] Starting in demo mode — all data is mock.");
 
   createWindow();
   app.on("activate", () => {

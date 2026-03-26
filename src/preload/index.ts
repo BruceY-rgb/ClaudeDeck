@@ -34,6 +34,11 @@ import type {
   CommunityOverview,
   InstallResult,
 } from "../shared/types/community";
+import type {
+  Memory,
+  MemoryChain,
+  MemoryOverview,
+} from "../shared/types/memory";
 
 // Types for plugin detail
 interface PluginDetail {
@@ -395,6 +400,22 @@ const api = {
       ipcRenderer.invoke(IPC.COMMUNITY_INSTALL_RESOURCE, resourceId),
     search: (query: string): Promise<CommunityResource[]> =>
       ipcRenderer.invoke(IPC.COMMUNITY_SEARCH, query),
+  },
+  memory: {
+    getOverview: (): Promise<MemoryOverview> =>
+      ipcRenderer.invoke(IPC.MEMORY_GET_OVERVIEW),
+    list: (category?: string, source?: string): Promise<Memory[]> =>
+      ipcRenderer.invoke(IPC.MEMORY_LIST, category, source),
+    get: (id: string): Promise<Memory | null> =>
+      ipcRenderer.invoke(IPC.MEMORY_GET, id),
+    search: (query: string): Promise<Memory[]> =>
+      ipcRenderer.invoke(IPC.MEMORY_SEARCH, query),
+    listChains: (): Promise<MemoryChain[]> =>
+      ipcRenderer.invoke(IPC.MEMORY_LIST_CHAINS),
+    getChain: (id: string): Promise<MemoryChain | null> =>
+      ipcRenderer.invoke(IPC.MEMORY_GET_CHAIN, id),
+    getChainMemories: (chainId: string): Promise<Memory[]> =>
+      ipcRenderer.invoke(IPC.MEMORY_GET_CHAIN_MEMORIES, chainId),
   },
 };
 

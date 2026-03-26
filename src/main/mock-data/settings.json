@@ -1,0 +1,16 @@
+{
+  "alwaysThinkingEnabled": true,
+  "enabledPlugins": {
+    "ui-ux-pro-max-skill": true,
+    "claude-code-power-pack": true,
+    "db-tools": true,
+    "devops-toolkit": true,
+    "local-project-helper": true,
+    "testing-framework": false
+  },
+  "env": {
+    "ANTHROPIC_API_KEY": "sk-ant-xxxxxxxxxxxx",
+    "GITHUB_TOKEN": "ghp_xxxxxxxxxxxx",
+    "NODE_ENV": "development"
+  }
+}

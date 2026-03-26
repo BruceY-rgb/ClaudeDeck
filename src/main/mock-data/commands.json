@@ -1,0 +1,66 @@
+[
+  {
+    "name": "lint-fix",
+    "description": "Run linter and auto-fix issues",
+    "body": "Run eslint --fix on the current project, then report remaining issues.",
+    "pluginId": "claude-code-power-pack",
+    "pluginName": "Claude Code Power Pack",
+    "filePath": "/mock/commands/lint-fix.md"
+  },
+  {
+    "name": "gen-types",
+    "description": "Generate TypeScript types from schema",
+    "body": "Generate TypeScript type definitions from the project's API schema or database schema.",
+    "pluginId": "db-tools",
+    "pluginName": "Database Tools Suite",
+    "filePath": "/mock/commands/gen-types.md"
+  },
+  {
+    "name": "deploy-preview",
+    "description": "Deploy a preview environment",
+    "body": "Build the project and deploy to a preview URL for testing.",
+    "pluginId": "devops-toolkit",
+    "pluginName": "DevOps Toolkit",
+    "filePath": "/mock/commands/deploy-preview.md"
+  },
+  {
+    "name": "audit-deps",
+    "description": "Audit project dependencies for vulnerabilities",
+    "body": "Run npm audit and report critical/high severity vulnerabilities with suggested fixes.",
+    "pluginId": "claude-code-power-pack",
+    "pluginName": "Claude Code Power Pack",
+    "filePath": "/mock/commands/audit-deps.md"
+  },
+  {
+    "name": "gen-migration",
+    "description": "Generate database migration files",
+    "body": "Analyze schema changes and generate migration files for Prisma or Drizzle.",
+    "pluginId": "db-tools",
+    "pluginName": "Database Tools Suite",
+    "filePath": "/mock/commands/gen-migration.md"
+  },
+  {
+    "name": "storybook-gen",
+    "description": "Generate Storybook stories for components",
+    "body": "Scan React components and generate corresponding Storybook stories with variants.",
+    "pluginId": "ui-ux-pro-max-skill",
+    "pluginName": "UI/UX Pro Max Skill",
+    "filePath": "/mock/commands/storybook-gen.md"
+  },
+  {
+    "name": "changelog",
+    "description": "Generate changelog from git commits",
+    "body": "Parse conventional commits and generate a formatted CHANGELOG.md entry.",
+    "pluginId": "claude-code-power-pack",
+    "pluginName": "Claude Code Power Pack",
+    "filePath": "/mock/commands/changelog.md"
+  },
+  {
+    "name": "benchmark",
+    "description": "Run performance benchmarks",
+    "body": "Execute performance benchmarks and generate comparison reports.",
+    "pluginId": "testing-framework",
+    "pluginName": "Testing Framework Pro",
+    "filePath": "/mock/commands/benchmark.md"
+  }
+]

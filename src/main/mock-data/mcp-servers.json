@@ -1,0 +1,69 @@
+[
+  {
+    "name": "filesystem",
+    "type": "stdio",
+    "command": "npx",
+    "args": [
+      "-y",
+      "@modelcontextprotocol/server-filesystem",
+      "/home/user/projects"
+    ],
+    "active": true
+  },
+  {
+    "name": "github",
+    "type": "stdio",
+    "command": "npx",
+    "args": [
+      "-y",
+      "@modelcontextprotocol/server-github"
+    ],
+    "env": {
+      "GITHUB_TOKEN": "ghp_xxxxxxxxxxxx"
+    },
+    "active": true
+  },
+  {
+    "name": "postgres",
+    "type": "stdio",
+    "command": "npx",
+    "args": [
+      "-y",
+      "@modelcontextprotocol/server-postgres",
+      "postgresql://localhost:5432/mydb"
+    ],
+    "active": true
+  },
+  {
+    "name": "brave-search",
+    "type": "stdio",
+    "command": "npx",
+    "args": [
+      "-y",
+      "@modelcontextprotocol/server-brave-search"
+    ],
+    "env": {
+      "BRAVE_API_KEY": "BSA_xxxxxxxxxxxx"
+    },
+    "active": false
+  },
+  {
+    "name": "slack",
+    "type": "stdio",
+    "command": "npx",
+    "args": [
+      "-y",
+      "@modelcontextprotocol/server-slack"
+    ],
+    "env": {
+      "SLACK_BOT_TOKEN": "xoxb-xxxxxxxxxxxx"
+    },
+    "active": true
+  },
+  {
+    "name": "custom-api",
+    "type": "http",
+    "url": "http://localhost:8080/mcp",
+    "active": true
+  }
+]

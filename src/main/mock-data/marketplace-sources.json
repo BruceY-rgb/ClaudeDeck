@@ -1,0 +1,29 @@
+[
+  {
+    "id": "official",
+    "source": {
+      "source": "github",
+      "repo": "anthropics/claude-code-plugins"
+    },
+    "installLocation": "/mock/marketplaces/official",
+    "lastUpdated": "2026-03-20T10:00:00Z"
+  },
+  {
+    "id": "community",
+    "source": {
+      "source": "github",
+      "repo": "community/claude-plugins"
+    },
+    "installLocation": "/mock/marketplaces/community",
+    "lastUpdated": "2026-03-18T14:30:00Z"
+  },
+  {
+    "id": "awesome-claude",
+    "source": {
+      "source": "github",
+      "repo": "nicekid1/everything-claude-code"
+    },
+    "installLocation": "/mock/marketplaces/awesome-claude",
+    "lastUpdated": "2026-03-15T09:00:00Z"
+  }
+]

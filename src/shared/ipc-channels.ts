@@ -138,4 +138,13 @@ export const IPC = {
   COMMUNITY_GET_RESOURCE: "community:get-resource",
   COMMUNITY_INSTALL_RESOURCE: "community:install-resource",
   COMMUNITY_SEARCH: "community:search",
+
+  // Memory Hub
+  MEMORY_GET_OVERVIEW: "memory:get-overview",
+  MEMORY_LIST: "memory:list",
+  MEMORY_GET: "memory:get",
+  MEMORY_SEARCH: "memory:search",
+  MEMORY_LIST_CHAINS: "memory:list-chains",
+  MEMORY_GET_CHAIN: "memory:get-chain",
+  MEMORY_GET_CHAIN_MEMORIES: "memory:get-chain-memories",
 } as const;

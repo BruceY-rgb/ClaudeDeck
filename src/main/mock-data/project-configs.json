@@ -1,0 +1,380 @@
+{
+  "/Users/demo/Desktop/HIMA-AIP": {
+    "agents": [
+      {
+        "name": "hima-aip-helper",
+        "description": "Project-specific helper for HIMA-AIP",
+        "tools": [
+          "Read",
+          "Write",
+          "Bash"
+        ],
+        "model": "sonnet",
+        "source": "personal",
+        "body": "You are a helper agent for the HIMA-AIP project.",
+        "projectDir": "/Users/demo/Desktop/HIMA-AIP"
+      }
+    ],
+    "skills": [
+      {
+        "name": "hima-aip-conventions",
+        "description": "Coding conventions for HIMA-AIP",
+        "userInvocable": false,
+        "body": "# HIMA-AIP Conventions\n\n- Use TypeScript strict mode\n- Follow ESLint rules\n- Write tests for all new code",
+        "source": "personal",
+        "filePath": "/Users/demo/Desktop/HIMA-AIP/.claude/skills/hima-aip-conventions/SKILL.md",
+        "hasReference": false,
+        "hasTemplates": false,
+        "projectDir": "/Users/demo/Desktop/HIMA-AIP"
+      }
+    ],
+    "mcpServers": [
+      {
+        "name": "project-fs",
+        "type": "stdio",
+        "command": "npx",
+        "args": [
+          "-y",
+          "@modelcontextprotocol/server-filesystem",
+          "/Users/demo/Desktop/HIMA-AIP"
+        ],
+        "active": true,
+        "projectDir": "/Users/demo/Desktop/HIMA-AIP"
+      }
+    ],
+    "plans": [
+      {
+        "name": "hima-aip-roadmap.md",
+        "content": "# HIMA-AIP Roadmap\n\n## Q1 2026\n- Core feature development\n- Testing infrastructure\n\n## Q2 2026\n- Performance optimization\n- Public launch",
+        "filePath": "/Users/demo/Desktop/HIMA-AIP/.claude/plans/hima-aip-roadmap.md",
+        "projectDir": "/Users/demo/Desktop/HIMA-AIP",
+        "lastModified": "2026-03-20T10:00:00Z"
+      }
+    ],
+    "hooks": [],
+    "commands": [],
+    "summary": {
+      "agentCount": 1,
+      "skillCount": 1,
+      "mcpCount": 1,
+      "planCount": 1,
+      "hookCount": 0,
+      "commandCount": 0
+    }
+  },
+  "/Users/demo/Desktop/TermHub": {
+    "agents": [
+      {
+        "name": "termhub-helper",
+        "description": "Project-specific helper for TermHub",
+        "tools": [
+          "Read",
+          "Write",
+          "Bash"
+        ],
+        "model": "sonnet",
+        "source": "personal",
+        "body": "You are a helper agent for the TermHub project.",
+        "projectDir": "/Users/demo/Desktop/TermHub"
+      }
+    ],
+    "skills": [
+      {
+        "name": "termhub-conventions",
+        "description": "Coding conventions for TermHub",
+        "userInvocable": false,
+        "body": "# TermHub Conventions\n\n- Use TypeScript strict mode\n- Follow ESLint rules\n- Write tests for all new code",
+        "source": "personal",
+        "filePath": "/Users/demo/Desktop/TermHub/.claude/skills/termhub-conventions/SKILL.md",
+        "hasReference": false,
+        "hasTemplates": false,
+        "projectDir": "/Users/demo/Desktop/TermHub"
+      }
+    ],
+    "mcpServers": [
+      {
+        "name": "project-fs",
+        "type": "stdio",
+        "command": "npx",
+        "args": [
+          "-y",
+          "@modelcontextprotocol/server-filesystem",
+          "/Users/demo/Desktop/TermHub"
+        ],
+        "active": true,
+        "projectDir": "/Users/demo/Desktop/TermHub"
+      }
+    ],
+    "plans": [
+      {
+        "name": "termhub-roadmap.md",
+        "content": "# TermHub Roadmap\n\n## Q1 2026\n- Core feature development\n- Testing infrastructure\n\n## Q2 2026\n- Performance optimization\n- Public launch",
+        "filePath": "/Users/demo/Desktop/TermHub/.claude/plans/termhub-roadmap.md",
+        "projectDir": "/Users/demo/Desktop/TermHub",
+        "lastModified": "2026-03-20T10:00:00Z"
+      }
+    ],
+    "hooks": [],
+    "commands": [],
+    "summary": {
+      "agentCount": 1,
+      "skillCount": 1,
+      "mcpCount": 1,
+      "planCount": 1,
+      "hookCount": 0,
+      "commandCount": 0
+    }
+  },
+  "/Users/demo/Desktop/ClaudeDeck": {
+    "agents": [
+      {
+        "name": "claudedeck-helper",
+        "description": "Project-specific helper for ClaudeDeck",
+        "tools": [
+          "Read",
+          "Write",
+          "Bash"
+        ],
+        "model": "sonnet",
+        "source": "personal",
+        "body": "You are a helper agent for the ClaudeDeck project.",
+        "projectDir": "/Users/demo/Desktop/ClaudeDeck"
+      }
+    ],
+    "skills": [
+      {
+        "name": "claudedeck-conventions",
+        "description": "Coding conventions for ClaudeDeck",
+        "userInvocable": false,
+        "body": "# ClaudeDeck Conventions\n\n- Use TypeScript strict mode\n- Follow ESLint rules\n- Write tests for all new code",
+        "source": "personal",
+        "filePath": "/Users/demo/Desktop/ClaudeDeck/.claude/skills/claudedeck-conventions/SKILL.md",
+        "hasReference": false,
+        "hasTemplates": false,
+        "projectDir": "/Users/demo/Desktop/ClaudeDeck"
+      }
+    ],
+    "mcpServers": [
+      {
+        "name": "project-fs",
+        "type": "stdio",
+        "command": "npx",
+        "args": [
+          "-y",
+          "@modelcontextprotocol/server-filesystem",
+          "/Users/demo/Desktop/ClaudeDeck"
+        ],
+        "active": true,
+        "projectDir": "/Users/demo/Desktop/ClaudeDeck"
+      }
+    ],
+    "plans": [
+      {
+        "name": "claudedeck-roadmap.md",
+        "content": "# ClaudeDeck Roadmap\n\n## Q1 2026\n- Core feature development\n- Testing infrastructure\n\n## Q2 2026\n- Performance optimization\n- Public launch",
+        "filePath": "/Users/demo/Desktop/ClaudeDeck/.claude/plans/claudedeck-roadmap.md",
+        "projectDir": "/Users/demo/Desktop/ClaudeDeck",
+        "lastModified": "2026-03-20T10:00:00Z"
+      }
+    ],
+    "hooks": [],
+    "commands": [],
+    "summary": {
+      "agentCount": 1,
+      "skillCount": 1,
+      "mcpCount": 1,
+      "planCount": 1,
+      "hookCount": 0,
+      "commandCount": 0
+    }
+  },
+  "/Users/demo/Desktop/api-gateway": {
+    "agents": [
+      {
+        "name": "api-gateway-helper",
+        "description": "Project-specific helper for api-gateway",
+        "tools": [
+          "Read",
+          "Write",
+          "Bash"
+        ],
+        "model": "sonnet",
+        "source": "personal",
+        "body": "You are a helper agent for the api-gateway project.",
+        "projectDir": "/Users/demo/Desktop/api-gateway"
+      }
+    ],
+    "skills": [
+      {
+        "name": "api-gateway-conventions",
+        "description": "Coding conventions for api-gateway",
+        "userInvocable": false,
+        "body": "# api-gateway Conventions\n\n- Use TypeScript strict mode\n- Follow ESLint rules\n- Write tests for all new code",
+        "source": "personal",
+        "filePath": "/Users/demo/Desktop/api-gateway/.claude/skills/api-gateway-conventions/SKILL.md",
+        "hasReference": false,
+        "hasTemplates": false,
+        "projectDir": "/Users/demo/Desktop/api-gateway"
+      }
+    ],
+    "mcpServers": [
+      {
+        "name": "project-fs",
+        "type": "stdio",
+        "command": "npx",
+        "args": [
+          "-y",
+          "@modelcontextprotocol/server-filesystem",
+          "/Users/demo/Desktop/api-gateway"
+        ],
+        "active": true,
+        "projectDir": "/Users/demo/Desktop/api-gateway"
+      }
+    ],
+    "plans": [
+      {
+        "name": "api-gateway-roadmap.md",
+        "content": "# api-gateway Roadmap\n\n## Q1 2026\n- Core feature development\n- Testing infrastructure\n\n## Q2 2026\n- Performance optimization\n- Public launch",
+        "filePath": "/Users/demo/Desktop/api-gateway/.claude/plans/api-gateway-roadmap.md",
+        "projectDir": "/Users/demo/Desktop/api-gateway",
+        "lastModified": "2026-03-20T10:00:00Z"
+      }
+    ],
+    "hooks": [],
+    "commands": [],
+    "summary": {
+      "agentCount": 1,
+      "skillCount": 1,
+      "mcpCount": 1,
+      "planCount": 1,
+      "hookCount": 0,
+      "commandCount": 0
+    }
+  },
+  "/Users/demo/Desktop/mobile-app": {
+    "agents": [
+      {
+        "name": "mobile-app-helper",
+        "description": "Project-specific helper for mobile-app",
+        "tools": [
+          "Read",
+          "Write",
+          "Bash"
+        ],
+        "model": "sonnet",
+        "source": "personal",
+        "body": "You are a helper agent for the mobile-app project.",
+        "projectDir": "/Users/demo/Desktop/mobile-app"
+      }
+    ],
+    "skills": [
+      {
+        "name": "mobile-app-conventions",
+        "description": "Coding conventions for mobile-app",
+        "userInvocable": false,
+        "body": "# mobile-app Conventions\n\n- Use TypeScript strict mode\n- Follow ESLint rules\n- Write tests for all new code",
+        "source": "personal",
+        "filePath": "/Users/demo/Desktop/mobile-app/.claude/skills/mobile-app-conventions/SKILL.md",
+        "hasReference": false,
+        "hasTemplates": false,
+        "projectDir": "/Users/demo/Desktop/mobile-app"
+      }
+    ],
+    "mcpServers": [
+      {
+        "name": "project-fs",
+        "type": "stdio",
+        "command": "npx",
+        "args": [
+          "-y",
+          "@modelcontextprotocol/server-filesystem",
+          "/Users/demo/Desktop/mobile-app"
+        ],
+        "active": true,
+        "projectDir": "/Users/demo/Desktop/mobile-app"
+      }
+    ],
+    "plans": [
+      {
+        "name": "mobile-app-roadmap.md",
+        "content": "# mobile-app Roadmap\n\n## Q1 2026\n- Core feature development\n- Testing infrastructure\n\n## Q2 2026\n- Performance optimization\n- Public launch",
+        "filePath": "/Users/demo/Desktop/mobile-app/.claude/plans/mobile-app-roadmap.md",
+        "projectDir": "/Users/demo/Desktop/mobile-app",
+        "lastModified": "2026-03-20T10:00:00Z"
+      }
+    ],
+    "hooks": [],
+    "commands": [],
+    "summary": {
+      "agentCount": 1,
+      "skillCount": 1,
+      "mcpCount": 1,
+      "planCount": 1,
+      "hookCount": 0,
+      "commandCount": 0
+    }
+  },
+  "/Users/demo/Desktop/design-system": {
+    "agents": [
+      {
+        "name": "design-system-helper",
+        "description": "Project-specific helper for design-system",
+        "tools": [
+          "Read",
+          "Write",
+          "Bash"
+        ],
+        "model": "sonnet",
+        "source": "personal",
+        "body": "You are a helper agent for the design-system project.",
+        "projectDir": "/Users/demo/Desktop/design-system"
+      }
+    ],
+    "skills": [
+      {
+        "name": "design-system-conventions",
+        "description": "Coding conventions for design-system",
+        "userInvocable": false,
+        "body": "# design-system Conventions\n\n- Use TypeScript strict mode\n- Follow ESLint rules\n- Write tests for all new code",
+        "source": "personal",
+        "filePath": "/Users/demo/Desktop/design-system/.claude/skills/design-system-conventions/SKILL.md",
+        "hasReference": false,
+        "hasTemplates": false,
+        "projectDir": "/Users/demo/Desktop/design-system"
+      }
+    ],
+    "mcpServers": [
+      {
+        "name": "project-fs",
+        "type": "stdio",
+        "command": "npx",
+        "args": [
+          "-y",
+          "@modelcontextprotocol/server-filesystem",
+          "/Users/demo/Desktop/design-system"
+        ],
+        "active": true,
+        "projectDir": "/Users/demo/Desktop/design-system"
+      }
+    ],
+    "plans": [
+      {
+        "name": "design-system-roadmap.md",
+        "content": "# design-system Roadmap\n\n## Q1 2026\n- Core feature development\n- Testing infrastructure\n\n## Q2 2026\n- Performance optimization\n- Public launch",
+        "filePath": "/Users/demo/Desktop/design-system/.claude/plans/design-system-roadmap.md",
+        "projectDir": "/Users/demo/Desktop/design-system",
+        "lastModified": "2026-03-20T10:00:00Z"
+      }
+    ],
+    "hooks": [],
+    "commands": [],
+    "summary": {
+      "agentCount": 1,
+      "skillCount": 1,
+      "mcpCount": 1,
+      "planCount": 1,
+      "hookCount": 0,
+      "commandCount": 0
+    }
+  }
+}
