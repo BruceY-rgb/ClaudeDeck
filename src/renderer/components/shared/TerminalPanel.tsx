@@ -82,7 +82,7 @@ export function TerminalPanel({
 
   // Listen for CLI output
   useEffect(() => {
-    if (!terminalRef.current) return;
+    if (!terminalRef.current) return undefined;
 
     const unsubscribe = window.electronAPI.cli.onOutput((data) => {
       const term = terminalRef.current;
@@ -100,7 +100,7 @@ export function TerminalPanel({
       }
     });
 
-    return unsubscribe;
+    return () => { unsubscribe(); };
   }, []);
 
   const handleSubmit = (e: React.FormEvent): void => {

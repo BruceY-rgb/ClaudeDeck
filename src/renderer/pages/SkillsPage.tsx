@@ -79,10 +79,11 @@ function SkillCard({
             />
           )}
           {shadowed && (
-            <AlertTriangle
-              className="w-4 h-4 text-orange-500 shrink-0"
-              title="This skill is shadowed by your personal skill"
-            />
+            <span title="This skill is shadowed by your personal skill">
+              <AlertTriangle
+                className="w-4 h-4 text-orange-500 shrink-0"
+              />
+            </span>
           )}
           <h3 className="font-semibold text-sm">{skill.name}</h3>
         </div>

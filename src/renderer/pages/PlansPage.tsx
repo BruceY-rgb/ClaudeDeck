@@ -112,7 +112,7 @@ export function PlansPage(): JSX.Element {
         setIsEditing(false);
       }
     } else {
-      alert(t("plans.deleteFailed", { error: result.error }));
+      alert(t("plans.deleteFailed", { error: result.error ?? "unknown" }));
     }
   };
 
@@ -186,7 +186,7 @@ export function PlansPage(): JSX.Element {
         setIsEditing(false);
         await loadPlans();
       } else {
-        alert(t("plans.deleteFailed", { error: result.error }));
+        alert(t("plans.deleteFailed", { error: result.error ?? "unknown" }));
       }
     } catch (err) {
       console.error("Save failed:", err);

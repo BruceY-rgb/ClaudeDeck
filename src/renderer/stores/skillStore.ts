@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import type { Skill } from '@shared/types/skill'
 
-interface SkillFormData {
+export interface SkillFormData {
   name: string
   description: string
   userInvocable?: boolean

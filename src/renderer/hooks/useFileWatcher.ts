@@ -27,6 +27,6 @@ export function useFileWatcher(onChanged: () => void): void {
       // Call the refresh callback
       onChanged()
     })
-    return unsubscribe
+    return () => { unsubscribe() }
   }, [onChanged, showToast])
 }

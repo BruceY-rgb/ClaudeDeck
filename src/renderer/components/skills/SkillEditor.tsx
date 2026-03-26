@@ -5,7 +5,7 @@ import remarkGfm from "remark-gfm";
 import { useTheme } from "../../hooks/useTheme";
 import { useAppPreferences } from "../../hooks/useAppPreferences";
 import { useTranslation } from "../../i18n/LanguageContext";
-import type { SkillFormData } from "../stores/skillStore";
+import type { SkillFormData } from "../../stores/skillStore";
 
 interface SkillEditorProps {
   initialData?: SkillFormData;

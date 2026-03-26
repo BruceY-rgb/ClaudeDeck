@@ -109,7 +109,7 @@ export function AgentDetailPage(): JSX.Element {
         setIsRunning(false);
       }
     });
-    return unsubscribe;
+    return () => { unsubscribe(); };
   }, []);
 
   if (loading)

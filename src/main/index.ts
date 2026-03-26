@@ -61,7 +61,7 @@ app.whenReady().then(async () => {
     const dockIconPath = getIconPath();
     const dockIcon = nativeImage.createFromPath(dockIconPath);
     if (!dockIcon.isEmpty()) {
-      app.dock.setIcon(dockIcon);
+      app.dock?.setIcon(dockIcon);
     }
   }
 

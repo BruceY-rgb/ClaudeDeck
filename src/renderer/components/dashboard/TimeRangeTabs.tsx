@@ -1,8 +1,10 @@
 import { useTranslation } from "../../i18n/LanguageContext";
 
+type TimeRange = "7d" | "30d" | "90d" | "year";
+
 interface TimeRangeTabsProps {
   value: string;
-  onChange: (range: string) => void;
+  onChange: (range: TimeRange) => void;
 }
 
 const ranges = ["7d", "30d", "90d", "year"] as const;

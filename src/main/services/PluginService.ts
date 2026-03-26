@@ -14,7 +14,7 @@ import type { InstalledPluginRecord } from "../../shared/types/marketplace";
 import type { Agent } from "../../shared/types/agent";
 import type { Skill } from "../../shared/types/skill";
 import type { Command } from "../../shared/types/command";
-import type { HookEntry } from "../../shared/types/hook";
+import type { HookEntry, HookDefinition, HookMatcher, HookEvent } from "../../shared/types/hook";
 import { readdir, stat, readFile, unlink, writeFile, mkdir } from "fs/promises";
 import { join, basename } from "path";
 
@@ -23,7 +23,7 @@ export interface PluginDetail {
   agents: Agent[];
   skills: Skill[];
   commands: Command[];
-  hooks: HookEntry[];
+  hooks: HookDefinition[];
 }
 
 export class PluginService {
@@ -249,7 +249,7 @@ export class PluginService {
   private async loadHooks(
     installPath: string,
     pluginId: string,
-  ): Promise<HookEntry[]> {
+  ): Promise<HookDefinition[]> {
     const hooksFile = join(installPath, "hooks", "hooks.json");
     if (!(await fsService.exists(hooksFile))) return [];
 
@@ -259,20 +259,25 @@ export class PluginService {
       }>(hooksFile);
       if (!data.hooks) return [];
 
-      const hooks: HookEntry[] = [];
+      const hooks: HookDefinition[] = [];
       for (const [event, configs] of Object.entries(data.hooks)) {
         const configArray = Array.isArray(configs) ? configs : [configs];
+        const matchers: HookMatcher[] = [];
         for (const config of configArray) {
-          hooks.push({
-            pluginId,
-            event: event as HookEntry["event"],
+          matchers.push({
             matcher:
               ((config as Record<string, unknown>).matcher as string) || "",
             hooks:
               ((config as Record<string, unknown>)
-                .hooks as HookEntry["hooks"]) || [],
+                .hooks as HookEntry[]) || [],
           });
         }
+        hooks.push({
+          pluginId,
+          pluginName: pluginId,
+          event: event as HookEvent,
+          matchers,
+        });
       }
       return hooks;
     } catch {

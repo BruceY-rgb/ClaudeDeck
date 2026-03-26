@@ -178,7 +178,7 @@ export function SkillDetailPage(): JSX.Element {
         setIsRunning(false);
       }
     });
-    return unsubscribe;
+    return () => { unsubscribe(); };
   }, []);
 
   if (loading) {

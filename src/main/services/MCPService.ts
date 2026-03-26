@@ -20,6 +20,7 @@ interface MCPTemplate {
   args?: string[]
   url?: string
   requiredEnvVars?: string[]
+  env?: Record<string, string>
   pluginId: string
   pluginName: string
 }
@@ -180,7 +181,7 @@ export class MCPService {
 
   private async writeClaudeConfig(config: ClaudeConfig): Promise<void> {
     // Write to ~/.claude.json
-    await fsService.writeJSON(CLAUDE_JSON_FILE, config, { spaces: 2 })
+    await fsService.writeJSON(CLAUDE_JSON_FILE, config)
   }
 }
 

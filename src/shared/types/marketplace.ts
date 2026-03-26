@@ -37,6 +37,6 @@ export interface InstalledPluginRecord {
   installedAt: string
   lastUpdated: string
   installPath: string
-  gitCommitSha: string
+  gitCommitSha?: string
   isLocal: boolean
 }

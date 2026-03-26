@@ -209,7 +209,7 @@ export function ProjectDetailPage(): JSX.Element {
       alert(t("office.sessionDeleted"));
     } else {
       console.error("Failed to delete agent:", result.error);
-      alert(t("office.deleteFailed", { error: result.error }));
+      alert(t("office.deleteFailed", { error: result.error ?? "unknown" }));
     }
   };
 

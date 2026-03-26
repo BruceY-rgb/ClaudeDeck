@@ -6,6 +6,7 @@
     "moduleResolution": "bundler",
     "strict": true,
     "jsx": "react-jsx",
+    "jsxImportSource": "react",
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
@@ -20,6 +21,7 @@
   "include": [
     "src/renderer/**/*",
     "src/shared/**/*",
-    "src/preload/*.d.ts"
+    "src/preload/*.d.ts",
+    "src/renderer/i18n/locales/*.json"
   ]
 }

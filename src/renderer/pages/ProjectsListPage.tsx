@@ -34,7 +34,7 @@ export function ProjectsListPage(): JSX.Element {
       setProjects((prev) => prev.filter((p) => p.projectDir !== projectDir));
       alert(t("office.deleted", { count: result.deletedCount || 0 }));
     } else {
-      alert(t("office.deleteFailed", { error: result.error }));
+      alert(t("office.deleteFailed", { error: result.error ?? "unknown" }));
     }
   };
 

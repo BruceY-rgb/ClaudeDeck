@@ -8,8 +8,8 @@ export interface PlanInfo {
   fileName: string;
   filePath: string;
   name: string;
-  createdAt: Date;
-  modifiedAt: Date;
+  createdAt: string;
+  modifiedAt: string;
   size: number;
   preview: string;
 }
