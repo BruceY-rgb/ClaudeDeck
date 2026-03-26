@@ -1,7 +1,7 @@
 {
-  "name": "claude-skills-and-agents-manager",
-  "version": "2.0.0",
-  "description": "Visual manager for Claude Code agents, skills, plugins and more",
+  "name": "agent-forge",
+  "version": "2.0.1",
+  "description": "Visual manager for Claude Code agents, skills, plugins and more - AgentForge",
   "main": "./out/main/index.js",
   "scripts": {
     "dev": "electron-vite dev",
