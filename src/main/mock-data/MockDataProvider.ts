@@ -11,9 +11,9 @@ import { readFileSync } from "fs"
 
 // ─── Resolve base path (works both in dev and packaged app) ─────────────────
 function resolveMockDir(): string {
-  // In development the files sit next to this module after compilation
-  // In production they are bundled by Vite into the same chunk
-  return join(__dirname, ".")
+  // In development: out/main/mock-data/
+  // In production (packaged): the copyMockDataPlugin copies JSON files to out/main/mock-data/
+  return join(__dirname, "mock-data")
 }
 
 function loadJSON<T>(fileName: string): T {
