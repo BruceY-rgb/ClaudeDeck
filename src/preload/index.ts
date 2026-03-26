@@ -28,6 +28,12 @@ import type {
   ProjectHookFormData,
 } from "../shared/types/project-config";
 import type { ParsedSession, AnalyticsData, WrappedData, ActivityDay } from "../shared/types/session-detail";
+import type {
+  CommunityContributor,
+  CommunityResource,
+  CommunityOverview,
+  InstallResult,
+} from "../shared/types/community";
 
 // Types for plugin detail
 interface PluginDetail {
@@ -373,6 +379,22 @@ const api = {
       ipcRenderer.invoke(IPC.FILE_REVEAL, filePath),
     revealMCPConfig: (): Promise<void> =>
       ipcRenderer.invoke(IPC.FILE_REVEAL_MCP_CONFIG),
+  },
+  community: {
+    getOverview: (): Promise<CommunityOverview> =>
+      ipcRenderer.invoke(IPC.COMMUNITY_GET_OVERVIEW),
+    listContributors: (query?: string): Promise<CommunityContributor[]> =>
+      ipcRenderer.invoke(IPC.COMMUNITY_LIST_CONTRIBUTORS, query),
+    getContributor: (id: string): Promise<CommunityContributor | null> =>
+      ipcRenderer.invoke(IPC.COMMUNITY_GET_CONTRIBUTOR, id),
+    listResources: (contributorId?: string, type?: string): Promise<CommunityResource[]> =>
+      ipcRenderer.invoke(IPC.COMMUNITY_LIST_RESOURCES, contributorId, type),
+    getResource: (id: string): Promise<CommunityResource | null> =>
+      ipcRenderer.invoke(IPC.COMMUNITY_GET_RESOURCE, id),
+    installResource: (resourceId: string): Promise<InstallResult> =>
+      ipcRenderer.invoke(IPC.COMMUNITY_INSTALL_RESOURCE, resourceId),
+    search: (query: string): Promise<CommunityResource[]> =>
+      ipcRenderer.invoke(IPC.COMMUNITY_SEARCH, query),
   },
 };
 

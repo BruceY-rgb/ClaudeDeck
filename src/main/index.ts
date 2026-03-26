@@ -3,6 +3,7 @@ import { join } from "path";
 import { electronApp, optimizer, is } from "@electron-toolkit/utils";
 import { registerHandlers, cleanupHandlers } from "./ipc/registerHandlers";
 import { marketplaceService } from "./services/MarketplaceService";
+import { demoDataService } from "./services/DemoDataService";
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -65,6 +66,9 @@ app.whenReady().then(async () => {
       app.dock.setIcon(dockIcon);
     }
   }
+
+  // Seed demo data on first launch
+  await demoDataService.initialize();
 
   // Initialize default marketplace
   await marketplaceService.initializeDefaultMarketplace();

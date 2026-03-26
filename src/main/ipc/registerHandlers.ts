@@ -17,6 +17,7 @@ import { planService } from "../services/PlanService";
 import { projectConfigService } from "../services/ProjectConfigService";
 import { sessionParserService } from "../services/SessionParserService";
 import { sessionAnalyticsService } from "../services/SessionAnalyticsService";
+import { communityService } from "../services/CommunityService";
 import type { ProjectAgentFormData, ProjectSkillFormData, ProjectMCPFormData, ProjectCommandFormData, ProjectHookFormData } from "../../shared/types/project-config";
 
 let watcher: ReturnType<typeof watch> | null = null;
@@ -450,6 +451,35 @@ export function registerHandlers(mainWindow: BrowserWindow): void {
 
   ipcMain.handle(IPC.ANALYTICS_GET_WRAPPED, async () => {
     return sessionAnalyticsService.getWrapped();
+  });
+
+  // --- Community ---
+  ipcMain.handle(IPC.COMMUNITY_GET_OVERVIEW, async () => {
+    return communityService.getOverview();
+  });
+
+  ipcMain.handle(IPC.COMMUNITY_LIST_CONTRIBUTORS, async (_e, query?: string) => {
+    return communityService.listContributors(query);
+  });
+
+  ipcMain.handle(IPC.COMMUNITY_GET_CONTRIBUTOR, async (_e, id: string) => {
+    return communityService.getContributor(id);
+  });
+
+  ipcMain.handle(IPC.COMMUNITY_LIST_RESOURCES, async (_e, contributorId?: string, type?: string) => {
+    return communityService.listResources(contributorId, type);
+  });
+
+  ipcMain.handle(IPC.COMMUNITY_GET_RESOURCE, async (_e, id: string) => {
+    return communityService.getResource(id);
+  });
+
+  ipcMain.handle(IPC.COMMUNITY_INSTALL_RESOURCE, async (_e, resourceId: string) => {
+    return communityService.installResource(resourceId);
+  });
+
+  ipcMain.handle(IPC.COMMUNITY_SEARCH, async (_e, query: string) => {
+    return communityService.search(query);
   });
 
   // --- File Watcher ---

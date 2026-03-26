@@ -1,0 +1,90 @@
+{
+  "claude-code-plugins": {
+    "source": {
+      "source": "github",
+      "repo": "anthropic/claude-code-plugins"
+    },
+    "installLocation": "/Users/yangsmac/.claude/plugins/marketplaces/claude-code-plugins",
+    "lastUpdated": "2026-02-20T02:03:19.694Z"
+  },
+  "awesome-claude-code-subagents": {
+    "source": {
+      "source": "git",
+      "url": "https://github.com/VoltAgent/awesome-claude-code-subagents.git"
+    },
+    "installLocation": "/Users/yangsmac/.claude/plugins/marketplaces/awesome-claude-code-subagents",
+    "lastUpdated": "2026-02-20T02:03:23.331Z"
+  },
+  "anthropic-agent-skills": {
+    "source": {
+      "source": "git",
+      "url": "https://github.com/anthropics/skills.git"
+    },
+    "installLocation": "/Users/yangsmac/.claude/plugins/marketplaces/anthropic-agent-skills",
+    "lastUpdated": "2026-02-19T22:00:00.000Z"
+  },
+  "awesome-claude-skills": {
+    "source": {
+      "source": "git",
+      "url": "https://github.com/ComposioHQ/awesome-claude-skills.git"
+    },
+    "installLocation": "/Users/yangsmac/.claude/plugins/marketplaces/awesome-claude-skills",
+    "lastUpdated": "2026-02-19T22:00:00.000Z"
+  },
+  "claude-code-sub-agents": {
+    "source": {
+      "source": "git",
+      "url": "https://github.com/lst97/claude-code-sub-agents.git"
+    },
+    "installLocation": "/Users/yangsmac/.claude/plugins/marketplaces/claude-code-sub-agents",
+    "lastUpdated": "2026-02-19T22:00:00.000Z"
+  },
+  "everything-claude-code": {
+    "source": {
+      "source": "git",
+      "url": "https://github.com/affaan-m/everything-claude-code.git"
+    },
+    "installLocation": "/Users/yangsmac/.claude/plugins/marketplaces/everything-claude-code",
+    "lastUpdated": "2026-02-19T22:00:00.000Z"
+  },
+  "superpowers-marketplace": {
+    "source": {
+      "source": "git",
+      "url": "https://github.com/obra/superpowers-marketplace.git"
+    },
+    "installLocation": "/Users/yangsmac/.claude/plugins/marketplaces/superpowers-marketplace",
+    "lastUpdated": "2026-02-20T02:03:15.490Z"
+  },
+  "skills": {
+    "source": {
+      "source": "git",
+      "url": "https://github.com/anthropics/skills.git"
+    },
+    "installLocation": "/Users/yangsmac/.claude/plugins/marketplaces/skills",
+    "lastUpdated": "2026-02-27T07:16:56.837Z"
+  },
+  "thedotmack": {
+    "source": {
+      "source": "github",
+      "repo": "thedotmack/claude-mem"
+    },
+    "installLocation": "/Users/yangsmac/.claude/plugins/marketplaces/thedotmack",
+    "lastUpdated": "2026-03-21T04:06:01.552Z"
+  },
+  "claude-hud": {
+    "source": {
+      "source": "github",
+      "repo": "jarrodwatts/claude-hud"
+    },
+    "installLocation": "/Users/yangsmac/.claude/plugins/marketplaces/claude-hud",
+    "lastUpdated": "2026-03-22T06:38:45.195Z"
+  },
+  "impeccable": {
+    "source": {
+      "source": "github",
+      "repo": "pbakaus/impeccable"
+    },
+    "installLocation": "/Users/yangsmac/.claude/plugins/marketplaces/impeccable",
+    "lastUpdated": "2026-03-23T07:59:03.432Z"
+  }
+}

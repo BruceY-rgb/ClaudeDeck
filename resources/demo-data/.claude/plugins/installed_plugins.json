@@ -1,0 +1,299 @@
+{
+  "version": 1,
+  "plugins": {
+    "agent-sdk-dev@claude-code-plugins": {
+      "version": "1.0.0",
+      "installedAt": "2026-02-20T12:57:00.510Z",
+      "lastUpdated": "2026-02-20T12:57:00.510Z",
+      "installPath": "/Users/yangsmac/.claude/plugins/cache/claude-code-plugins/agent-sdk-dev/1.0.0",
+      "gitCommitSha": "0d996a7"
+    },
+    "commit-commands@claude-code-plugins": {
+      "version": "1.0.0",
+      "installedAt": "2026-02-20T01:47:31.579Z",
+      "lastUpdated": "2026-02-20T01:47:31.579Z",
+      "installPath": "/Users/yangsmac/.claude/plugins/cache/claude-code-plugins/commit-commands/1.0.0",
+      "gitCommitSha": "b757fc9ecdf77e450442e3ca9f9093a9da35952b"
+    },
+    "document-skills@anthropic-agent-skills": {
+      "version": "69c0b1a06741",
+      "installedAt": "2026-02-20T01:47:31.579Z",
+      "lastUpdated": "2026-02-20T01:47:31.579Z",
+      "installPath": "/Users/yangsmac/.claude/plugins/cache/anthropic-agent-skills/document-skills/69c0b1a06741",
+      "gitCommitSha": "69c0b1a0674149f27b61b2635f935524b6add202"
+    },
+    "skill-creator@awesome-claude-skills": {
+      "version": "1.0.0",
+      "installedAt": "2026-02-20T02:04:31.719Z",
+      "lastUpdated": "2026-02-20T02:04:31.719Z",
+      "installPath": "/Users/yangsmac/.claude/plugins/cache/awesome-claude-skills/skill-creator/1.0.0",
+      "gitCommitSha": "362d354"
+    },
+    "superpowers@superpowers-marketplace": {
+      "version": "1.0.0",
+      "installedAt": "2026-02-20T01:49:36.490Z",
+      "lastUpdated": "2026-02-20T01:49:36.490Z",
+      "installPath": "/Users/yangsmac/.claude/plugins/cache/superpowers-marketplace/superpowers/1.0.0",
+      "gitCommitSha": "93fa102"
+    },
+    "theme-factory@awesome-claude-skills": {
+      "version": "1.0.0",
+      "installedAt": "2026-02-20T02:04:44.752Z",
+      "lastUpdated": "2026-02-20T02:04:44.752Z",
+      "installPath": "/Users/yangsmac/.claude/plugins/cache/awesome-claude-skills/theme-factory/1.0.0",
+      "gitCommitSha": "362d354"
+    },
+    "ui-ux-pro-max@ui-ux-pro-max-skill": {
+      "version": "1820f2b7b678",
+      "installedAt": "2026-02-20T01:47:31.579Z",
+      "lastUpdated": "2026-02-20T01:47:31.579Z",
+      "installPath": "/Users/yangsmac/.claude/plugins/cache/ui-ux-pro-max-skill/ui-ux-pro-max/1820f2b7b678",
+      "gitCommitSha": "1820f2b7b678d5fd1eda5be5c8c9a1f7ac12137a"
+    },
+    "webapp-testing@awesome-claude-skills": {
+      "version": "362d35428562",
+      "installedAt": "2026-02-20T01:47:31.579Z",
+      "lastUpdated": "2026-02-20T01:47:31.579Z",
+      "installPath": "/Users/yangsmac/.claude/plugins/cache/awesome-claude-skills/webapp-testing/362d35428562",
+      "gitCommitSha": "362d35428562ad05d1faa1767abaf39d6e3a8e7a"
+    },
+    "code-review@claude-code-plugins": {
+      "version": "1.0.0",
+      "installedAt": "2026-02-20T01:40:17.371Z",
+      "lastUpdated": "2026-02-20T01:40:17.371Z",
+      "installPath": "/Users/yangsmac/.claude/plugins/cache/claude-code-plugins/code-review/1.0.0",
+      "gitCommitSha": "b757fc9"
+    },
+    "example-skills@anthropic-agent-skills": {
+      "version": "1ed29a03dc85",
+      "installedAt": "2026-02-20T02:09:18.327Z",
+      "lastUpdated": "2026-02-20T02:09:18.327Z",
+      "installPath": "/Users/yangsmac/.claude/plugins/cache/anthropic-agent-skills/example-skills/1ed29a03dc85",
+      "gitCommitSha": "1ed29a03dc852d30fa6ef2ca53a67dc2c2c2c563"
+    },
+    "canvas-design@awesome-claude-skills": {
+      "version": "1.0.0",
+      "installedAt": "2026-02-20T12:29:48.912Z",
+      "lastUpdated": "2026-02-20T12:29:48.912Z",
+      "installPath": "/Users/yangsmac/.claude/plugins/cache/awesome-claude-skills/canvas-design/1.0.0",
+      "gitCommitSha": "362d354"
+    },
+    "file-organizer@awesome-claude-skills": {
+      "version": "1.0.0",
+      "installedAt": "2026-02-20T02:04:28.484Z",
+      "lastUpdated": "2026-02-20T02:04:28.484Z",
+      "installPath": "/Users/yangsmac/.claude/plugins/cache/awesome-claude-skills/file-organizer/1.0.0",
+      "gitCommitSha": "362d354"
+    },
+    "lead-research-assistant@awesome-claude-skills": {
+      "version": "1.0.0",
+      "installedAt": "2026-02-20T02:04:49.599Z",
+      "lastUpdated": "2026-02-20T02:04:49.599Z",
+      "installPath": "/Users/yangsmac/.claude/plugins/cache/awesome-claude-skills/lead-research-assistant/1.0.0",
+      "gitCommitSha": "362d354"
+    },
+    "content-research-writer@awesome-claude-skills": {
+      "version": "1.0.0",
+      "installedAt": "2026-02-20T02:04:50.399Z",
+      "lastUpdated": "2026-02-20T02:04:50.399Z",
+      "installPath": "/Users/yangsmac/.claude/plugins/cache/awesome-claude-skills/content-research-writer/1.0.0",
+      "gitCommitSha": "362d354"
+    },
+    "internal-comms@awesome-claude-skills": {
+      "version": "1.0.0",
+      "installedAt": "2026-02-20T02:04:51.699Z",
+      "lastUpdated": "2026-02-20T02:04:51.699Z",
+      "installPath": "/Users/yangsmac/.claude/plugins/cache/awesome-claude-skills/internal-comms/1.0.0",
+      "gitCommitSha": "362d354"
+    },
+    "elements-of-style@superpowers-marketplace": {
+      "version": "1.0.0",
+      "installedAt": "2026-02-20T02:08:36.299Z",
+      "lastUpdated": "2026-02-20T02:08:36.299Z",
+      "installPath": "/Users/yangsmac/.claude/plugins/cache/superpowers-marketplace/elements-of-style/1.0.0",
+      "gitCommitSha": "d3cd73c"
+    },
+    "pptx@anthropic-agent-skills": {
+      "version": "1.0.0",
+      "installedAt": "2026-02-20T01:32:06.590Z",
+      "lastUpdated": "2026-02-20T01:32:06.591Z",
+      "installPath": "/Users/yangsmac/.claude/plugins/cache/anthropic-agent-skills/pptx/1.0.0",
+      "gitCommitSha": "69c0b1a"
+    },
+    "algorithmic-art@anthropic-agent-skills": {
+      "version": "1.0.0",
+      "installedAt": "2026-02-20T01:33:10.454Z",
+      "lastUpdated": "2026-02-20T01:33:10.454Z",
+      "installPath": "/Users/yangsmac/.claude/plugins/cache/anthropic-agent-skills/algorithmic-art/1.0.0",
+      "gitCommitSha": "69c0b1a"
+    },
+    "mcp-builder@anthropic-agent-skills": {
+      "version": "1.0.0",
+      "installedAt": "2026-02-20T01:33:12.805Z",
+      "lastUpdated": "2026-02-20T01:33:12.805Z",
+      "installPath": "/Users/yangsmac/.claude/plugins/cache/anthropic-agent-skills/mcp-builder/1.0.0",
+      "gitCommitSha": "69c0b1a"
+    },
+    "skill-creator@anthropic-agent-skills": {
+      "version": "1.0.0",
+      "installedAt": "2026-02-20T01:33:16.992Z",
+      "lastUpdated": "2026-02-20T01:33:16.992Z",
+      "installPath": "/Users/yangsmac/.claude/plugins/cache/anthropic-agent-skills/skill-creator/1.0.0",
+      "gitCommitSha": "69c0b1a"
+    },
+    "pdf@anthropic-agent-skills": {
+      "version": "1.0.0",
+      "installedAt": "2026-02-20T01:33:25.793Z",
+      "lastUpdated": "2026-02-20T01:33:25.793Z",
+      "installPath": "/Users/yangsmac/.claude/plugins/cache/anthropic-agent-skills/pdf/1.0.0",
+      "gitCommitSha": "69c0b1a"
+    },
+    "theme-factory@anthropic-agent-skills": {
+      "version": "1.0.0",
+      "installedAt": "2026-02-20T01:43:58.772Z",
+      "lastUpdated": "2026-02-20T01:43:58.772Z",
+      "installPath": "/Users/yangsmac/.claude/plugins/cache/anthropic-agent-skills/theme-factory/1.0.0",
+      "gitCommitSha": "69c0b1a"
+    },
+    "image-enhancer@awesome-claude-skills": {
+      "version": "1.0.0",
+      "installedAt": "2026-02-20T01:53:30.251Z",
+      "lastUpdated": "2026-02-20T01:53:30.251Z",
+      "installPath": "/Users/yangsmac/.claude/plugins/cache/awesome-claude-skills/image-enhancer/1.0.0",
+      "gitCommitSha": "362d354"
+    },
+    "quality-testing@claude-code-sub-agents": {
+      "version": "1.0.0",
+      "installedAt": "2026-02-20T12:28:08.256Z",
+      "lastUpdated": "2026-02-20T12:28:08.256Z",
+      "installPath": "/Users/yangsmac/.claude/plugins/cache/claude-code-sub-agents/quality-testing/1.0.0",
+      "gitCommitSha": "96f5a50"
+    },
+    "mcp-builder@awesome-claude-skills": {
+      "version": "1.0.0",
+      "installedAt": "2026-02-20T12:30:11.569Z",
+      "lastUpdated": "2026-02-20T12:30:11.569Z",
+      "installPath": "/Users/yangsmac/.claude/plugins/cache/awesome-claude-skills/mcp-builder/1.0.0",
+      "gitCommitSha": "362d354"
+    },
+    "learning-output-style@claude-code-plugins": {
+      "version": "1.0.0",
+      "installedAt": "2026-02-20T12:34:17.152Z",
+      "lastUpdated": "2026-02-20T12:34:17.152Z",
+      "installPath": "/Users/yangsmac/.claude/plugins/cache/claude-code-plugins/learning-output-style/1.0.0",
+      "gitCommitSha": "0d996a7"
+    },
+    "frontend-design@claude-code-plugins": {
+      "version": "1.0.0",
+      "installedAt": "2026-02-20T12:56:44.737Z",
+      "lastUpdated": "2026-02-20T12:56:44.737Z",
+      "installPath": "/Users/yangsmac/.claude/plugins/cache/claude-code-plugins/frontend-design/1.0.0",
+      "gitCommitSha": "0d996a7"
+    },
+    "canvas-design@anthropic-agent-skills": {
+      "version": "1.0.0",
+      "installedAt": "2026-02-20T13:09:47.836Z",
+      "lastUpdated": "2026-02-20T13:09:47.836Z",
+      "installPath": "/Users/yangsmac/.claude/plugins/cache/anthropic-agent-skills/canvas-design/1.0.0",
+      "gitCommitSha": "1ed29a0"
+    },
+    "xlsx@anthropic-agent-skills": {
+      "version": "1.0.0",
+      "installedAt": "2026-02-20T13:22:11.199Z",
+      "lastUpdated": "2026-02-20T13:22:11.199Z",
+      "installPath": "/Users/yangsmac/.claude/plugins/cache/anthropic-agent-skills/xlsx/1.0.0",
+      "gitCommitSha": "1ed29a0"
+    },
+    "specialization@claude-code-sub-agents": {
+      "version": "1.0.0",
+      "installedAt": "2026-02-20T23:08:40.831Z",
+      "lastUpdated": "2026-02-20T23:08:40.832Z",
+      "installPath": "/Users/yangsmac/.claude/plugins/cache/claude-code-sub-agents/specialization/1.0.0",
+      "gitCommitSha": "96f5a50"
+    },
+    "skill-creator@skills": {
+      "version": "1.0.0",
+      "installedAt": "2026-02-27T07:17:49.515Z",
+      "lastUpdated": "2026-02-27T07:17:49.515Z",
+      "installPath": "/Users/yangsmac/.claude/plugins/cache/skills/skill-creator/1.0.0",
+      "gitCommitSha": "3d59511"
+    },
+    "voltagent-core-dev@awesome-claude-code-subagents": {
+      "version": "1.0.0",
+      "installedAt": "2026-03-13T06:59:32.527Z",
+      "lastUpdated": "2026-03-13T06:59:32.527Z",
+      "installPath": "/Users/yangsmac/.claude/plugins/cache/awesome-claude-code-subagents/voltagent-core-dev/1.0.0",
+      "gitCommitSha": "f0f9aba"
+    },
+    "voltagent-data-ai@awesome-claude-code-subagents": {
+      "version": "1.0.0",
+      "installedAt": "2026-03-13T07:21:47.857Z",
+      "lastUpdated": "2026-03-13T07:21:47.857Z",
+      "installPath": "/Users/yangsmac/.claude/plugins/cache/awesome-claude-code-subagents/voltagent-data-ai/1.0.0",
+      "gitCommitSha": "f0f9aba"
+    },
+    "project-manager@awesome-claude-code-subagents": {
+      "version": "1.0.0",
+      "installedAt": "2026-03-13T08:12:13.921Z",
+      "lastUpdated": "2026-03-13T08:12:13.923Z",
+      "installPath": "/Users/yangsmac/.claude/plugins/cache/awesome-claude-code-subagents/project-manager/1.0.0",
+      "gitCommitSha": "f0f9aba"
+    },
+    "debugger@awesome-claude-code-subagents": {
+      "version": "1.0.0",
+      "installedAt": "2026-03-13T08:14:58.139Z",
+      "lastUpdated": "2026-03-13T08:14:58.139Z",
+      "installPath": "/Users/yangsmac/.claude/plugins/cache/awesome-claude-code-subagents/debugger/1.0.0",
+      "gitCommitSha": "f0f9aba"
+    },
+    "claude-hud@claude-hud": {
+      "version": "0.0.10",
+      "installedAt": "2026-03-21T04:09:07.373Z",
+      "lastUpdated": "2026-03-21T04:09:07.373Z",
+      "installPath": "/Users/yangsmac/.claude/plugins/cache/claude-hud/claude-hud/0.0.10",
+      "gitCommitSha": "26e38decd762"
+    },
+    "mcp-builder@skills": {
+      "version": "1.0.0",
+      "installedAt": "2026-03-22T06:48:00.123Z",
+      "lastUpdated": "2026-03-22T06:48:00.123Z",
+      "installPath": "/Users/yangsmac/.claude/plugins/cache/skills/mcp-builder/1.0.0",
+      "gitCommitSha": "3d59511"
+    },
+    "canvas-design@skills": {
+      "version": "1.0.0",
+      "installedAt": "2026-03-22T06:48:06.901Z",
+      "lastUpdated": "2026-03-22T06:48:06.901Z",
+      "installPath": "/Users/yangsmac/.claude/plugins/cache/skills/canvas-design/1.0.0",
+      "gitCommitSha": "3d59511"
+    },
+    "pdf@skills": {
+      "version": "1.0.0",
+      "installedAt": "2026-03-22T06:48:08.601Z",
+      "lastUpdated": "2026-03-22T06:48:08.601Z",
+      "installPath": "/Users/yangsmac/.claude/plugins/cache/skills/pdf/1.0.0",
+      "gitCommitSha": "3d59511"
+    },
+    "xlsx@skills": {
+      "version": "1.0.0",
+      "installedAt": "2026-03-22T06:48:09.313Z",
+      "lastUpdated": "2026-03-22T06:48:09.313Z",
+      "installPath": "/Users/yangsmac/.claude/plugins/cache/skills/xlsx/1.0.0",
+      "gitCommitSha": "3d59511"
+    },
+    "docx@skills": {
+      "version": "1.0.0",
+      "installedAt": "2026-03-22T06:48:10.581Z",
+      "lastUpdated": "2026-03-22T06:48:10.581Z",
+      "installPath": "/Users/yangsmac/.claude/plugins/cache/skills/docx/1.0.0",
+      "gitCommitSha": "3d59511"
+    },
+    "pptx@skills": {
+      "version": "1.0.0",
+      "installedAt": "2026-03-22T06:48:11.467Z",
+      "lastUpdated": "2026-03-22T06:48:11.467Z",
+      "installPath": "/Users/yangsmac/.claude/plugins/cache/skills/pptx/1.0.0",
+      "gitCommitSha": "3d59511"
+    }
+  }
+}

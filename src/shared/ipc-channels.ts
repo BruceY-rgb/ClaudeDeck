@@ -129,4 +129,13 @@ export const IPC = {
   ANALYTICS_GET_SUMMARY: "analytics:get-summary",
   ANALYTICS_GET_HEATMAP: "analytics:get-heatmap",
   ANALYTICS_GET_WRAPPED: "analytics:get-wrapped",
+
+  // Community
+  COMMUNITY_GET_OVERVIEW: "community:get-overview",
+  COMMUNITY_LIST_CONTRIBUTORS: "community:list-contributors",
+  COMMUNITY_GET_CONTRIBUTOR: "community:get-contributor",
+  COMMUNITY_LIST_RESOURCES: "community:list-resources",
+  COMMUNITY_GET_RESOURCE: "community:get-resource",
+  COMMUNITY_INSTALL_RESOURCE: "community:install-resource",
+  COMMUNITY_SEARCH: "community:search",
 } as const;

@@ -1,0 +1,92 @@
+{
+  "env": {
+    "ANTHROPIC_AUTH_TOKEN": "sk-cp-qP1d553Cj7cImFvYBpQY61Tx_lwbC895UHpQPql6cI8e316ezPtlCScgO9ct2VSTAMdcz-gGfhwOIuQSi1eLgJuwukVoZ4jz_usj_GB-b2baiDD3YaEeHLU",
+    "ANTHROPIC_BASE_URL": "https://api.minimaxi.com/anthropic",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "MiniMax-M2.5",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "MiniMax-M2.5",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "MiniMax-M2.5",
+    "ANTHROPIC_MODEL": "MiniMax-M2.5",
+    "API_TIMEOUT_MS": "3000000",
+    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+    "CLAUDE_CODE_ENABLE_TELEMETRY": "1",
+    "OTEL_EXPORTER_OTLP_ENDPOINT": "http://localhost:4318",
+    "OTEL_EXPORTER_OTLP_PROTOCOL": "http/json",
+    "OTEL_LOGS_EXPORTER": "otlp",
+    "OTEL_METRICS_EXPORTER": "otlp"
+  },
+  "model": "opus",
+  "hooks": {
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "curl -s --noproxy localhost -X POST http://localhost:4318/notify -H 'Content-Type: application/json' -d \"$(cat)\""
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "curl -s --noproxy localhost -X POST http://localhost:4318/notify -H 'Content-Type: application/json' -d \"$(cat)\""
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "curl -s --noproxy localhost -X POST http://localhost:4318/notify -H 'Content-Type: application/json' -d \"$(cat)\""
+          }
+        ]
+      }
+    ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "bash -c 'plugin_dir=\"/Users/yangsmac/.claude/plugins/marketplaces/claude-hud\" && exec \"/opt/homebrew/bin/node\" \"${plugin_dir}/dist/index.js\"'"
+  },
+  "enabledPlugins": {
+    "agent-sdk-dev@claude-code-plugins": true,
+    "algorithmic-art@anthropic-agent-skills": true,
+    "canvas-design@awesome-claude-skills": true,
+    "canvas-design@skills": true,
+    "claude-hud@claude-hud": true,
+    "code-review@claude-code-plugins": true,
+    "commit-commands@claude-code-plugins": true,
+    "content-research-writer@awesome-claude-skills": true,
+    "debugger@awesome-claude-code-subagents": true,
+    "document-skills@anthropic-agent-skills": true,
+    "docx@skills": true,
+    "elements-of-style@superpowers-marketplace": true,
+    "example-skills@anthropic-agent-skills": true,
+    "file-organizer@awesome-claude-skills": true,
+    "frontend-design@claude-code-plugins": true,
+    "image-enhancer@awesome-claude-skills": true,
+    "internal-comms@awesome-claude-skills": true,
+    "lead-research-assistant@awesome-claude-skills": true,
+    "mcp-builder@anthropic-agent-skills": true,
+    "mcp-builder@awesome-claude-skills": true,
+    "mcp-builder@skills": true,
+    "pdf@anthropic-agent-skills": true,
+    "pdf@skills": true,
+    "pptx@anthropic-agent-skills": true,
+    "pptx@skills": true,
+    "project-manager@awesome-claude-code-subagents": true,
+    "quality-testing@claude-code-sub-agents": true,
+    "skill-creator@anthropic-agent-skills": true,
+    "skill-creator@awesome-claude-skills": true,
+    "superpowers@superpowers-marketplace": true,
+    "theme-factory@anthropic-agent-skills": true,
+    "theme-factory@awesome-claude-skills": true,
+    "ui-ux-pro-max@ui-ux-pro-max-skill": true,
+    "webapp-testing@awesome-claude-skills": true,
+    "xlsx@skills": true
+  },
+  "alwaysThinkingEnabled": false
+}

@@ -25,6 +25,7 @@ import { ProjectsListPage } from "./pages/ProjectsListPage";
 import { ProjectDetailPage } from "./pages/ProjectDetailPage";
 import { PlansPage } from "./pages/PlansPage";
 import { SessionDetailPage } from "./pages/SessionDetailPage";
+import { CommunityPage } from "./pages/CommunityPage";
 
 const AnalyticsPage = lazy(() =>
   import("./pages/AnalyticsPage").then((m) => ({ default: m.AnalyticsPage }))
@@ -63,6 +64,7 @@ function ThemedApp(): JSX.Element {
             <Route path="/office/project/:projectDir/session/:sessionId" element={<SessionDetailPage />} />
             <Route path="/analytics" element={<Suspense fallback={<div className="flex items-center justify-center h-full"><Loader2 className="w-5 h-5 animate-spin text-zinc-400" /></div>}><AnalyticsPage /></Suspense>} />
             <Route path="/plans" element={<PlansPage />} />
+            <Route path="/community" element={<CommunityPage />} />
           </Route>
         </Routes>
       </HashRouter>

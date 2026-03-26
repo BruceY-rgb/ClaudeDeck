@@ -12,6 +12,7 @@ import {
   Layout,
   BarChart3,
   FileStack,
+  Users,
   PanelLeft,
   PanelLeftClose,
   type LucideIcon,
@@ -42,6 +43,7 @@ export function Sidebar(): JSX.Element {
     { path: "/office", label: t("sidebar.nav.office"), icon: Layout },
     { path: "/analytics", label: t("sidebar.nav.analytics"), icon: BarChart3 },
     { path: "/plans", label: t("sidebar.nav.plans"), icon: FileStack },
+    { path: "/community", label: t("sidebar.nav.community"), icon: Users },
     { path: "/settings", label: t("sidebar.nav.settings"), icon: Settings },
   ];
 
