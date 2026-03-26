@@ -80,7 +80,7 @@ export function registerHandlers(mainWindow: BrowserWindow): void {
   // Skills
   // ═══════════════════════════════════════════════════════════════════════════
   ipcMain.handle(IPC.SKILLS_LIST, async () => {
-    return [...mockSkillsPersonal, ...mockSkillsPlugin];
+    return { personal: mockSkillsPersonal, plugin: mockSkillsPlugin };
   });
 
   ipcMain.handle(IPC.SKILLS_READ, async (_e, _source: string, name: string) => {
