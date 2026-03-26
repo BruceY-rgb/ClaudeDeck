@@ -1,6 +1,6 @@
 import { join, dirname } from 'path'
 import { homedir } from 'os'
-import { existsSync, mkdirSync, copyFileSync, readdirSync, statSync, readFileSync, writeFileSync } from 'fs'
+import { existsSync, mkdirSync, copyFileSync, readdirSync, statSync, lstatSync, readlinkSync, symlinkSync, readFileSync, writeFileSync } from 'fs'
 import { is } from '@electron-toolkit/utils'
 
 const CLAUDE_DIR = join(homedir(), '.claude')
@@ -94,16 +94,34 @@ export class DemoDataService {
 
       const srcPath = join(src, entry)
       const destPath = join(dest, entry)
-      const stat = statSync(srcPath)
 
-      if (stat.isDirectory()) {
-        this.copyDirRecursive(srcPath, destPath)
-      } else {
-        // Only copy if destination doesn't exist (don't overwrite user data)
-        if (!existsSync(destPath)) {
-          mkdirSync(dirname(destPath), { recursive: true })
-          copyFileSync(srcPath, destPath)
+      try {
+        // Use lstatSync to avoid following broken symlinks
+        const lstat = lstatSync(srcPath)
+
+        if (lstat.isSymbolicLink()) {
+          // Recreate symlinks as-is (relative links will resolve in the new location)
+          if (!existsSync(destPath)) {
+            try {
+              const linkTarget = readlinkSync(srcPath)
+              symlinkSync(linkTarget, destPath)
+            } catch {
+              // Skip broken or unsupported symlinks silently
+              console.warn(`[DemoData] Skipped symlink: ${srcPath}`)
+            }
+          }
+        } else if (lstat.isDirectory()) {
+          this.copyDirRecursive(srcPath, destPath)
+        } else {
+          // Only copy if destination doesn't exist (don't overwrite user data)
+          if (!existsSync(destPath)) {
+            mkdirSync(dirname(destPath), { recursive: true })
+            copyFileSync(srcPath, destPath)
+          }
         }
+      } catch (err) {
+        // Skip entries that cannot be stat'd (e.g. broken symlinks on some OS)
+        console.warn(`[DemoData] Skipped entry: ${srcPath}`, err)
       }
     }
   }
