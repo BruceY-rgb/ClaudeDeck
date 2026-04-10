@@ -3,12 +3,14 @@ import * as fs from "fs"
 import * as os from "os"
 import { createReadStream } from "fs"
 import { createInterface } from "readline"
+import { CODEX_SESSIONS_DIR } from "../../shared/constants"
 import type {
   ParsedSession,
   ParsedMessage,
   ParsedContentBlock,
   SessionStats,
 } from "../../shared/types/session-detail"
+import { settingsService } from "./SettingsService"
 
 // ─── LRU Cache ──────────────────────────────────────────────────────────────
 
@@ -355,8 +357,94 @@ async function parseJSONL(
 
   return {
     sessionId,
+    provider: "claude",
     projectPath,
     gitBranch,
+    messages,
+    stats,
+  }
+}
+
+async function parseCodexJSONL(
+  filePath: string,
+  sessionId: string,
+  projectPath: string,
+): Promise<ParsedSession> {
+  const messages: ParsedMessage[] = []
+  const stats: SessionStats = {
+    totalInputTokens: 0,
+    totalOutputTokens: 0,
+    totalCacheReadTokens: 0,
+    totalCacheCreationTokens: 0,
+    estimatedCostUsd: 0,
+    durationSeconds: 0,
+    costUnavailable: true,
+  }
+
+  let firstTimestamp: string | undefined
+  let lastTimestamp: string | undefined
+
+  const rl = createInterface({
+    input: createReadStream(filePath, { encoding: "utf-8" }),
+    crlfDelay: Infinity,
+  })
+
+  let index = 0
+  for await (const line of rl) {
+    if (!line.trim()) continue
+
+    let entry: Record<string, unknown>
+    try {
+      entry = JSON.parse(line)
+    } catch {
+      continue
+    }
+
+    const timestamp = entry.timestamp as string | undefined
+    if (timestamp && !firstTimestamp) firstTimestamp = timestamp
+    if (timestamp) lastTimestamp = timestamp
+
+    if (entry.type !== "response_item") continue
+    const payload = entry.payload as Record<string, unknown> | undefined
+    if (!payload || payload.type !== "message") continue
+
+    const role = payload.role as "user" | "assistant" | undefined
+    if (role !== "user" && role !== "assistant") continue
+
+    const contentBlocks = Array.isArray(payload.content) ? payload.content : []
+    const content: ParsedContentBlock[] = []
+
+    for (const block of contentBlocks) {
+      if (!block || typeof block !== "object") continue
+      const typedBlock = block as Record<string, unknown>
+      if (typedBlock.type === "input_text" || typedBlock.type === "output_text") {
+        content.push({ type: "text", text: String(typedBlock.text || "") })
+      }
+    }
+
+    if (content.length === 0) continue
+    messages.push({
+      id: `${sessionId}-${index++}`,
+      role,
+      timestamp: timestamp || new Date().toISOString(),
+      content,
+      isMeta: false,
+      isSidechain: false,
+    })
+  }
+
+  if (firstTimestamp && lastTimestamp) {
+    const start = new Date(firstTimestamp).getTime()
+    const end = new Date(lastTimestamp).getTime()
+    if (!isNaN(start) && !isNaN(end) && end >= start) {
+      stats.durationSeconds = Math.round((end - start) / 1000)
+    }
+  }
+
+  return {
+    sessionId,
+    provider: "codex",
+    projectPath,
     messages,
     stats,
   }
@@ -379,12 +467,22 @@ class SessionParserService {
    * Parse a session JSONL file and return structured data.
    */
   async parseSession(projectDir: string, sessionId: string): Promise<ParsedSession> {
-    const encodedDir = this.encodeDirName(projectDir)
-    const filePath = path.join(os.homedir(), ".claude", "projects", encodedDir, sessionId + ".jsonl")
+    const settings = await settingsService.read()
+    const filePath =
+      settings.activeProvider === "codex"
+        ? await this.findCodexSessionFile(sessionId)
+        : path.join(
+            os.homedir(),
+            ".claude",
+            "projects",
+            this.encodeDirName(projectDir),
+            `${sessionId}.jsonl`,
+          )
 
     // Get file mtime for cache key
     let mtime: number
     try {
+      if (!filePath) throw new Error("Session file not found")
       const stat = fs.statSync(filePath)
       mtime = stat.mtimeMs
     } catch {
@@ -398,12 +496,36 @@ class SessionParserService {
     if (cached) return cached
 
     // Parse directly (no Worker thread)
-    const result = await parseJSONL(filePath, sessionId, projectDir)
+    const result =
+      settings.activeProvider === "codex"
+        ? await parseCodexJSONL(filePath, sessionId, projectDir)
+        : await parseJSONL(filePath, sessionId, projectDir)
 
     // Cache result
     this.cache.set(cacheKey, result)
 
     return result
+  }
+
+  private async findCodexSessionFile(sessionId: string): Promise<string | null> {
+    return this.walkForSessionFile(CODEX_SESSIONS_DIR, sessionId)
+  }
+
+  private async walkForSessionFile(dir: string, sessionId: string): Promise<string | null> {
+    if (!fs.existsSync(dir)) return null
+
+    const entries = fs.readdirSync(dir, { withFileTypes: true })
+    for (const entry of entries) {
+      const fullPath = path.join(dir, entry.name)
+      if (entry.isDirectory()) {
+        const nested = await this.walkForSessionFile(fullPath, sessionId)
+        if (nested) return nested
+      } else if (entry.isFile() && entry.name.includes(sessionId) && entry.name.endsWith(".jsonl")) {
+        return fullPath
+      }
+    }
+
+    return null
   }
 }
 

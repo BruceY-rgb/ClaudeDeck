@@ -4,9 +4,13 @@ import { fsService } from './FileSystemService'
 import { parserService } from './ParserService'
 import { pluginService } from './PluginService'
 import type { Agent } from '../../shared/types/agent'
+import { settingsService } from './SettingsService'
 
 export class AgentService {
   async list(): Promise<Agent[]> {
+    const settings = await settingsService.read()
+    if (settings.activeProvider !== 'claude') return []
+
     const agents: Agent[] = []
 
     // 1. Personal agents
@@ -29,6 +33,8 @@ export class AgentService {
   }
 
   async read(name: string): Promise<Agent | null> {
+    const settings = await settingsService.read()
+    if (settings.activeProvider !== 'claude') return null
     const filePath = join(AGENTS_DIR, `${name}.md`)
     if (!(await fsService.exists(filePath))) return null
     try {
@@ -40,12 +46,20 @@ export class AgentService {
   }
 
   async write(name: string, data: { name: string; description: string; tools: string[]; model: string; body: string }): Promise<void> {
+    const settings = await settingsService.read()
+    if (settings.activeProvider !== 'claude') {
+      throw new Error('Agents are only editable for Claude in this release')
+    }
     const filePath = join(AGENTS_DIR, `${name}.md`)
     const content = parserService.serializeAgent(data)
     await fsService.writeFileAtomic(filePath, content)
   }
 
   async delete(name: string): Promise<void> {
+    const settings = await settingsService.read()
+    if (settings.activeProvider !== 'claude') {
+      throw new Error('Agents are only editable for Claude in this release')
+    }
     const filePath = join(AGENTS_DIR, `${name}.md`)
     await fsService.deleteFile(filePath)
   }
@@ -73,8 +87,8 @@ export class AgentService {
       // Check which plugins are enabled
       let enabledPlugins: Record<string, boolean> = {}
       if (await fsService.exists(SETTINGS_FILE)) {
-        const settings = await fsService.readJSON<{ enabledPlugins?: Record<string, boolean> }>(SETTINGS_FILE)
-        enabledPlugins = settings.enabledPlugins || {}
+        const settings = await settingsService.read()
+        enabledPlugins = settings.enabledPlugins.claude || {}
       }
 
       for (const [pluginId, info] of Object.entries(data)) {

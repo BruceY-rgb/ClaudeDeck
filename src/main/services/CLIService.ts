@@ -2,6 +2,7 @@ import { spawn, ChildProcess } from 'child_process'
 import { BrowserWindow } from 'electron'
 import { IPC } from '../../shared/ipc-channels'
 import os from 'os'
+import type { ProviderId } from '../../shared/types/provider'
 
 interface CLIResult {
   success: boolean
@@ -21,17 +22,18 @@ interface StreamOptions {
 let currentProcess: ChildProcess | null = null
 
 export class CLIService {
-  private getClaudeCommand(): string {
-    return process.platform === 'win32' ? 'claude.cmd' : 'claude'
+  private getCommand(providerId: ProviderId): string {
+    const bin = providerId === 'claude' ? 'claude' : providerId
+    return process.platform === 'win32' ? `${bin}.cmd` : bin
   }
 
   /**
    * Run a Claude CLI command and return the result
    */
-  async run(command: string[], input?: string): Promise<CLIResult> {
+  async run(providerId: ProviderId, command: string[], input?: string): Promise<CLIResult> {
     return new Promise((resolve) => {
-      const args = command.slice(1) // Remove 'claude' from args
-      const proc = spawn(this.getClaudeCommand(), args, {
+      const args = command[0] === this.getCommand(providerId) ? command.slice(1) : command
+      const proc = spawn(this.getCommand(providerId), args, {
         stdio: input ? ['pipe', 'pipe', 'pipe'] : ['ignore', 'pipe', 'pipe'],
         env: { ...process.env, CLAUDE_DBG: undefined }
       })
@@ -75,10 +77,14 @@ export class CLIService {
   /**
    * Run an agent with a prompt and stream output to a window
    */
-  async runAgent(agentName: string, prompt: string, mainWindow: BrowserWindow): Promise<void> {
+  async runAgent(providerId: ProviderId, agentName: string, prompt: string, mainWindow: BrowserWindow): Promise<void> {
     await this.kill()
 
-    const proc = spawn(this.getClaudeCommand(), ['-a', agentName], {
+    if (providerId !== 'claude') {
+      throw new Error(`${providerId} does not support Claude-style agent launching`)
+    }
+
+    const proc = spawn(this.getCommand(providerId), ['-a', agentName], {
       stdio: ['pipe', 'pipe', 'pipe'],
       env: { ...process.env, CLAUDE_DBG: undefined }
     })
@@ -112,10 +118,14 @@ export class CLIService {
   /**
    * Test a skill with a prompt and stream output to a window
    */
-  async testSkill(skillName: string, prompt: string, mainWindow: BrowserWindow): Promise<void> {
+  async testSkill(providerId: ProviderId, skillName: string, prompt: string, mainWindow: BrowserWindow): Promise<void> {
     await this.kill()
 
-    const proc = spawn(this.getClaudeCommand(), ['-s', skillName], {
+    if (providerId !== 'claude') {
+      throw new Error(`${providerId} does not support Claude-style skill testing`)
+    }
+
+    const proc = spawn(this.getCommand(providerId), ['-s', skillName], {
       stdio: ['pipe', 'pipe', 'pipe'],
       env: { ...process.env, CLAUDE_DBG: undefined }
     })
@@ -159,10 +169,11 @@ export class CLIService {
   /**
    * Check if Claude CLI is available
    */
-  async checkAvailability(): Promise<boolean> {
+  async checkAvailability(providerId: ProviderId): Promise<boolean> {
     try {
-      const result = await this.run([this.getClaudeCommand(), '--version'])
-      return result.success || result.stdout.includes('Claude')
+      const command = this.getCommand(providerId)
+      const result = await this.run(providerId, [command, '--help'])
+      return result.success || result.stdout.length > 0
     } catch {
       return false
     }

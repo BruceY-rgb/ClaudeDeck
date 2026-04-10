@@ -17,7 +17,9 @@ import { planService } from "../services/PlanService";
 import { projectConfigService } from "../services/ProjectConfigService";
 import { sessionParserService } from "../services/SessionParserService";
 import { sessionAnalyticsService } from "../services/SessionAnalyticsService";
+import { providerService } from "../services/ProviderService";
 import type { ProjectAgentFormData, ProjectSkillFormData, ProjectMCPFormData, ProjectCommandFormData, ProjectHookFormData } from "../../shared/types/project-config";
+import type { ProviderId } from "../../shared/types/provider";
 
 let watcher: ReturnType<typeof watch> | null = null;
 let mainWindowRef: BrowserWindow | null = null;
@@ -102,11 +104,11 @@ export function registerHandlers(mainWindow: BrowserWindow): void {
   });
 
   ipcMain.handle(IPC.PLUGINS_ENABLE, async (_e, pluginId: string) => {
-    return settingsService.enablePlugin(pluginId);
+    return pluginService.setEnabled(pluginId, true);
   });
 
   ipcMain.handle(IPC.PLUGINS_DISABLE, async (_e, pluginId: string) => {
-    return settingsService.disablePlugin(pluginId);
+    return pluginService.setEnabled(pluginId, false);
   });
 
   ipcMain.handle(IPC.PLUGINS_DETAIL, async (_e, pluginId: string) => {
@@ -140,6 +142,14 @@ export function registerHandlers(mainWindow: BrowserWindow): void {
       return settingsService.write(settings);
     },
   );
+
+  ipcMain.handle(IPC.PROVIDERS_LIST, async () => {
+    return providerService.list();
+  });
+
+  ipcMain.handle(IPC.PROVIDERS_SET_ACTIVE, async (_e, providerId: ProviderId) => {
+    return settingsService.setActiveProvider(providerId);
+  });
 
   // --- Marketplace ---
   ipcMain.handle(IPC.MARKETPLACE_LIST, async () => {
@@ -234,24 +244,24 @@ export function registerHandlers(mainWindow: BrowserWindow): void {
   });
 
   // --- CLI ---
-  ipcMain.handle(IPC.CLI_RUN, async (_e, command: string[]) => {
-    return cliService.run(command);
+  ipcMain.handle(IPC.CLI_RUN, async (_e, command: string[], providerId?: ProviderId) => {
+    return cliService.run(providerId || await providerService.getActiveProvider(), command);
   });
 
   ipcMain.handle(
     IPC.CLI_RUN_AGENT,
-    async (_e, agentName: string, prompt: string) => {
+    async (_e, agentName: string, prompt: string, providerId?: ProviderId) => {
       if (!mainWindowRef) return { error: "No window available" };
-      await cliService.runAgent(agentName, prompt, mainWindowRef);
+      await cliService.runAgent(providerId || await providerService.getActiveProvider(), agentName, prompt, mainWindowRef);
       return { success: true };
     },
   );
 
   ipcMain.handle(
     IPC.CLI_TEST_SKILL,
-    async (_e, skillName: string, prompt: string) => {
+    async (_e, skillName: string, prompt: string, providerId?: ProviderId) => {
       if (!mainWindowRef) return { error: "No window available" };
-      await cliService.testSkill(skillName, prompt, mainWindowRef);
+      await cliService.testSkill(providerId || await providerService.getActiveProvider(), skillName, prompt, mainWindowRef);
       return { success: true };
     },
   );
@@ -262,8 +272,8 @@ export function registerHandlers(mainWindow: BrowserWindow): void {
   });
 
   // --- Office / Projects ---
-  ipcMain.handle(IPC.OFFICE_GET_PROJECTS, async () => {
-    return projectDiscoveryService.getProjects();
+  ipcMain.handle(IPC.OFFICE_GET_PROJECTS, async (_e, providerId?: ProviderId) => {
+    return projectDiscoveryService.getProjects(providerId);
   });
 
   ipcMain.handle(IPC.OFFICE_GET_PROJECT_AGENTS, async (_e, projectDir: string) => {

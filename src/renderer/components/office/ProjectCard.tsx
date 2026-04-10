@@ -1,8 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import { Trash2, Bot, Sparkles, Server } from "lucide-react";
 import { useTranslation } from "../../i18n/LanguageContext";
+import type { ProviderId } from "@shared/types/provider";
+import { ProviderBadge } from "../shared/ProviderBadge";
 
 export interface ProjectInfo {
+  provider: ProviderId;
   projectDir: string;
   projectName: string;
   agentCount: number;
@@ -58,10 +61,10 @@ export function ProjectCard({ project, onDelete, batchMode = false, selected = f
 
   return (
     <div
-      className={`bg-white dark:bg-zinc-900 border rounded-lg p-4 cursor-pointer transition-colors ${
+      className={`rounded-[26px] border bg-[var(--panel)] p-5 shadow-[var(--panel-shadow)] cursor-pointer transition ${
         batchMode && selected
-          ? "border-blue-400 dark:border-blue-600 ring-2 ring-blue-400/30"
-          : "border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700"
+          ? "border-sky-400 ring-2 ring-sky-400/20"
+          : "border-[var(--border-soft)] hover:border-[var(--border-strong)]"
       }`}
       onClick={handleClick}
     >
@@ -77,18 +80,21 @@ export function ProjectCard({ project, onDelete, batchMode = false, selected = f
             />
           )}
           <div className="flex-1 min-w-0">
-          <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 truncate">
+          <div className="mb-2">
+            <ProviderBadge providerId={project.provider} compact />
+          </div>
+          <h3 className="text-lg font-semibold text-[var(--text-strong)] truncate">
             {project.projectName}
           </h3>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400 truncate mt-1">
+          <p className="text-sm text-[var(--text-muted)] truncate mt-1">
             {project.projectDir}
           </p>
         </div>
         </div>
         <div className="flex items-center gap-2 ml-4">
           {!batchMode && (
-          <button
-            className="p-1.5 hover:bg-red-500/10 rounded-md text-zinc-400 hover:text-red-500"
+            <button
+            className="p-1.5 hover:bg-red-500/10 rounded-md text-[var(--text-muted)] hover:text-red-500"
             onClick={handleDelete}
             title={t("office.deleteAllSessions")}
           >
@@ -109,15 +115,15 @@ export function ProjectCard({ project, onDelete, batchMode = false, selected = f
         </div>
       </div>
       <div className="mt-4 flex items-center justify-between text-sm">
-        <span className="text-zinc-500 dark:text-zinc-400">
+        <span className="text-[var(--text-muted)]">
           {project.agentCount === 1 ? t("office.sessions", { count: project.agentCount }) : t("office.sessionsPlural", { count: project.agentCount })}
         </span>
-        <span className="text-zinc-500 dark:text-zinc-400">
+        <span className="text-[var(--text-muted)]">
           {formatTime(project.lastActivity)}
         </span>
       </div>
       {project.configSummary && (project.configSummary.agents > 0 || project.configSummary.skills > 0 || project.configSummary.mcp > 0) && (
-        <div className="mt-2 pt-2 border-t border-zinc-200 dark:border-zinc-800 flex items-center gap-3 text-xs text-zinc-500 dark:text-zinc-400">
+        <div className="mt-3 pt-3 border-t border-[var(--border-soft)] flex items-center gap-3 text-xs text-[var(--text-muted)]">
           {project.configSummary.agents > 0 && (
             <span className="flex items-center gap-1">
               <Bot className="w-3 h-3" />

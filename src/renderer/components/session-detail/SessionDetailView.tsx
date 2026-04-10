@@ -144,6 +144,7 @@ export function SessionDetailView({
           <SessionHeader
             projectPath={session.projectPath}
             sessionId={session.sessionId}
+            provider={session.provider}
             stats={session.stats}
             messageCount={session.messages.length}
             onBack={onBack}
@@ -165,6 +166,7 @@ export function SessionDetailView({
       <SessionHeader
         projectPath={session.projectPath}
         sessionId={session.sessionId}
+        provider={session.provider}
         stats={session.stats}
         messageCount={session.messages.length}
         onBack={onBack}

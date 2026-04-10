@@ -6,6 +6,7 @@ import { readFile, writeFile } from 'fs/promises'
 import { join, basename } from 'path'
 import { existsSync } from 'fs'
 import { homedir } from 'os'
+import { settingsService } from './SettingsService'
 
 interface ClaudeConfig {
   mcpServers?: Record<string, MCPServer>
@@ -26,6 +27,8 @@ interface MCPTemplate {
 
 export class MCPService {
   async list(): Promise<MCPServer[]> {
+    const settings = await settingsService.read()
+    if (settings.activeProvider !== 'claude') return []
     const config = await this.readClaudeConfig()
     const servers = config.mcpServers || {}
 
@@ -41,6 +44,8 @@ export class MCPService {
   }
 
   async listTemplates(): Promise<MCPTemplate[]> {
+    const settings = await settingsService.read()
+    if (settings.activeProvider !== 'claude') return []
     const templates: MCPTemplate[] = []
     const plugins = await pluginService.list()
     const enabledPlugins = plugins.filter(p => p.enabled)
@@ -91,6 +96,10 @@ export class MCPService {
   }
 
   async activate(template: MCPTemplate, env: Record<string, string>): Promise<void> {
+    const settings = await settingsService.read()
+    if (settings.activeProvider !== 'claude') {
+      throw new Error('MCP activation is only available for Claude in this release')
+    }
     const config = await this.readClaudeConfig()
 
     if (!config.mcpServers) {
@@ -100,7 +109,7 @@ export class MCPService {
     const serverName = template.name
 
     // Merge provided env with template
-    const mergedEnv = { ...template.env, ...env }
+    const mergedEnv = env
 
     config.mcpServers[serverName] = {
       name: serverName,
@@ -117,6 +126,8 @@ export class MCPService {
   }
 
   async deactivate(name: string): Promise<void> {
+    const settings = await settingsService.read()
+    if (settings.activeProvider !== 'claude') return
     const config = await this.readClaudeConfig()
 
     if (config.mcpServers && config.mcpServers[name]) {
@@ -126,6 +137,10 @@ export class MCPService {
   }
 
   async update(name: string, updates: Partial<MCPServer>): Promise<void> {
+    const settings = await settingsService.read()
+    if (settings.activeProvider !== 'claude') {
+      throw new Error('MCP editing is only available for Claude in this release')
+    }
     const config = await this.readClaudeConfig()
 
     if (!config.mcpServers || !config.mcpServers[name]) {
@@ -180,7 +195,7 @@ export class MCPService {
 
   private async writeClaudeConfig(config: ClaudeConfig): Promise<void> {
     // Write to ~/.claude.json
-    await fsService.writeJSON(CLAUDE_JSON_FILE, config, { spaces: 2 })
+    await fsService.writeJSON(CLAUDE_JSON_FILE, config)
   }
 }
 

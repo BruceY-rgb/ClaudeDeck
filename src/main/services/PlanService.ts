@@ -48,8 +48,8 @@ class PlanService {
         fileName: file,
         filePath,
         name,
-        createdAt: stat.birthtime.toISOString(),
-        modifiedAt: stat.mtime.toISOString(),
+        createdAt: stat.birthtime,
+        modifiedAt: stat.mtime,
         size: stat.size,
         preview,
       });

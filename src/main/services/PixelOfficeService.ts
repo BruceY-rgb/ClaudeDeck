@@ -1,277 +1,221 @@
-import * as fs from "fs";
-import * as path from "path";
-import { exec } from "child_process";
-import { promisify } from "util";
+import * as fs from 'fs'
+import * as path from 'path'
+import { exec } from 'child_process'
+import { promisify } from 'util'
+import { CODEX_SESSION_INDEX_FILE, CODEX_SESSIONS_DIR } from '../../shared/constants'
+import { settingsService } from './SettingsService'
+import { projectDiscoveryService } from './ProjectDiscoveryService'
 
-const execAsync = promisify(exec);
+const execAsync = promisify(exec)
 
 export interface OfficeAgentInfo {
-  id: number;
-  sessionId: string;
-  projectDir: string;
-  jsonlFile: string;
-  isActive: boolean;
-  lastModified: Date;
+  id: number
+  sessionId: string
+  projectDir: string
+  jsonlFile: string
+  isActive: boolean
+  lastModified: Date
 }
 
 export interface AgentContext {
-  sessionId: string;
-  projectDir: string;
-  messages: ConversationMessage[];
+  sessionId: string
+  projectDir: string
+  messages: ConversationMessage[]
 }
 
 export interface ConversationMessage {
-  role: "user" | "assistant" | "system";
-  content: string;
-  timestamp: Date;
-  tools?: ToolCall[];
+  role: 'user' | 'assistant' | 'system'
+  content: string
+  timestamp: Date
+  tools?: ToolCall[]
 }
 
 export interface ToolCall {
-  name: string;
-  input: Record<string, unknown>;
+  name: string
+  input: Record<string, unknown>
 }
 
-const CLAUDE_DIR = path.join(process.env.HOME || "", ".claude");
-const PROJECTS_DIR = path.join(CLAUDE_DIR, "projects");
-
 class PixelOfficeService {
-  private nextId = 1;
+  private nextId = 1
 
-  /**
-   * 将真实路径转换为编码的目录名
-   */
-  private encodeDirName(realPath: string): string {
-    return realPath.replace(/\//g, "-");
-  }
-
-  /**
-   * 根据项目目录获取所有会话
-   */
   async getAgentsByProject(projectDir: string): Promise<OfficeAgentInfo[]> {
-    const encoded = this.encodeDirName(projectDir);
-    const projectPath = path.join(PROJECTS_DIR, encoded);
+    const settings = await settingsService.read()
+    const projects = await projectDiscoveryService.getProjects(settings.activeProvider)
+    const project = projects.find((item) => item.projectDir === projectDir)
+    if (!project) return []
 
-    if (!fs.existsSync(projectPath)) {
-      return [];
-    }
-
-    const agents: OfficeAgentInfo[] = [];
-    try {
-      const files = fs.readdirSync(projectPath);
-      for (const file of files) {
-        if (!file.endsWith(".jsonl") || file.startsWith("agent-")) continue;
-
-        const sessionId = file.replace(".jsonl", "");
-        const filePath = path.join(projectPath, file);
-        const stat = fs.statSync(filePath);
-
-        agents.push({
-          id: this.nextId++,
-          sessionId,
-          projectDir,
-          jsonlFile: filePath,
-          isActive: false,
-          lastModified: stat.mtime,
-        });
-      }
-    } catch {
-      // 读取失败
-    }
-
-    agents.sort((a, b) => b.lastModified.getTime() - a.lastModified.getTime());
-    return agents.slice(0, 20);
+    return project.sessions.map((session) => ({
+      id: this.nextId++,
+      sessionId: session.sessionId,
+      projectDir: session.projectDir,
+      jsonlFile: session.jsonlFile,
+      isActive: session.isActive,
+      lastModified: session.lastModified,
+    }))
   }
 
-  /**
-   * 获取会话的对话上下文（从 JSONL 文件解析）
-   */
-  async getAgentContext(
-    projectDir: string,
-    sessionId: string,
-  ): Promise<AgentContext | null> {
-    const encoded = this.encodeDirName(projectDir);
-    const jsonlPath = path.join(PROJECTS_DIR, encoded, `${sessionId}.jsonl`);
+  async getAgentContext(projectDir: string, sessionId: string): Promise<AgentContext | null> {
+    const settings = await settingsService.read()
+    return settings.activeProvider === 'codex'
+      ? this.getCodexAgentContext(projectDir, sessionId)
+      : this.getClaudeAgentContext(projectDir, sessionId)
+  }
 
-    if (!fs.existsSync(jsonlPath)) {
-      return null;
+  async joinTerminal(projectDir: string, sessionId?: string): Promise<void> {
+    const settings = await settingsService.read()
+    const providerCommand = settings.activeProvider === 'codex' ? 'codex' : 'claude'
+    const cdCmd =
+      process.platform === 'darwin'
+        ? `cd "${projectDir.replace(/"/g, '\\"')}"`
+        : `cd "${projectDir}"`
+    const resumeArg = sessionId ? ` resume ${sessionId}` : ''
+    const fullCmd = `${cdCmd} && ${providerCommand}${resumeArg}`
+
+    if (process.platform === 'darwin') {
+      await execAsync(
+        `osascript -e 'tell application "Terminal" to do script "${fullCmd.replace(/"/g, '\\"')}"'`,
+      )
+    } else if (process.platform === 'win32') {
+      await execAsync(`start cmd /k "${fullCmd}"`)
+    } else {
+      await execAsync(`x-terminal-emulator -e "${fullCmd}"`)
+    }
+  }
+
+  async deleteAgent(projectDir: string, sessionId: string): Promise<{ success: boolean; error?: string }> {
+    const settings = await settingsService.read()
+    const filePath = await this.resolveSessionFile(projectDir, sessionId, settings.activeProvider)
+    if (!filePath || !fs.existsSync(filePath)) {
+      return { success: false, error: '会话文件不存在' }
     }
 
-    const messages: ConversationMessage[] = [];
     try {
-      const content = fs.readFileSync(jsonlPath, "utf-8");
-      const lines = content.split("\n");
+      fs.unlinkSync(filePath)
+      return { success: true }
+    } catch (error) {
+      return { success: false, error: `删除失败: ${error}` }
+    }
+  }
+
+  async deleteAgents(projectDir: string, sessionIds: string[]): Promise<{ success: boolean; deletedCount: number; errors: string[] }> {
+    const errors: string[] = []
+    let deletedCount = 0
+
+    for (const sessionId of sessionIds) {
+      const result = await this.deleteAgent(projectDir, sessionId)
+      if (result.success) {
+        deletedCount++
+      } else if (result.error) {
+        errors.push(result.error)
+      }
+    }
+
+    return { success: errors.length === 0, deletedCount, errors }
+  }
+
+  async deleteProject(projectDir: string): Promise<{ success: boolean; error?: string; deletedCount?: number }> {
+    const agents = await this.getAgentsByProject(projectDir)
+    const result = await this.deleteAgents(projectDir, agents.map((agent) => agent.sessionId))
+    if (!result.success && result.deletedCount === 0) {
+      return { success: false, error: result.errors.join(', ') }
+    }
+    return { success: true, deletedCount: result.deletedCount }
+  }
+
+  private async getClaudeAgentContext(projectDir: string, sessionId: string): Promise<AgentContext | null> {
+    const filePath = await this.resolveSessionFile(projectDir, sessionId, 'claude')
+    if (!filePath || !fs.existsSync(filePath)) return null
+
+    const messages: ConversationMessage[] = []
+    try {
+      const content = fs.readFileSync(filePath, 'utf-8')
+      const lines = content.split('\n')
 
       for (const line of lines) {
-        if (!line.trim()) continue;
+        if (!line.trim()) continue
         try {
-          const entry = JSON.parse(line);
-          if (entry.type !== "user" && entry.type !== "assistant") continue;
+          const entry = JSON.parse(line)
+          if (entry.type !== 'user' && entry.type !== 'assistant') continue
+          const msg = entry.message
+          if (!msg) continue
 
-          const msg = entry.message;
-          if (!msg) continue;
-
-          // 提取文本内容
-          let text = "";
-          const tools: ToolCall[] = [];
-
-          if (typeof msg.content === "string") {
-            text = msg.content;
+          let text = ''
+          const tools: ToolCall[] = []
+          if (typeof msg.content === 'string') {
+            text = msg.content
           } else if (Array.isArray(msg.content)) {
             for (const block of msg.content) {
-              if (block.type === "text") {
-                text += block.text;
-              } else if (block.type === "tool_use") {
-                tools.push({
-                  name: block.name,
-                  input: block.input || {},
-                });
+              if (block.type === 'text') text += block.text
+              else if (block.type === 'tool_use') {
+                tools.push({ name: block.name, input: block.input || {} })
               }
             }
           }
 
-          if (!text && tools.length === 0) continue;
-
+          if (!text && tools.length === 0) continue
           messages.push({
-            role: entry.type as "user" | "assistant",
+            role: entry.type,
             content: text,
             timestamp: new Date(entry.timestamp),
             tools: tools.length > 0 ? tools : undefined,
-          });
+          })
         } catch {
-          // 跳过无效行
+          // ignore line
         }
       }
     } catch {
-      return null;
+      return null
     }
 
-    return { sessionId, projectDir, messages };
+    return { sessionId, projectDir, messages }
   }
 
-  /**
-   * 在项目目录中打开终端并启动 claude
-   * @param projectDir 项目目录
-   * @param sessionId 可选，要恢复的会话ID，如果不提供则启动新会话
-   */
-  async joinTerminal(projectDir: string, sessionId?: string): Promise<void> {
-    const cdCmd = process.platform === "darwin" ? `cd "${projectDir.replace(/"/g, '\\"')}"` : `cd "${projectDir}"`;
+  private async getCodexAgentContext(projectDir: string, sessionId: string): Promise<AgentContext | null> {
+    const filePath = await this.resolveSessionFile(projectDir, sessionId, 'codex')
+    if (!filePath || !fs.existsSync(filePath)) return null
 
-    let claudeCmd = "claude";
-    if (sessionId) {
-      claudeCmd += ` --resume ${sessionId}`;
-    }
-
-    const fullCmd = `${cdCmd} && ${claudeCmd}`;
-
-    if (process.platform === "darwin") {
-      await execAsync(
-        `osascript -e 'tell application "Terminal" to do script "${fullCmd.replace(/"/g, '\\"')}"'`,
-      );
-    } else if (process.platform === "win32") {
-      await execAsync(`start cmd /k "${fullCmd}"`);
-    } else {
-      await execAsync(
-        `x-terminal-emulator -e "${fullCmd}"`,
-      );
-    }
-  }
-
-  /**
-   * 删除会话（删除 JSONL 文件）
-   */
-  async deleteAgent(projectDir: string, sessionId: string): Promise<{ success: boolean; error?: string }> {
-    console.log(`[PixelOfficeService] deleteAgent called: projectDir=${projectDir}, sessionId=${sessionId}`);
-
-    const encoded = this.encodeDirName(projectDir);
-    const jsonlPath = path.join(PROJECTS_DIR, encoded, `${sessionId}.jsonl`);
-
-    console.log(`[PixelOfficeService] Trying to delete: ${jsonlPath}`);
-    console.log(`[PixelOfficeService] File exists: ${fs.existsSync(jsonlPath)}`);
-
-    if (!fs.existsSync(jsonlPath)) {
-      console.log(`[PixelOfficeService] File does not exist, returning error`);
-      return { success: false, error: "会话文件不存在" };
-    }
-
+    const messages: ConversationMessage[] = []
     try {
-      fs.unlinkSync(jsonlPath);
-      console.log(`[PixelOfficeService] Successfully deleted file`);
-      return { success: true };
-    } catch (e) {
-      console.log(`[PixelOfficeService] Delete failed: ${e}`);
-      return { success: false, error: `删除失败: ${e}` };
+      const lines = fs.readFileSync(filePath, 'utf-8').split(/\r?\n/)
+      for (const line of lines) {
+        if (!line.trim()) continue
+        const entry = JSON.parse(line)
+        if (entry.type !== 'response_item') continue
+        const payload = entry.payload || {}
+        if (payload.type !== 'message') continue
+        const role = payload.role
+        if (role !== 'user' && role !== 'assistant') continue
+
+        const parts = Array.isArray(payload.content) ? payload.content : []
+        const text = parts
+          .map((part: Record<string, unknown>) => String(part.text || ''))
+          .join('\n')
+          .trim()
+        if (!text) continue
+
+        messages.push({
+          role,
+          content: text,
+          timestamp: new Date(entry.timestamp),
+        })
+      }
+    } catch {
+      return null
     }
+
+    return { sessionId, projectDir, messages }
   }
 
-  /**
-   * 批量删除会话
-   */
-  async deleteAgents(projectDir: string, sessionIds: string[]): Promise<{ success: boolean; deletedCount: number; errors: string[] }> {
-    console.log(`[PixelOfficeService] deleteAgents called: projectDir=${projectDir}, count=${sessionIds.length}`);
-
-    const encoded = this.encodeDirName(projectDir);
-    const projectPath = path.join(PROJECTS_DIR, encoded);
-
-    if (!fs.existsSync(projectPath)) {
-      return { success: false, deletedCount: 0, errors: ["项目目录不存在"] };
-    }
-
-    const errors: string[] = [];
-    let deletedCount = 0;
-
-    for (const sessionId of sessionIds) {
-      const jsonlPath = path.join(projectPath, `${sessionId}.jsonl`);
-      try {
-        if (fs.existsSync(jsonlPath)) {
-          fs.unlinkSync(jsonlPath);
-          deletedCount++;
-        }
-      } catch (e) {
-        errors.push(`删除 ${sessionId} 失败: ${e}`);
-      }
-    }
-
-    console.log(`[PixelOfficeService] Deleted ${deletedCount} files, ${errors.length} errors`);
-    return { success: errors.length === 0, deletedCount, errors };
-  }
-
-  /**
-   * 删除项目（删除项目目录下的所有会话文件）
-   */
-  async deleteProject(projectDir: string): Promise<{ success: boolean; error?: string; deletedCount?: number }> {
-    console.log(`[PixelOfficeService] deleteProject called: projectDir=${projectDir}`);
-
-    const encoded = this.encodeDirName(projectDir);
-    const projectPath = path.join(PROJECTS_DIR, encoded);
-
-    if (!fs.existsSync(projectPath)) {
-      console.log(`[PixelOfficeService] Project directory does not exist`);
-      return { success: false, error: "项目目录不存在" };
-    }
-
-    try {
-      const files = fs.readdirSync(projectPath);
-      const jsonlFiles = files.filter(f => f.endsWith('.jsonl') && !f.startsWith('agent-'));
-      let deletedCount = 0;
-
-      for (const file of jsonlFiles) {
-        const filePath = path.join(projectPath, file);
-        try {
-          fs.unlinkSync(filePath);
-          deletedCount++;
-        } catch (e) {
-          console.log(`[PixelOfficeService] Failed to delete ${file}: ${e}`);
-        }
-      }
-
-      console.log(`[PixelOfficeService] Successfully deleted ${deletedCount} files`);
-      return { success: true, deletedCount };
-    } catch (e) {
-      console.log(`[PixelOfficeService] Delete project failed: ${e}`);
-      return { success: false, error: `删除失败: ${e}` };
-    }
+  private async resolveSessionFile(
+    projectDir: string,
+    sessionId: string,
+    provider: 'claude' | 'codex' | 'gemini',
+  ): Promise<string | null> {
+    const projects = await projectDiscoveryService.getProjects(provider)
+    const project = projects.find((item) => item.projectDir === projectDir)
+    const session = project?.sessions.find((item) => item.sessionId === sessionId)
+    return session?.jsonlFile || null
   }
 }
 
-export const pixelOfficeService = new PixelOfficeService();
+export const pixelOfficeService = new PixelOfficeService()

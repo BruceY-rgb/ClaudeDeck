@@ -1,151 +1,115 @@
-import { useEffect, useCallback, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Boxes, ChevronRight, Search, Trash2 } from "lucide-react";
 import { usePluginStore } from "../stores/pluginStore";
+import { useSettingsStore } from "../stores/settingsStore";
 import { PageHeader } from "../components/shared/PageHeader";
-import { Trash2, ChevronRight, Search } from "lucide-react";
-import { useTranslation } from "../i18n/LanguageContext";
+import { ProviderBadge } from "../components/shared/ProviderBadge";
+import { EmptyState } from "../components/shared/EmptyState";
 
 export function PluginsPage(): JSX.Element {
-  const { t } = useTranslation();
   const navigate = useNavigate();
   const { items, loading, fetch, toggle, uninstall } = usePluginStore();
-  const [uninstalling, setUninstalling] = useState<string | null>(null);
+  const { settings, fetch: fetchSettings } = useSettingsStore();
   const [search, setSearch] = useState("");
 
   useEffect(() => {
+    fetchSettings();
+  }, [fetchSettings]);
+
+  useEffect(() => {
     fetch();
-  }, [fetch]);
+  }, [fetch, settings?.activeProvider]);
 
-  const filterPlugins = (plugins: typeof items) =>
-    plugins.filter((p) => {
-      if (!search) return true;
-      const q = search.toLowerCase();
-      return (
-        p.name.toLowerCase().includes(q) ||
-        p.id.toLowerCase().includes(q) ||
-        p.installPath.toLowerCase().includes(q)
-      );
-    });
-
-  const handleToggle = useCallback(
-    async (id: string, enabled: boolean) => {
-      await toggle(id, enabled);
-    },
-    [toggle],
-  );
-
-  const handleUninstall = useCallback(
-    async (id: string) => {
-      if (confirm(t("plugins.uninstallConfirm"))) {
-        setUninstalling(id);
-        try {
-          await uninstall(id);
-          await fetch();
-        } finally {
-          setUninstalling(null);
-        }
-      }
-    },
-    [uninstall, fetch],
-  );
-
-  const handlePluginClick = useCallback(
-    (id: string) => {
-      navigate(`/plugins/${encodeURIComponent(id)}`);
-    },
-    [navigate],
-  );
+  const filtered = items.filter((plugin) => {
+    const q = search.trim().toLowerCase();
+    if (!q) return true;
+    return [plugin.name, plugin.id, plugin.installPath].some((value) =>
+      value.toLowerCase().includes(q),
+    );
+  });
 
   return (
-    <div>
+    <div className="space-y-6">
       <PageHeader
-        title={t("plugins.title")}
-        description={t("plugins.description", {
-          installed: String(items.length),
-          enabled: String(items.filter((p) => p.enabled).length),
-        })}
+        eyebrow="Plugins"
+        title="Runtime add-ons"
+        badge={settings ? <ProviderBadge providerId={settings.activeProvider} /> : undefined}
+        description="Installed plugins and add-ons are shown through the lens of the selected provider. Toggling state always affects the active runtime only."
       />
 
-      {/* Search */}
-      <div className="relative w-full max-w-sm mb-5">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+      <div className="relative max-w-sm">
+        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-subtle)]" />
         <input
-          type="text"
-          placeholder={t("plugins.searchPlaceholder") || "Search plugins..."}
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-full pl-9 pr-3 py-2 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          onChange={(event) => setSearch(event.target.value)}
+          placeholder="Search plugins"
+          className="w-full rounded-2xl border border-[var(--border-soft)] bg-[var(--panel)] px-10 py-3 text-sm shadow-[var(--panel-shadow)] outline-none"
         />
       </div>
 
       {loading ? (
-        <div className="text-center py-12 text-zinc-400">
-          {t("common.loading")}
-        </div>
+        <div className="py-12 text-center text-[var(--text-muted)]">Loading plugins…</div>
+      ) : filtered.length === 0 ? (
+        <EmptyState
+          icon={Boxes}
+          title="No plugins found"
+          description="The selected runtime does not currently expose any installed plugins, or the search filter removed every result."
+        />
       ) : (
         <div className="space-y-3">
-          {filterPlugins(items).length === 0 ? (
-            <p className="text-sm text-zinc-400">
-              {search ? t("plugins.noResults") : t("plugins.noPlugins")}
-            </p>
-          ) : (
-            filterPlugins(items).map((plugin) => (
-              <div
-                key={plugin.id}
-                className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-5 flex items-center justify-between"
+          {filtered.map((plugin) => (
+            <div
+              key={`${plugin.provider}-${plugin.id}`}
+              className="flex items-center justify-between rounded-[26px] border border-[var(--border-soft)] bg-[var(--panel)] p-5 shadow-[var(--panel-shadow)]"
+            >
+              <button
+                onClick={() => navigate(`/plugins/${encodeURIComponent(plugin.id)}`)}
+                className="min-w-0 flex-1 text-left"
               >
-                <div
-                  className="flex-1 min-w-0 cursor-pointer"
-                  onClick={() => handlePluginClick(plugin.id)}
-                >
-                  <div className="flex items-center gap-2 mb-1">
-                    <h3 className="font-semibold text-sm">{plugin.name}</h3>
-                    <span className="text-xs text-zinc-400">
-                      @{plugin.marketplace}
-                    </span>
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-500">
+                <div className="mb-2 flex items-center gap-2">
+                  <ProviderBadge providerId={plugin.provider} compact />
+                  {plugin.version && (
+                    <span className="rounded-full bg-[var(--panel-muted)] px-2 py-0.5 text-xs text-[var(--text-muted)]">
                       v{plugin.version}
                     </span>
-                  </div>
-                  <p className="text-xs text-zinc-500 dark:text-zinc-400 truncate">
-                    {plugin.installPath}
-                  </p>
+                  )}
                 </div>
+                <p className="text-base font-semibold text-[var(--text-strong)]">{plugin.name}</p>
+                <p className="mt-1 text-sm text-[var(--text-muted)]">{plugin.id}</p>
+                <p className="mt-2 truncate text-xs text-[var(--text-subtle)]">{plugin.installPath}</p>
+              </button>
 
-                <div className="flex items-center gap-2">
+              <div className="ml-4 flex items-center gap-2">
+                <button
+                  onClick={() => navigate(`/plugins/${encodeURIComponent(plugin.id)}`)}
+                  className="rounded-xl border border-[var(--border-soft)] p-2 text-[var(--text-muted)]"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+                {plugin.provider === "claude" && (
                   <button
-                    onClick={() => handlePluginClick(plugin.id)}
-                    className="p-2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
-                    title="View details"
+                    onClick={() => void uninstall(plugin.id).then(fetch)}
+                    className="rounded-xl border border-[var(--border-soft)] p-2 text-[var(--text-muted)] hover:text-red-500"
                   >
-                    <ChevronRight className="w-4 h-4" />
+                    <Trash2 className="h-4 w-4" />
                   </button>
-                  <button
-                    onClick={() => handleUninstall(plugin.id)}
-                    disabled={uninstalling === plugin.id}
-                    className="p-2 text-zinc-400 hover:text-red-500 transition-colors disabled:opacity-50"
-                    title="Uninstall"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => handleToggle(plugin.id, !plugin.enabled)}
-                    className={`relative w-11 h-6 rounded-full transition-colors ${
-                      plugin.enabled
-                        ? "bg-green-500"
-                        : "bg-zinc-300 dark:bg-zinc-700"
+                )}
+                <button
+                  onClick={() => void toggle(plugin.id, !plugin.enabled)}
+                  className={`relative h-7 w-12 rounded-full transition ${
+                    plugin.enabled ? "bg-emerald-500" : "bg-zinc-300 dark:bg-zinc-700"
+                  }`}
+                >
+                  <span
+                    className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow transition ${
+                      plugin.enabled ? "left-6" : "left-1"
                     }`}
-                  >
-                    <span
-                      className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${
-                        plugin.enabled ? "translate-x-5" : "translate-x-0"
-                      }`}
-                    />
-                  </button>
-                </div>
+                  />
+                </button>
               </div>
-            ))
-          )}
+            </div>
+          ))}
         </div>
       )}
     </div>

@@ -44,6 +44,8 @@ export class ParserService {
     return {
       name: (data.name as string) || '',
       description: (data.description as string) || '',
+      icon: (data.icon as string) || undefined,
+      category: (data.category as string) || undefined,
       userInvocable: data['user-invocable'] as boolean | undefined,
       disableModelInvocation: data['disable-model-invocation'] as boolean | undefined,
       body,

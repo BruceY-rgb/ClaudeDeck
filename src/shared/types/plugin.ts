@@ -1,6 +1,9 @@
+import type { ProviderId } from './provider'
+
 export interface InstalledPlugin {
   id: string
   name: string
+  provider: ProviderId
   marketplace: string
   version: string
   installedAt: string

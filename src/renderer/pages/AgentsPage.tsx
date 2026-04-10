@@ -2,8 +2,11 @@ import { useEffect, useCallback, useState } from "react";
 import { Link } from "react-router-dom";
 import { FolderOpen, Trash2 } from "lucide-react";
 import { useAgentStore } from "../stores/agentStore";
+import { useSettingsStore } from "../stores/settingsStore";
 import { useFileWatcher } from "../hooks/useFileWatcher";
 import { PageHeader } from "../components/shared/PageHeader";
+import { ProviderBadge } from "../components/shared/ProviderBadge";
+import { EmptyState } from "../components/shared/EmptyState";
 import { useTranslation } from "../i18n/LanguageContext";
 import type { Agent } from "@shared/types/agent";
 
@@ -107,6 +110,7 @@ function AgentCard({
 
 export function AgentsPage(): JSX.Element {
   const { items, loading, fetch, batchDeleteAgents } = useAgentStore();
+  const { settings, fetch: fetchSettings } = useSettingsStore();
   const { t } = useTranslation();
   const [search, setSearch] = useState("");
   const [sourceFilter, setSourceFilter] = useState<
@@ -116,8 +120,11 @@ export function AgentsPage(): JSX.Element {
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
   useEffect(() => {
+    fetchSettings();
+  }, [fetchSettings]);
+  useEffect(() => {
     fetch();
-  }, [fetch]);
+  }, [fetch, settings?.activeProvider]);
   useFileWatcher(useCallback(() => fetch(), [fetch]));
 
   const filtered = items.filter((a) => {
@@ -171,7 +178,9 @@ export function AgentsPage(): JSX.Element {
   return (
     <div>
       <PageHeader
+        eyebrow="Agents"
         title={t("agents.title")}
+        badge={settings ? <ProviderBadge providerId={settings.activeProvider} /> : undefined}
         description={t("agents.description", { count: String(items.length) })}
         actions={
           <div className="flex items-center gap-2">
@@ -219,6 +228,14 @@ export function AgentsPage(): JSX.Element {
         }
       />
 
+      {settings?.activeProvider !== "claude" ? (
+        <EmptyState
+          icon={FolderOpen}
+          title="Agent management is Claude-only for now"
+          description="Codex and Gemini are wired into sessions, skills, and runtime metadata first. Agent authoring stays disabled until we design a provider-native model."
+        />
+      ) : (
+        <>
       {/* Filters */}
       <div className="flex items-center gap-3 mb-5">
         <input
@@ -272,6 +289,8 @@ export function AgentsPage(): JSX.Element {
             />
           ))}
         </div>
+      )}
+        </>
       )}
     </div>
   );

@@ -3,9 +3,12 @@ import { pluginService } from './PluginService'
 import type { Command } from '../../shared/types/command'
 import { readFile } from 'fs/promises'
 import { join } from 'path'
+import { settingsService } from './SettingsService'
 
 export class CommandService {
   async list(): Promise<Command[]> {
+    const settings = await settingsService.read()
+    if (settings.activeProvider !== 'claude') return []
     const plugins = await pluginService.list()
     const enabledPlugins = plugins.filter(p => p.enabled)
 
@@ -20,6 +23,8 @@ export class CommandService {
   }
 
   async read(pluginId: string, commandName: string): Promise<Command | null> {
+    const settings = await settingsService.read()
+    if (settings.activeProvider !== 'claude') return null
     const plugins = await pluginService.list()
     const plugin = plugins.find(p => p.id === pluginId)
     if (!plugin) return null

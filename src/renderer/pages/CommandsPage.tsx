@@ -5,12 +5,17 @@ import { PageHeader } from '../components/shared/PageHeader'
 import { Command, Search, ChevronRight } from 'lucide-react'
 import { useTranslation } from '../i18n/LanguageContext'
 import type { Command as Cmd } from '@shared/types/command'
+import { useSettingsStore } from '../stores/settingsStore'
+import { ProviderBadge } from '../components/shared/ProviderBadge'
+import { EmptyState } from '../components/shared/EmptyState'
 
 export function CommandsPage(): JSX.Element {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { items, loading, fetch } = useCommandStore()
+  const { settings } = useSettingsStore()
   const [search, setSearch] = useState('')
+  const providerId = settings?.activeProvider ?? 'claude'
 
   useEffect(() => { fetch() }, [fetch])
 
@@ -41,10 +46,20 @@ export function CommandsPage(): JSX.Element {
   return (
     <div>
       <PageHeader
+        eyebrow="Commands"
         title={t('commands.title')}
+        badge={<ProviderBadge providerId={providerId} />}
         description={t('commands.description', { count: String(items.length) })}
       />
 
+      {providerId !== 'claude' ? (
+        <EmptyState
+          icon={Command}
+          title="Slash commands are currently Claude-only"
+          description="Codex and Gemini are wired into the platform shell, but shared command management is still being standardized across providers."
+        />
+      ) : (
+        <>
       {/* Search */}
       <div className="relative mb-6">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
@@ -91,6 +106,8 @@ export function CommandsPage(): JSX.Element {
             </div>
           ))}
         </div>
+      )}
+        </>
       )}
     </div>
   )

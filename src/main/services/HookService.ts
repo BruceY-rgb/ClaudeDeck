@@ -4,6 +4,7 @@ import { readFile } from 'fs/promises'
 import { join } from 'path'
 import { existsSync } from 'fs'
 import { CLAUDE_DIR } from '../../shared/constants'
+import { settingsService } from './SettingsService'
 
 // Actual hooks.json structure from plugins:
 /*
@@ -46,6 +47,8 @@ const VALID_EVENTS: HookEvent[] = ['SessionStart', 'PreToolUse', 'PostToolUse', 
 
 export class HookService {
   async list(): Promise<HookDefinition[]> {
+    const settings = await settingsService.read()
+    if (settings.activeProvider !== 'claude') return []
     const allHooks: HookDefinition[] = []
 
     // 1. Read personal hooks (~/.claude/hooks/*.json)

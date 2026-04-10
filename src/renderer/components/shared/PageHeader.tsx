@@ -6,15 +6,17 @@ interface PageHeaderProps {
   description?: string | React.ReactNode
   actions?: React.ReactNode
   backTo?: { label: string; path: string }
+  eyebrow?: string
+  badge?: React.ReactNode
 }
 
-export function PageHeader({ title, description, actions, backTo }: PageHeaderProps): JSX.Element {
+export function PageHeader({ title, description, actions, backTo, eyebrow, badge }: PageHeaderProps): JSX.Element {
   return (
-    <div className="mb-6">
+    <div className="mb-6 rounded-[28px] border border-[var(--border-soft)] bg-[var(--panel)] px-6 py-5 shadow-[var(--panel-shadow)]">
       {backTo && (
         <Link
           to={backTo.path}
-          className="inline-flex items-center gap-1.5 text-sm text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 mb-3"
+          className="mb-3 inline-flex items-center gap-1.5 text-sm text-[var(--text-muted)] transition hover:text-[var(--text-strong)]"
         >
           <ArrowLeft className="w-4 h-4" />
           {backTo.label}
@@ -22,11 +24,19 @@ export function PageHeader({ title, description, actions, backTo }: PageHeaderPr
       )}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
+          {eyebrow && (
+            <p className="mb-2 text-[11px] uppercase tracking-[0.18em] text-[var(--text-subtle)]">
+              {eyebrow}
+            </p>
+          )}
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl font-bold tracking-tight text-[var(--text-strong)]">{title}</h1>
+            {badge}
+          </div>
           {description && (
             typeof description === 'string'
-              ? <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{description}</p>
-              : <div className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{description}</div>
+              ? <p className="mt-2 text-sm text-[var(--text-muted)]">{description}</p>
+              : <div className="mt-2 text-sm text-[var(--text-muted)]">{description}</div>
           )}
         </div>
         {actions && <div className="flex items-center gap-2">{actions}</div>}

@@ -11,12 +11,18 @@ import {
   Search,
   FolderOpen,
   Trash2,
+  Sparkles,
 } from "lucide-react";
 import { useSkillStore } from "../stores/skillStore";
+import { useSettingsStore } from "../stores/settingsStore";
 import { useFileWatcher } from "../hooks/useFileWatcher";
 import { PageHeader } from "../components/shared/PageHeader";
+import { ProviderBadge } from "../components/shared/ProviderBadge";
+import { EmptyState } from "../components/shared/EmptyState";
+import { IconAvatar } from "../components/shared/IconAvatar";
 import { useTranslation } from "../i18n/LanguageContext";
 import type { Skill } from "@shared/types/skill";
+import { getSkillIcon } from "../utils/branding";
 
 interface FileNode {
   name: string;
@@ -59,16 +65,16 @@ function SkillCard({
     <Link
       to={batchMode ? "#" : linkPath}
       onClick={batchMode ? (e) => { e.preventDefault(); onToggleSelect?.(skill.name); } : undefined}
-      className={`block bg-white dark:bg-zinc-900 rounded-xl border p-5 transition-colors ${
+      className={`block rounded-[24px] border bg-[var(--panel)] p-5 shadow-[var(--panel-shadow)] transition ${
         batchMode && selected
-          ? "border-blue-400 dark:border-blue-600 ring-2 ring-blue-400/30"
+          ? "border-sky-400 ring-2 ring-sky-400/20"
           : shadowed
-            ? "border-orange-300 dark:border-orange-700 hover:border-zinc-300 dark:hover:border-zinc-700"
-            : "border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700"
+            ? "border-orange-300 hover:border-[var(--border-strong)]"
+            : "border-[var(--border-soft)] hover:border-[var(--border-strong)]"
       }`}
     >
       <div className="flex items-start justify-between mb-2">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           {batchMode && (
             <input
               type="checkbox"
@@ -81,9 +87,9 @@ function SkillCard({
           {shadowed && (
             <AlertTriangle
               className="w-4 h-4 text-orange-500 shrink-0"
-              title="This skill is shadowed by your personal skill"
             />
           )}
+          <IconAvatar icon={getSkillIcon(skill.icon, skill.category)} tone="brand" />
           <h3 className="font-semibold text-sm">{skill.name}</h3>
         </div>
         <div className="flex items-center gap-1.5">
@@ -210,6 +216,7 @@ export function SkillsPage(): JSX.Element {
     fetchDirectoryTree,
     readFileContent,
   } = useSkillStore();
+  const { settings, fetch: fetchSettings } = useSettingsStore();
   const { t } = useTranslation();
   const [search, setSearch] = useState("");
   const [viewMode, setViewMode] = useState<"cards" | "tree">("cards");
@@ -220,8 +227,12 @@ export function SkillsPage(): JSX.Element {
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
   useEffect(() => {
+    fetchSettings();
+  }, [fetchSettings]);
+
+  useEffect(() => {
     fetch();
-  }, [fetch]);
+  }, [fetch, settings?.activeProvider]);
   useEffect(() => {
     if (viewMode === "tree") {
       fetchDirectoryTree();
@@ -299,7 +310,9 @@ export function SkillsPage(): JSX.Element {
   return (
     <div>
       <PageHeader
+        eyebrow="Skills"
         title={t("skills.title")}
+        badge={settings ? <ProviderBadge providerId={settings.activeProvider} /> : undefined}
         description={t("skills.description", {
           personal: String(personal.length),
           plugin: String(plugin.length),
@@ -388,9 +401,13 @@ export function SkillsPage(): JSX.Element {
       )}
 
       {loading ? (
-        <div className="text-center py-12 text-zinc-400">
-          {t("common.loading")}
-        </div>
+        <div className="text-center py-12 text-[var(--text-muted)]">{t("common.loading")}</div>
+      ) : filterSkills(personal).length === 0 && filterSkills(plugin).length === 0 ? (
+        <EmptyState
+          icon={Sparkles}
+          title={search ? "No matching skills" : "No skills available"}
+          description="Switch runtime, create a new skill, or install one through your current provider before coming back here."
+        />
       ) : viewMode === "cards" ? (
         <>
           {/* Cards View */}

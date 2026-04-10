@@ -1,6 +1,8 @@
 export interface Skill {
   name: string
   description: string
+  icon?: string
+  category?: string
   userInvocable?: boolean
   disableModelInvocation?: boolean
   body: string

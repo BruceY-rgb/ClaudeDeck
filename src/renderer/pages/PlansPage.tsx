@@ -112,13 +112,13 @@ export function PlansPage(): JSX.Element {
         setIsEditing(false);
       }
     } else {
-      alert(t("plans.deleteFailed", { error: result.error }));
+      alert(t("plans.deleteFailed", { error: result.error ?? "unknown" }));
     }
   };
 
   // 批量删除
   const handleBatchDelete = async (): Promise<void> => {
-    if (!confirm(t("plans.batchDeleteConfirm", { count: selectedPlans.size }))) {
+    if (!confirm(t("plans.batchDeleteConfirm", { count: String(selectedPlans.size) }))) {
       return;
     }
 
@@ -186,7 +186,7 @@ export function PlansPage(): JSX.Element {
         setIsEditing(false);
         await loadPlans();
       } else {
-        alert(t("plans.deleteFailed", { error: result.error }));
+        alert(t("plans.deleteFailed", { error: result.error || "unknown" }));
       }
     } catch (err) {
       console.error("Save failed:", err);

@@ -42,6 +42,10 @@ export const IPC = {
   SETTINGS_READ: "settings:read",
   SETTINGS_WRITE: "settings:write",
 
+  // Providers
+  PROVIDERS_LIST: "providers:list",
+  PROVIDERS_SET_ACTIVE: "providers:set-active",
+
   // Marketplace
   MARKETPLACE_LIST: "marketplace:list",
   MARKETPLACE_ADD: "marketplace:add",

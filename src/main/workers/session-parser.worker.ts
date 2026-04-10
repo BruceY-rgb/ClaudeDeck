@@ -359,6 +359,7 @@ async function parseJSONL(req: ParseRequest): Promise<ParsedSession> {
 
   return {
     sessionId,
+    provider: "claude",
     projectPath,
     gitBranch,
     messages,

@@ -5,6 +5,7 @@ import type { Skill } from "../shared/types/skill";
 import type { InstalledPlugin } from "../shared/types/plugin";
 import type { Command } from "../shared/types/command";
 import type { Settings } from "../shared/types/settings";
+import type { ProviderDescriptor, ProviderId } from "../shared/types/provider";
 import type {
   MarketplaceSource,
   MarketplacePlugin,
@@ -117,6 +118,12 @@ const api = {
     write: (settings: Settings): Promise<void> =>
       ipcRenderer.invoke(IPC.SETTINGS_WRITE, settings),
   },
+  providers: {
+    list: (): Promise<ProviderDescriptor[]> =>
+      ipcRenderer.invoke(IPC.PROVIDERS_LIST),
+    setActive: (providerId: ProviderId): Promise<void> =>
+      ipcRenderer.invoke(IPC.PROVIDERS_SET_ACTIVE, providerId),
+  },
   marketplace: {
     list: (): Promise<MarketplaceSource[]> =>
       ipcRenderer.invoke(IPC.MARKETPLACE_LIST),
@@ -185,27 +192,32 @@ const api = {
       callback(data);
     };
     ipcRenderer.on(IPC.FS_CHANGED, handler);
-    return () => ipcRenderer.removeListener(IPC.FS_CHANGED, handler);
+    return () => {
+      ipcRenderer.removeListener(IPC.FS_CHANGED, handler);
+    };
   },
   cli: {
     run: (
       command: string[],
+      providerId?: ProviderId,
     ): Promise<{
       success: boolean;
       stdout: string;
       stderr: string;
       exitCode: number | null;
-    }> => ipcRenderer.invoke(IPC.CLI_RUN, command),
+    }> => ipcRenderer.invoke(IPC.CLI_RUN, command, providerId),
     runAgent: (
       agentName: string,
       prompt: string,
+      providerId?: ProviderId,
     ): Promise<{ success: boolean; error?: string }> =>
-      ipcRenderer.invoke(IPC.CLI_RUN_AGENT, agentName, prompt),
+      ipcRenderer.invoke(IPC.CLI_RUN_AGENT, agentName, prompt, providerId),
     testSkill: (
       skillName: string,
       prompt: string,
+      providerId?: ProviderId,
     ): Promise<{ success: boolean; error?: string }> =>
-      ipcRenderer.invoke(IPC.CLI_TEST_SKILL, skillName, prompt),
+      ipcRenderer.invoke(IPC.CLI_TEST_SKILL, skillName, prompt, providerId),
     kill: (): Promise<{ success: boolean }> => ipcRenderer.invoke(IPC.CLI_KILL),
     onOutput: (
       callback: (data: {
@@ -225,11 +237,14 @@ const api = {
         callback(data);
       };
       ipcRenderer.on(IPC.CLI_OUTPUT, handler);
-      return () => ipcRenderer.removeListener(IPC.CLI_OUTPUT, handler);
+      return () => {
+        ipcRenderer.removeListener(IPC.CLI_OUTPUT, handler);
+      };
     },
   },
   office: {
-    getProjects: (): Promise<Array<{
+    getProjects: (providerId?: ProviderId): Promise<Array<{
+      provider: ProviderId;
       projectDir: string;
       projectName: string;
       agentCount: number;
@@ -240,7 +255,7 @@ const api = {
         skills: number;
         mcp: number;
       };
-    }>> => ipcRenderer.invoke(IPC.OFFICE_GET_PROJECTS),
+    }>> => ipcRenderer.invoke(IPC.OFFICE_GET_PROJECTS, providerId),
 
     getProjectAgents: (projectDir: string): Promise<Array<{
       id: number;

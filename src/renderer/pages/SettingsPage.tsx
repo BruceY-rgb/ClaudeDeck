@@ -1,49 +1,22 @@
 import { useEffect, useState } from "react";
 import Editor from "@monaco-editor/react";
-import {
-  Sun,
-  Moon,
-  Monitor,
-  Type,
-  Terminal,
-  Settings2,
-  Key,
-  Code,
-  type LucideIcon,
-} from "lucide-react";
+import { Code, KeyRound, MonitorCog, SlidersHorizontal } from "lucide-react";
 import { useSettingsStore } from "../stores/settingsStore";
 import { useTheme } from "../hooks/useTheme";
 import { useAppPreferences } from "../hooks/useAppPreferences";
 import { useTranslation, type Locale } from "../i18n/LanguageContext";
 import { PageHeader } from "../components/shared/PageHeader";
-
-interface SettingsSection {
-  id: string;
-  icon: LucideIcon;
-  labelKey: string;
-}
-
-const SETTINGS_SECTIONS: SettingsSection[] = [
-  { id: "appearance", icon: Sun, labelKey: "settings.appearance" },
-  { id: "editor", icon: Type, labelKey: "settings.editor" },
-  { id: "claudeCode", icon: Terminal, labelKey: "settings.claudeCode" },
-  { id: "general", icon: Settings2, labelKey: "settings.general" },
-  { id: "environment", icon: Key, labelKey: "settings.envVars" },
-  { id: "json", icon: Code, labelKey: "settings.jsonMode" },
-];
+import { SectionPanel } from "../components/shared/SectionPanel";
+import { ProviderBadge } from "../components/shared/ProviderBadge";
+import { EmptyState } from "../components/shared/EmptyState";
 
 export function SettingsPage(): JSX.Element {
-  const { settings, loading, fetch, save, setSettings } = useSettingsStore();
+  const { settings, providers, loading, fetch, save, setSettings } = useSettingsStore();
   const { theme, setTheme, resolvedTheme } = useTheme();
-  const { locale, setLocale, t } = useTranslation();
+  const { locale, setLocale } = useTranslation();
   const { editorFontSize, setEditorFontSize } = useAppPreferences();
-  const [saving, setSaving] = useState(false);
-  const [newKey, setNewKey] = useState("");
-  const [newValue, setNewValue] = useState("");
   const [jsonContent, setJsonContent] = useState("");
-  const [activeSection, setActiveSection] = useState("appearance");
-
-  const isJsonMode = activeSection === "json";
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     fetch();
@@ -55,305 +28,170 @@ export function SettingsPage(): JSX.Element {
     }
   }, [settings]);
 
+  if (loading || !settings) {
+    return <div className="py-12 text-center text-[var(--text-muted)]">Loading settings…</div>;
+  }
+
+  const activeProvider = providers.find((provider) => provider.id === settings.activeProvider);
+
   const handleSave = async (): Promise<void> => {
-    if (!settings) return;
     setSaving(true);
     try {
-      if (isJsonMode) {
-        const parsed = JSON.parse(jsonContent);
-        await save(parsed);
-      } else {
-        await save(settings);
-      }
-    } catch (error) {
-      console.error("Failed to save settings:", error);
-      alert(t("settings.invalidJson"));
+      await save(JSON.parse(jsonContent));
     } finally {
       setSaving(false);
     }
   };
 
-  const addEnvVar = (): void => {
-    if (!newKey.trim() || !settings) return;
-    const newSettings = {
-      ...settings,
-      env: { ...settings.env, [newKey.trim()]: newValue },
-    };
-    setJsonContent(JSON.stringify(newSettings, null, 2));
-    setSettings(newSettings);
-    setNewKey("");
-    setNewValue("");
-  };
-
-  const removeEnvVar = (key: string): void => {
-    if (!settings) return;
-    const { [key]: _, ...rest } = settings.env;
-    const newSettings = { ...settings, env: rest };
-    setJsonContent(JSON.stringify(newSettings, null, 2));
-    setSettings(newSettings);
-  };
-
-  const maskValue = (key: string, value: string): string => {
-    const sensitive = ["TOKEN", "KEY", "SECRET", "PASSWORD", "AUTH"];
-    if (sensitive.some((s) => key.toUpperCase().includes(s))) {
-      return value.slice(0, 8) + "****";
-    }
-    return value;
-  };
-
-  const monacoTheme = resolvedTheme === "dark" ? "vs-dark" : "vs";
-
-  if (loading || !settings)
-    return (
-      <div className="text-center py-12 text-zinc-400">
-        {t("common.loading")}
-      </div>
-    );
-
   return (
-    <div className="flex h-full flex-col">
+    <div className="space-y-6">
       <PageHeader
-        title={t("settings.title")}
-        description={t("settings.description")}
+        eyebrow="Preferences"
+        title="Runtime settings"
+        badge={<ProviderBadge providerId={settings.activeProvider} />}
+        description="Tune the app shell and inspect the currently selected runtime. Provider-specific constraints stay visible here so the UI never feels misleading."
         actions={
           <button
             onClick={handleSave}
-            disabled={saving}
-            className="px-4 py-2 rounded-lg bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-sm font-medium hover:opacity-90 disabled:opacity-50"
+            className="rounded-2xl bg-[var(--text-strong)] px-4 py-2 text-sm font-medium text-white transition hover:opacity-90"
           >
-            {saving ? t("common.saving") : t("settings.saveChanges")}
+            {saving ? "Saving…" : "Save changes"}
           </button>
         }
       />
 
-      <div className="flex flex-1 min-h-0">
-        {/* Left Navigation */}
-        <nav className="w-48 shrink-0 border-r border-zinc-200 dark:border-zinc-800 pr-2">
-          <ul className="space-y-0.5">
-            {SETTINGS_SECTIONS.map((section) => {
-              const Icon = section.icon;
-              const isActive = activeSection === section.id;
-              return (
-                <li key={section.id}>
+      <section className="grid gap-4 lg:grid-cols-[1.15fr,1fr]">
+        <SectionPanel title="Application controls" description="Global preferences that shape the shell rather than one specific runtime.">
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="rounded-[22px] border border-[var(--border-soft)] bg-[var(--panel-muted)] p-4">
+              <div className="mb-4 flex items-center gap-3">
+                <MonitorCog className="h-4 w-4 text-[var(--text-muted)]" />
+                <p className="font-semibold text-[var(--text-strong)]">Appearance</p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {(["light", "dark", "system"] as const).map((mode) => (
                   <button
-                    onClick={() => setActiveSection(section.id)}
-                    className={`flex w-full items-center gap-2 px-3 py-2 text-sm transition-colors ${
-                      isActive
-                        ? "bg-zinc-200 dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 font-medium rounded-lg"
-                        : "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-lg"
+                    key={mode}
+                    onClick={() => setTheme(mode)}
+                    className={`rounded-full px-4 py-2 text-sm transition ${
+                      theme === mode
+                        ? "bg-[var(--accent-soft)] text-[var(--text-strong)]"
+                        : "bg-white/70 text-[var(--text-muted)] dark:bg-white/5"
                     }`}
                   >
-                    <Icon className="w-4 h-4 shrink-0" />
-                    <span>{t(section.labelKey)}</span>
+                    {mode}
                   </button>
-                </li>
-              );
-            })}
-          </ul>
-        </nav>
-
-        {/* Content Area */}
-        <div className="flex-1 overflow-y-auto p-6">
-          {activeSection === "appearance" && (
-            <SectionCard title={t("settings.appearance")}>
-              <div className="space-y-4">
-                {/* Theme */}
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    {t("settings.theme")}
-                  </label>
-                  <div className="flex items-center gap-2">
-                    {(
-                      [
-                        { value: "light", icon: Sun, label: t("theme.light") },
-                        { value: "dark", icon: Moon, label: t("theme.dark") },
-                        {
-                          value: "system",
-                          icon: Monitor,
-                          label: t("theme.system"),
-                        },
-                      ] as const
-                    ).map(({ value, icon: ThemeIcon, label }) => (
-                      <button
-                        key={value}
-                        onClick={() => setTheme(value)}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-colors ${
-                          theme === value
-                            ? "bg-zinc-200 dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 font-medium"
-                            : "border border-zinc-200 dark:border-zinc-700 text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-800"
-                        }`}
-                      >
-                        <ThemeIcon size={16} />
-                        {label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                {/* Language */}
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    {t("settings.language")}
-                  </label>
-                  <select
-                    value={locale}
-                    onChange={(e) => setLocale(e.target.value as Locale)}
-                    className="px-3 py-2 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="en">{t("settings.languageEn")}</option>
-                    <option value="zh-CN">{t("settings.languageZh")}</option>
-                  </select>
-                </div>
+                ))}
               </div>
-            </SectionCard>
-          )}
+            </div>
 
-          {activeSection === "editor" && (
-            <SectionCard title={t("settings.editor")}>
-              <div className="space-y-3">
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    {t("settings.editorFontSize")}
-                  </label>
-                  <div className="flex items-center gap-3">
-                    <input
-                      type="range"
-                      min={10}
-                      max={24}
-                      value={editorFontSize}
-                      onChange={(e) =>
-                        setEditorFontSize(Number(e.target.value))
-                      }
-                      className="w-48"
-                    />
-                    <span className="text-sm font-mono w-8 text-center">
-                      {editorFontSize}
-                    </span>
-                  </div>
-                </div>
-                <p className="text-xs text-zinc-400">
-                  {t("settings.editorThemeNote")}
-                </p>
+            <div className="rounded-[22px] border border-[var(--border-soft)] bg-[var(--panel-muted)] p-4">
+              <div className="mb-4 flex items-center gap-3">
+                <SlidersHorizontal className="h-4 w-4 text-[var(--text-muted)]" />
+                <p className="font-semibold text-[var(--text-strong)]">Editor comfort</p>
               </div>
-            </SectionCard>
-          )}
+              <input
+                type="range"
+                min={10}
+                max={24}
+                value={editorFontSize}
+                onChange={(event) => setEditorFontSize(Number(event.target.value))}
+                className="w-full"
+              />
+              <p className="mt-3 text-sm text-[var(--text-muted)]">
+                Font size: <span className="font-medium text-[var(--text-strong)]">{editorFontSize}px</span>
+              </p>
+            </div>
 
-          {activeSection === "claudeCode" && (
-            <SectionCard title={t("settings.claudeCode")}>
-              <div>
-                <label className="block text-sm font-medium mb-1.5">
-                  {t("settings.configDir")}
-                </label>
-                <code className="text-sm font-mono bg-zinc-100 dark:bg-zinc-800 px-3 py-1.5 rounded">
-                  ~/.claude
-                </code>
+            <div className="rounded-[22px] border border-[var(--border-soft)] bg-[var(--panel-muted)] p-4">
+              <div className="mb-4 flex items-center gap-3">
+                <KeyRound className="h-4 w-4 text-[var(--text-muted)]" />
+                <p className="font-semibold text-[var(--text-strong)]">Language</p>
               </div>
-            </SectionCard>
-          )}
+              <select
+                value={locale}
+                onChange={(event) => setLocale(event.target.value as Locale)}
+                className="w-full rounded-2xl border border-[var(--border-soft)] bg-white/80 px-3 py-2 text-sm dark:bg-white/5"
+              >
+                <option value="en">English</option>
+                <option value="zh-CN">简体中文</option>
+              </select>
+            </div>
 
-          {activeSection === "general" && (
-            <SectionCard title={t("settings.general")}>
-              <label className="flex items-center gap-3 cursor-pointer">
+            <div className="rounded-[22px] border border-[var(--border-soft)] bg-[var(--panel-muted)] p-4">
+              <div className="mb-4 flex items-center gap-3">
+                <Code className="h-4 w-4 text-[var(--text-muted)]" />
+                <p className="font-semibold text-[var(--text-strong)]">Runtime flags</p>
+              </div>
+              <label className="flex items-center justify-between rounded-2xl bg-white/70 px-3 py-2 text-sm dark:bg-white/5">
+                <span className="text-[var(--text-muted)]">Always thinking</span>
                 <input
                   type="checkbox"
                   checked={settings.alwaysThinkingEnabled ?? false}
-                  onChange={(e) => {
-                    const newSettings = {
+                  onChange={(event) =>
+                    setSettings({
                       ...settings,
-                      alwaysThinkingEnabled: e.target.checked,
-                    };
-                    setSettings(newSettings);
-                    setJsonContent(JSON.stringify(newSettings, null, 2));
-                  }}
-                  className="w-4 h-4 rounded border-zinc-300 dark:border-zinc-600"
+                      alwaysThinkingEnabled: event.target.checked,
+                    })
+                  }
                 />
-                <span className="text-sm">
-                  {t("settings.alwaysThinking")}
-                </span>
               </label>
-            </SectionCard>
-          )}
-
-          {activeSection === "environment" && (
-            <SectionCard title={t("settings.envVars")}>
-              <div className="space-y-2 mb-4">
-                {Object.entries(settings.env).map(([key, value]) => (
-                  <div key={key} className="flex items-center gap-2">
-                    <code className="flex-shrink-0 text-xs font-mono bg-zinc-100 dark:bg-zinc-800 px-2 py-1.5 rounded w-72 truncate">
-                      {key}
-                    </code>
-                    <code className="flex-1 text-xs font-mono bg-zinc-100 dark:bg-zinc-800 px-2 py-1.5 rounded truncate text-zinc-500">
-                      {maskValue(key, value)}
-                    </code>
-                    <button
-                      onClick={() => removeEnvVar(key)}
-                      className="text-xs text-red-500 hover:text-red-700 px-2"
-                    >
-                      {t("common.remove")}
-                    </button>
-                  </div>
-                ))}
-              </div>
-
-              <div className="flex items-center gap-2">
-                <input
-                  type="text"
-                  placeholder={t("settings.envKeyPlaceholder")}
-                  value={newKey}
-                  onChange={(e) => setNewKey(e.target.value)}
-                  className="w-48 px-3 py-2 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                <input
-                  type="text"
-                  placeholder={t("settings.envValuePlaceholder")}
-                  value={newValue}
-                  onChange={(e) => setNewValue(e.target.value)}
-                  className="flex-1 px-3 py-2 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                <button
-                  onClick={addEnvVar}
-                  disabled={!newKey.trim()}
-                  className="px-4 py-2 rounded-lg border border-zinc-200 dark:border-zinc-700 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-800 disabled:opacity-50"
-                >
-                  {t("common.add")}
-                </button>
-              </div>
-            </SectionCard>
-          )}
-
-          {activeSection === "json" && (
-            <div className="h-full rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
-              <Editor
-                height="100%"
-                defaultLanguage="json"
-                value={jsonContent}
-                onChange={(value) => setJsonContent(value || "")}
-                theme={monacoTheme}
-                options={{
-                  minimap: { enabled: false },
-                  fontSize: editorFontSize,
-                  lineNumbers: "on",
-                  padding: { top: 16 },
-                }}
-              />
             </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
+          </div>
+        </SectionPanel>
 
-function SectionCard({
-  title,
-  children,
-}: {
-  title: string;
-  children: React.ReactNode;
-}): JSX.Element {
-  return (
-    <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-5">
-      <h2 className="text-lg font-semibold mb-4">{title}</h2>
-      {children}
+        <SectionPanel title="Current runtime" description="The selected provider and what the app can reliably manage for it today.">
+          {activeProvider ? (
+            <div className="space-y-4">
+              <div className="rounded-[22px] border border-[var(--border-soft)] bg-[var(--panel-muted)] p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.16em] text-[var(--text-subtle)]">Selected provider</p>
+                    <p className="mt-2 text-lg font-semibold text-[var(--text-strong)]">{activeProvider.label}</p>
+                  </div>
+                  <ProviderBadge providerId={activeProvider.id} />
+                </div>
+                <div className="mt-4 space-y-2 text-sm text-[var(--text-muted)]">
+                  <p>Home: {activeProvider.homeDir}</p>
+                  <p>Config: {activeProvider.configPath || "Not exposed"}</p>
+                  <p>Status: {activeProvider.available ? "CLI detected" : "CLI not detected"}</p>
+                </div>
+              </div>
+
+              <div className="rounded-[22px] border border-[var(--border-soft)] bg-[var(--panel-muted)] p-4">
+                <p className="text-xs uppercase tracking-[0.16em] text-[var(--text-subtle)]">Capabilities</p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {activeProvider.capabilities.map((capability) => (
+                    <span
+                      key={capability}
+                      className="rounded-full border border-[var(--border-soft)] bg-white/70 px-3 py-1 text-xs text-[var(--text-strong)] dark:bg-white/5"
+                    >
+                      {capability}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <EmptyState
+              icon={MonitorCog}
+              title="No provider metadata loaded"
+              description="The runtime registry did not return any providers. Refresh the app settings after the main process finishes booting."
+            />
+          )}
+        </SectionPanel>
+      </section>
+
+      <SectionPanel title="Settings JSON" description="Raw config is still available for power users and debugging.">
+        <Editor
+          height="420px"
+          value={jsonContent}
+          onChange={(value) => setJsonContent(value || "")}
+          language="json"
+          theme={resolvedTheme === "dark" ? "vs-dark" : "vs"}
+          options={{ fontSize: editorFontSize, minimap: { enabled: false } }}
+        />
+      </SectionPanel>
     </div>
   );
 }

@@ -1,3 +1,5 @@
+import type { ProviderId } from './provider'
+
 // ─── Content & Message Types ────────────────────────────────────────────────
 
 export interface ParsedContentBlock {
@@ -31,12 +33,14 @@ export interface SessionStats {
   totalCacheCreationTokens: number
   estimatedCostUsd: number
   durationSeconds: number
+  costUnavailable?: boolean
 }
 
 // ─── Session ────────────────────────────────────────────────────────────────
 
 export interface ParsedSession {
   sessionId: string
+  provider: ProviderId
   projectPath: string
   gitBranch?: string
   messages: ParsedMessage[]

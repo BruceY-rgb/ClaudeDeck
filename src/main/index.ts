@@ -61,7 +61,7 @@ app.whenReady().then(async () => {
   if (process.platform === "darwin") {
     const dockIconPath = getIconPath();
     const dockIcon = nativeImage.createFromPath(dockIconPath);
-    if (!dockIcon.isEmpty()) {
+    if (app.dock && !dockIcon.isEmpty()) {
       app.dock.setIcon(dockIcon);
     }
   }

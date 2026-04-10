@@ -10,6 +10,7 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
+    "types": ["react", "react-dom", "vite/client"],
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "outDir": "./out",
     "paths": {
@@ -19,6 +20,7 @@
   },
   "include": [
     "src/renderer/**/*",
+    "src/renderer/**/*.json",
     "src/shared/**/*",
     "src/preload/*.d.ts"
   ]

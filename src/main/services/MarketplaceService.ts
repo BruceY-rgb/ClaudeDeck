@@ -746,7 +746,7 @@ export class MarketplaceService {
           lastUpdated:
             (pluginInfo.lastUpdated as string) || new Date().toISOString(),
           installPath: (pluginInfo.installPath as string) || "",
-          gitCommitSha: pluginInfo.gitCommitSha as string | undefined,
+          gitCommitSha: (pluginInfo.gitCommitSha as string) || "",
           isLocal: (pluginInfo.isLocal as boolean) ?? true,
         };
         newPlugins.push(record);

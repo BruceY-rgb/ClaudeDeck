@@ -10,6 +10,8 @@ import type {
   SessionStats,
   WrappedData,
 } from "../../shared/types/session-detail"
+import { settingsService } from "./SettingsService"
+import { projectDiscoveryService } from "./ProjectDiscoveryService"
 
 // ─── Pricing (per 1M tokens) — mirrors session-parser.worker.ts ─────────────
 
@@ -452,6 +454,11 @@ class SessionAnalyticsService {
    * Get analytics summary for a time range.
    */
   async getSummary(timeRange: "7d" | "30d" | "90d" | "year"): Promise<AnalyticsData> {
+    const settings = await settingsService.read()
+    if (settings.activeProvider !== "claude") {
+      return this.getLightweightProviderSummary(timeRange)
+    }
+
     const index = await this.refreshIndex()
     const sessions = this.filterSessionsByTimeRange(index, timeRange)
 
@@ -546,6 +553,11 @@ class SessionAnalyticsService {
    * Includes days with 0 count.
    */
   async getHeatmap(): Promise<ActivityDay[]> {
+    const settings = await settingsService.read()
+    if (settings.activeProvider !== "claude") {
+      return this.getLightweightProviderHeatmap()
+    }
+
     const index = await this.refreshIndex()
 
     // Build a count map from all sessions
@@ -575,6 +587,24 @@ class SessionAnalyticsService {
    * Get "wrapped" data: all-time summary with highlights.
    */
   async getWrapped(): Promise<WrappedData> {
+    const settings = await settingsService.read()
+    if (settings.activeProvider !== "claude") {
+      const summary = await this.getLightweightProviderSummary("year")
+      return {
+        totalSessions: summary.totalSessions,
+        totalCostUsd: summary.totalCostUsd,
+        totalTokens: summary.totalInputTokens + summary.totalOutputTokens,
+        totalDurationSeconds: summary.totalDurationSeconds,
+        longestSession: null,
+        mostExpensiveSession: null,
+        favoriteModel: null,
+        topTools: [],
+        activityByDay: summary.activityByDay,
+        peakHour: null,
+        streak: 0,
+      }
+    }
+
     const index = await this.refreshIndex()
 
     const allSessions = Object.values(index.sessions)
@@ -731,6 +761,68 @@ class SessionAnalyticsService {
     }
 
     return maxStreak
+  }
+
+  private async getLightweightProviderSummary(
+    timeRange: "7d" | "30d" | "90d" | "year",
+  ): Promise<AnalyticsData> {
+    const projects = await projectDiscoveryService.getProjects("codex")
+    const now = Date.now()
+    const windowDays = timeRange === "7d" ? 7 : timeRange === "30d" ? 30 : timeRange === "90d" ? 90 : 365
+    const cutoff = now - windowDays * 24 * 60 * 60 * 1000
+    const dayCountMap: Record<string, number> = {}
+    const topProjectsMap: Record<string, number> = {}
+    let totalSessions = 0
+
+    for (const project of projects) {
+      for (const session of project.sessions) {
+        const stamp = session.lastModified.getTime()
+        if (stamp < cutoff) continue
+        totalSessions++
+        const dateStr = session.lastModified.toISOString().slice(0, 10)
+        dayCountMap[dateStr] = (dayCountMap[dateStr] || 0) + 1
+        topProjectsMap[project.projectDir] = (topProjectsMap[project.projectDir] || 0) + 1
+      }
+    }
+
+    return {
+      totalSessions,
+      totalCostUsd: 0,
+      totalInputTokens: 0,
+      totalOutputTokens: 0,
+      totalCacheReadTokens: 0,
+      totalCacheCreationTokens: 0,
+      totalDurationSeconds: 0,
+      averageCostPerSession: 0,
+      averageDurationSeconds: 0,
+      activityByDay: Object.entries(dayCountMap)
+        .map(([date, count]) => ({ date, count }))
+        .sort((a, b) => a.date.localeCompare(b.date)),
+      modelUsage: {},
+      topProjects: Object.entries(topProjectsMap)
+        .map(([projectPath, sessionCount]) => ({ projectPath, sessionCount, totalCost: 0 }))
+        .sort((a, b) => b.sessionCount - a.sessionCount)
+        .slice(0, 10),
+      toolUsage: {},
+    }
+  }
+
+  private async getLightweightProviderHeatmap(): Promise<ActivityDay[]> {
+    const summary = await this.getLightweightProviderSummary("year")
+    const dayCountMap = Object.fromEntries(summary.activityByDay.map((day) => [day.date, day.count]))
+    const result: ActivityDay[] = []
+    const now = new Date()
+
+    for (let i = 364; i >= 0; i--) {
+      const date = new Date(now.getTime() - i * 24 * 60 * 60 * 1000)
+      const dateStr = this.formatDate(date)
+      result.push({
+        date: dateStr,
+        count: dayCountMap[dateStr] || 0,
+      })
+    }
+
+    return result
   }
 }
 

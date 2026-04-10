@@ -1,10 +1,13 @@
 import { ArrowLeft, Calendar, Clock, MessageSquare, Coins, Zap, Timer } from "lucide-react";
 import { useTranslation } from "../../i18n/LanguageContext";
 import type { SessionStats } from "../../../shared/types/session-detail";
+import type { ProviderId } from "@shared/types/provider";
+import { ProviderBadge } from "../shared/ProviderBadge";
 
 interface SessionHeaderProps {
   projectPath: string;
   sessionId: string;
+  provider: ProviderId;
   stats: SessionStats;
   messageCount: number;
   onBack?: () => void;
@@ -27,6 +30,7 @@ function formatTokens(count: number): string {
 export function SessionHeader({
   projectPath,
   sessionId,
+  provider,
   stats,
   messageCount,
   onBack,
@@ -57,6 +61,7 @@ export function SessionHeader({
             {sessionId.slice(0, 12)}...
           </p>
         </div>
+        <ProviderBadge providerId={provider} compact />
       </div>
 
       {/* Stats row */}
@@ -71,7 +76,9 @@ export function SessionHeader({
         </span>
         <span className="flex items-center gap-1">
           <Coins className="w-3.5 h-3.5" />
-          {t("sessionDetail.cost", { amount: stats.estimatedCostUsd.toFixed(4) })}
+          {stats.costUnavailable
+            ? "Cost unavailable"
+            : t("sessionDetail.cost", { amount: stats.estimatedCostUsd.toFixed(4) })}
         </span>
         <span className="flex items-center gap-1">
           <Timer className="w-3.5 h-3.5" />

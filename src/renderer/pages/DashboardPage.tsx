@@ -1,319 +1,421 @@
-import { useEffect, useCallback } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useMemo } from "react";
+import {
+  Activity,
+  Boxes,
+  Cpu,
+  FolderGit2,
+  Sparkles,
+  TerminalSquare,
+  Wrench,
+} from "lucide-react";
+import type { EChartsCoreOption } from "echarts/core";
 import { useAgentStore } from "../stores/agentStore";
 import { useSkillStore } from "../stores/skillStore";
 import { usePluginStore } from "../stores/pluginStore";
-import { useCommandStore } from "../stores/commandStore";
-import { useHookStore } from "../stores/hookStore";
 import { useMCPStore } from "../stores/mcpStore";
 import { useAnalyticsStore } from "../stores/analyticsStore";
-import { useFileWatcher } from "../hooks/useFileWatcher";
-import { PageHeader } from "../components/shared/PageHeader";
-import { TimeRangeTabs } from "../components/dashboard/TimeRangeTabs";
-import { OverviewStatCards } from "../components/dashboard/OverviewStatCards";
-import { CostChart } from "../components/dashboard/CostChart";
-import { ActivityHeatmap } from "../components/dashboard/ActivityHeatmap";
-import {
-  Plus,
-  Puzzle,
-  Terminal,
-  Command,
-  Webhook,
-  FileText,
-} from "lucide-react";
+import { useSettingsStore } from "../stores/settingsStore";
 import { useTranslation } from "../i18n/LanguageContext";
+import { PageHeader } from "../components/shared/PageHeader";
+import { ProviderBadge } from "../components/shared/ProviderBadge";
+import { SectionPanel } from "../components/shared/SectionPanel";
+import { EmptyState } from "../components/shared/EmptyState";
+import { IconAvatar } from "../components/shared/IconAvatar";
+import { EChart } from "../components/shared/EChart";
+import { ProviderGlyph, getProviderLabel } from "../utils/branding";
 
 export function DashboardPage(): JSX.Element {
   const { t } = useTranslation();
+  const { settings, fetch: fetchSettings } = useSettingsStore();
   const agents = useAgentStore((s) => s.items);
-  const agentsFetch = useAgentStore((s) => s.fetch);
   const skills = useSkillStore((s) => s);
-  const skillsFetch = useSkillStore((s) => s.fetch);
   const plugins = usePluginStore((s) => s.items);
-  const pluginsFetch = usePluginStore((s) => s.fetch);
-  const commands = useCommandStore((s) => s.items);
-  const commandsFetch = useCommandStore((s) => s.fetch);
-  const hooks = useHookStore((s) => s.items);
-  const hooksFetch = useHookStore((s) => s.fetch);
   const mcpServers = useMCPStore((s) => s.servers);
-  const mcpFetch = useMCPStore((s) => s.fetchServers);
-
-  const analyticsData = useAnalyticsStore((s) => s.data);
+  const analytics = useAnalyticsStore((s) => s.data);
   const analyticsLoading = useAnalyticsStore((s) => s.loading);
-  const heatmapData = useAnalyticsStore((s) => s.heatmapData);
-  const heatmapLoading = useAnalyticsStore((s) => s.heatmapLoading);
-  const timeRange = useAnalyticsStore((s) => s.timeRange);
-  const setTimeRange = useAnalyticsStore((s) => s.setTimeRange);
-  const fetchAnalyticsSummary = useAnalyticsStore((s) => s.fetchSummary);
-  const fetchHeatmap = useAnalyticsStore((s) => s.fetchHeatmap);
+  const fetchAgents = useAgentStore((s) => s.fetch);
+  const fetchSkills = useSkillStore((s) => s.fetch);
+  const fetchPlugins = usePluginStore((s) => s.fetch);
+  const fetchMcp = useMCPStore((s) => s.fetchServers);
+  const fetchAnalytics = useAnalyticsStore((s) => s.fetchSummary);
 
   useEffect(() => {
-    agentsFetch();
-    skillsFetch();
-    pluginsFetch();
-    commandsFetch();
-    hooksFetch();
-    mcpFetch();
-    fetchAnalyticsSummary();
-    fetchHeatmap();
-  }, [
-    agentsFetch,
-    skillsFetch,
-    pluginsFetch,
-    commandsFetch,
-    hooksFetch,
-    mcpFetch,
-    fetchAnalyticsSummary,
-    fetchHeatmap,
-  ]);
+    fetchSettings();
+  }, [fetchSettings]);
 
-  const refresh = useCallback(() => {
-    agentsFetch();
-    skillsFetch();
-    pluginsFetch();
-    commandsFetch();
-    hooksFetch();
-    mcpFetch();
-  }, [
-    agentsFetch,
-    skillsFetch,
-    pluginsFetch,
-    commandsFetch,
-    hooksFetch,
-    mcpFetch,
-  ]);
+  if (!settings) {
+    return <div className="py-12 text-center text-[var(--text-muted)]">{t("common.loading")}</div>;
+  }
 
-  useFileWatcher(refresh);
-
+  const activeProvider = settings.activeProvider;
+  const totalSkills = skills.personal.length + skills.plugin.length;
+  const topProjects = analytics?.topProjects ?? [];
+  const activityByDay = analytics?.activityByDay ?? [];
+  const toolEntries = Object.entries(analytics?.toolUsage ?? {}).sort((a, b) => b[1] - a[1]).slice(0, 6);
+  const modelEntries = Object.entries(analytics?.modelUsage ?? {}).sort((a, b) => b[1] - a[1]).slice(0, 6);
   const stats = [
+    { label: "Projects", value: analytics?.topProjects.length ?? 0, icon: FolderGit2 },
+    { label: "Skills", value: totalSkills, icon: Sparkles },
+    { label: "Plugins", value: plugins.length, icon: Boxes },
+    { label: "MCP", value: mcpServers.length, icon: TerminalSquare },
+  ];
+
+  const inventoryChart = useMemo<EChartsCoreOption>(() => ({
+    animationDuration: 700,
+    grid: { left: 28, right: 14, top: 26, bottom: 28 },
+    tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
+    xAxis: {
+      type: "category",
+      data: stats.map((stat) => stat.label),
+      axisTick: { show: false },
+      axisLine: { show: false },
+      axisLabel: { color: "#94a3b8", fontSize: 11 },
+    },
+    yAxis: {
+      type: "value",
+      splitLine: { lineStyle: { color: "rgba(148,163,184,0.12)" } },
+      axisLabel: { color: "#94a3b8", fontSize: 11 },
+    },
+    series: [
+      {
+        type: "bar",
+        data: stats.map((stat, index) => ({
+          value: stat.value,
+          itemStyle: {
+            color: ["#f97316", "#8b5cf6", "#0ea5e9", "#14b8a6"][index],
+            borderRadius: [10, 10, 4, 4],
+          },
+        })),
+        barWidth: 28,
+      },
+    ],
+  }), [stats]);
+
+  const activityChart = useMemo<EChartsCoreOption>(() => ({
+    animationDuration: 700,
+    grid: { left: 18, right: 18, top: 20, bottom: 24 },
+    tooltip: { trigger: "axis" },
+    xAxis: {
+      type: "category",
+      boundaryGap: false,
+      data: activityByDay.map((day) => day.date.slice(5)),
+      axisLine: { show: false },
+      axisTick: { show: false },
+      axisLabel: { color: "#94a3b8", fontSize: 10 },
+    },
+    yAxis: {
+      type: "value",
+      splitLine: { lineStyle: { color: "rgba(148,163,184,0.12)" } },
+      axisLabel: { color: "#94a3b8", fontSize: 11 },
+    },
+    series: [
+      {
+        type: "line",
+        smooth: true,
+        symbol: "circle",
+        symbolSize: 7,
+        lineStyle: { color: "#f97316", width: 3 },
+        areaStyle: { color: "rgba(249,115,22,0.12)" },
+        itemStyle: { color: "#fb923c" },
+        data: activityByDay.map((day) => day.count),
+      },
+    ],
+  }), [activityByDay]);
+
+  const projectsChart = useMemo<EChartsCoreOption>(() => ({
+    animationDuration: 700,
+    grid: { left: 120, right: 18, top: 18, bottom: 20 },
+    tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
+    xAxis: {
+      type: "value",
+      splitLine: { lineStyle: { color: "rgba(148,163,184,0.12)" } },
+      axisLabel: { color: "#94a3b8", fontSize: 11 },
+    },
+    yAxis: {
+      type: "category",
+      data: topProjects.slice(0, 6).map((item) => item.projectPath.split("/").filter(Boolean).pop() || item.projectPath).reverse(),
+      axisLine: { show: false },
+      axisTick: { show: false },
+      axisLabel: { color: "#94a3b8", fontSize: 11, overflow: "truncate", width: 104 },
+    },
+    series: [
+      {
+        type: "bar",
+        data: topProjects.slice(0, 6).map((item) => item.sessionCount).reverse(),
+        barWidth: 18,
+        itemStyle: { color: "#0ea5e9", borderRadius: [0, 10, 10, 0] },
+      },
+    ],
+  }), [topProjects]);
+
+  const toolsChart = useMemo<EChartsCoreOption>(() => ({
+    animationDuration: 700,
+    grid: { left: 22, right: 16, top: 26, bottom: 34 },
+    tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
+    xAxis: {
+      type: "category",
+      data: toolEntries.map(([name]) => name),
+      axisLabel: { color: "#94a3b8", fontSize: 10, interval: 0, rotate: 18 },
+      axisLine: { show: false },
+      axisTick: { show: false },
+    },
+    yAxis: {
+      type: "value",
+      splitLine: { lineStyle: { color: "rgba(148,163,184,0.12)" } },
+      axisLabel: { color: "#94a3b8", fontSize: 11 },
+    },
+    series: [
+      {
+        type: "bar",
+        data: toolEntries.map(([, count]) => count),
+        barWidth: 22,
+        itemStyle: { color: "#8b5cf6", borderRadius: [10, 10, 4, 4] },
+      },
+    ],
+  }), [toolEntries]);
+
+  const modelsChart = useMemo<EChartsCoreOption>(() => ({
+    animationDuration: 700,
+    grid: { left: 22, right: 16, top: 20, bottom: 28 },
+    tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
+    xAxis: {
+      type: "value",
+      splitLine: { lineStyle: { color: "rgba(148,163,184,0.12)" } },
+      axisLabel: { color: "#94a3b8", fontSize: 11 },
+    },
+    yAxis: {
+      type: "category",
+      data: modelEntries.map(([name]) => name).reverse(),
+      axisLine: { show: false },
+      axisTick: { show: false },
+      axisLabel: { color: "#94a3b8", fontSize: 11, overflow: "truncate", width: 110 },
+    },
+    series: [
+      {
+        type: "bar",
+        data: modelEntries.map(([, count]) => count).reverse(),
+        barWidth: 18,
+        itemStyle: { color: "#14b8a6", borderRadius: [0, 10, 10, 0] },
+      },
+    ],
+  }), [modelEntries]);
+
+  const runtimeSummary = [
     {
-      label: t("dashboard.stats.agents"),
-      count: agents.length,
-      icon: Terminal,
-      color: "bg-blue-500",
-      path: "/agents",
+      title: "Agents",
+      description:
+        activeProvider === "claude"
+          ? `${agents.length} Claude agents ready to run`
+          : "Agent editing stays Claude-only in this release",
     },
     {
-      label: t("dashboard.stats.skills"),
-      count: skills.personal.length + skills.plugin.length,
-      icon: FileText,
-      color: "bg-purple-500",
-      path: "/skills",
+      title: "Skills",
+      description: `${totalSkills} skill packages visible in ${getProviderLabel(activeProvider)}`,
     },
     {
-      label: t("dashboard.stats.plugins"),
-      count: plugins.length,
-      icon: Puzzle,
-      color: "bg-green-500",
-      path: "/plugins",
-    },
-    {
-      label: t("dashboard.stats.commands"),
-      count: commands.length,
-      icon: Command,
-      color: "bg-orange-500",
-      path: "/commands",
-    },
-    {
-      label: t("dashboard.stats.hooks"),
-      count: hooks.length,
-      icon: Webhook,
-      color: "bg-pink-500",
-      path: "/hooks",
-    },
-    {
-      label: t("dashboard.stats.mcpServers"),
-      count: mcpServers.length,
-      icon: Terminal,
-      color: "bg-cyan-500",
-      path: "/mcp",
+      title: "Plugins",
+      description:
+        plugins.length > 0
+          ? `${plugins.filter((plugin) => plugin.enabled).length} enabled add-ons`
+          : "No runtime add-ons detected yet",
     },
   ];
 
-  const quickActions = [
-    {
-      label: t("dashboard.quickActions.newAgent"),
-      icon: Plus,
-      path: "/agents/new",
-      color: "bg-blue-600 hover:bg-blue-700",
-    },
-    {
-      label: t("dashboard.quickActions.newSkill"),
-      icon: Plus,
-      path: "/skills/new",
-      color: "bg-purple-600 hover:bg-purple-700",
-    },
-    {
-      label: t("dashboard.quickActions.marketplace"),
-      icon: Puzzle,
-      path: "/marketplace",
-      color: "bg-green-600 hover:bg-green-700",
-    },
-    {
-      label: t("dashboard.quickActions.settings"),
-      icon: Terminal,
-      path: "/settings",
-      color: "bg-zinc-600 hover:bg-zinc-700",
-    },
-  ];
-
-  const personalAgents = agents
-    .filter((a) => a.source === "personal")
-    .slice(0, 5);
-  const personalSkills = skills.personal.slice(0, 5);
+  useEffect(() => {
+    if (!settings) return;
+    fetchAgents();
+    fetchSkills();
+    fetchPlugins();
+    fetchMcp();
+    fetchAnalytics();
+  }, [fetchAgents, fetchAnalytics, fetchMcp, fetchPlugins, fetchSkills, settings]);
 
   return (
-    <div>
+    <div className="space-y-6">
       <PageHeader
-        title={t("dashboard.title")}
-        description={t("dashboard.description")}
+        eyebrow="Runtime overview"
+        title="AI CLI workbench"
+        badge={<ProviderBadge providerId={activeProvider} />}
+        description="Inspect the active coding runtime, jump into projects, and manage the resources that shape each session."
       />
 
-      {/* Analytics Overview */}
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold">{t("dashboard.analytics.overview")}</h2>
-        <TimeRangeTabs value={timeRange} onChange={setTimeRange} />
-      </div>
-      <div className="mb-6">
-        <OverviewStatCards data={analyticsData} loading={analyticsLoading} />
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <CostChart data={analyticsData?.activityByDay ?? []} loading={analyticsLoading} />
-        <ActivityHeatmap data={heatmapData ?? []} loading={heatmapLoading} />
-      </div>
+      <section>
+        <div className="rounded-[32px] border border-[var(--border-soft)] bg-[var(--panel)] p-6 shadow-[var(--panel-shadow)]">
+          <div className="flex items-start justify-between gap-4">
+            <div className="max-w-2xl">
+              <p className="text-[11px] uppercase tracking-[0.2em] text-[var(--text-subtle)]">
+                Active runtime
+              </p>
+              <h2 className="mt-2 text-3xl font-semibold tracking-tight text-[var(--text-strong)]">
+                {getProviderLabel(activeProvider)}
+              </h2>
+              <p className="mt-3 max-w-xl text-sm leading-6 text-[var(--text-muted)]">
+                This dashboard adapts to the selected provider. Capabilities that do not exist for the current runtime stay visible as guided limitations instead of failing silently.
+              </p>
+            </div>
+            <div className="rounded-[28px] border border-[var(--border-soft)] bg-[var(--panel-muted)] p-2 shadow-[var(--panel-shadow)]">
+              <ProviderGlyph providerId={activeProvider} className="h-16 w-16" />
+            </div>
+          </div>
 
-      {/* Quick Actions */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-        {quickActions.map((action) => (
-          <Link
-            key={action.path}
-            to={action.path}
-            className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-white text-sm font-medium ${action.color} transition-colors`}
-          >
-            <action.icon className="w-4 h-4" />
-            {action.label}
-          </Link>
-        ))}
-      </div>
-
-      {/* Stats Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
-        {stats.map((stat) => (
-          <Link
-            key={stat.path}
-            to={stat.path}
-            className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-4 hover:border-blue-300 dark:hover:border-blue-700 transition-colors"
-          >
-            <div className="flex items-center gap-3 mb-2">
-              <span
-                className={`w-7 h-7 rounded-lg ${stat.color} flex items-center justify-center text-white`}
+          <div className="mt-8 grid gap-3 md:grid-cols-4">
+            {stats.map((stat) => (
+              <div
+                key={stat.label}
+                className="rounded-[24px] border border-[var(--border-soft)] bg-[var(--panel-muted)] px-4 py-4"
               >
-                <stat.icon className="w-4 h-4" />
-              </span>
-            </div>
-            <p className="text-2xl font-bold">{stat.count}</p>
-            <p className="text-xs text-zinc-500 dark:text-zinc-400">
-              {stat.label}
-            </p>
-          </Link>
-        ))}
-      </div>
-
-      {/* Content Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Personal Agents */}
-        <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-5">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold">
-              {t("dashboard.personalAgents")}
-            </h2>
-            <Link
-              to="/agents"
-              className="text-sm text-blue-500 hover:underline"
-            >
-              {t("dashboard.viewAll")}
-            </Link>
-          </div>
-          {personalAgents.length === 0 ? (
-            <p className="text-sm text-zinc-400">
-              {t("dashboard.noPersonalAgents")}
-            </p>
-          ) : (
-            <div className="space-y-2">
-              {personalAgents.map((agent) => (
-                <Link
-                  key={agent.name}
-                  to={`/agents/${agent.name}`}
-                  className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800/50"
-                >
-                  <div className="min-w-0">
-                    <span className="font-medium text-sm block truncate">
-                      {agent.name}
-                    </span>
-                    <p className="text-xs text-zinc-500 dark:text-zinc-400 truncate">
-                      {agent.description}
-                    </p>
-                  </div>
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 shrink-0 ml-2">
-                    {agent.model}
+                <div className="mb-4 flex items-center justify-between">
+                  <span className="text-xs uppercase tracking-[0.16em] text-[var(--text-subtle)]">
+                    {stat.label}
                   </span>
-                </Link>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Personal Skills */}
-        <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-5">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold">
-              {t("dashboard.personalSkills")}
-            </h2>
-            <Link
-              to="/skills"
-              className="text-sm text-blue-500 hover:underline"
-            >
-              {t("dashboard.viewAll")}
-            </Link>
+                  <stat.icon className="h-4 w-4 text-[var(--text-muted)]" />
+                </div>
+                <p className="text-2xl font-semibold text-[var(--text-strong)]">{stat.value}</p>
+              </div>
+            ))}
           </div>
-          {personalSkills.length === 0 ? (
-            <p className="text-sm text-zinc-400">
-              {t("dashboard.noPersonalSkills")}
-            </p>
-          ) : (
-            <div className="space-y-2">
-              {personalSkills.map((skill) => (
-                <Link
-                  key={skill.name}
-                  to={`/skills/personal/${skill.name}`}
-                  className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800/50"
-                >
-                  <div className="min-w-0">
-                    <span className="font-medium text-sm block truncate">
-                      {skill.name}
-                    </span>
-                    <p className="text-xs text-zinc-500 dark:text-zinc-400 truncate">
-                      {skill.description}
-                    </p>
-                  </div>
-                  {skill.userInvocable && (
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 shrink-0 ml-2">
-                      {t("common.invocable")}
-                    </span>
-                  )}
-                </Link>
-              ))}
-            </div>
-          )}
         </div>
-      </div>
+      </section>
 
-      {/* Keyboard Shortcut Hint */}
-      <div className="mt-6 text-center">
-        <p className="text-sm text-zinc-400">
-          {t("dashboard.searchHint", { shortcut: "\u2318K" })}
-        </p>
-      </div>
+      <section className="grid gap-4 xl:grid-cols-2">
+        <SectionPanel
+          title="Inventory mix"
+          description="How much configuration surface is currently visible to this runtime."
+          aside={<IconAvatar icon={Boxes} tone="muted" />}
+        >
+          <EChart option={inventoryChart} className="h-64 w-full" />
+        </SectionPanel>
+
+        <SectionPanel
+          title="Session cadence"
+          description="Recent activity trend from the active provider's session history."
+          aside={<IconAvatar icon={Activity} tone="muted" />}
+        >
+          {activityByDay.length > 0 ? (
+            <EChart option={activityChart} className="h-64 w-full" />
+          ) : (
+            <EmptyState
+              icon={Activity}
+              title="No activity trend yet"
+              description="Once sessions accumulate, this chart will show the pace of work over time."
+            />
+          )}
+        </SectionPanel>
+      </section>
+
+      <section className="grid gap-4 xl:grid-cols-3">
+        <SectionPanel title="Runtime summary" description="What is currently available for the selected provider.">
+          <div className="space-y-3">
+            {runtimeSummary.map((item) => (
+              <div
+                key={item.title}
+                className="rounded-[22px] border border-[var(--border-soft)] bg-[var(--panel-muted)] px-4 py-4"
+              >
+                <p className="text-sm font-semibold text-[var(--text-strong)]">{item.title}</p>
+                <p className="mt-1 text-sm text-[var(--text-muted)]">{item.description}</p>
+              </div>
+            ))}
+          </div>
+        </SectionPanel>
+
+        <SectionPanel
+          title="Top workspaces"
+          description="Projects that dominate the current provider's recent session history."
+          aside={<IconAvatar icon={FolderGit2} tone="muted" />}
+        >
+          {topProjects.length > 0 ? (
+            <EChart option={projectsChart} className="h-72 w-full" />
+          ) : (
+            <EmptyState
+              icon={FolderGit2}
+              title="No workspace leaders yet"
+              description="As soon as sessions are grouped by project, the busiest workspaces will appear here."
+            />
+          )}
+        </SectionPanel>
+
+        <SectionPanel
+          title="Tool pressure"
+          description="The most frequently used tools surfaced from parsed session transcripts."
+          aside={<IconAvatar icon={Wrench} tone="muted" />}
+        >
+          {toolEntries.length > 0 ? (
+            <EChart option={toolsChart} className="h-72 w-full" />
+          ) : (
+            <EmptyState
+              icon={Wrench}
+              title="No tool calls recorded"
+              description="This provider has not produced parsed tool activity yet, so the chart will fill in later."
+            />
+          )}
+        </SectionPanel>
+      </section>
+
+      <section className="grid gap-4 lg:grid-cols-[1.2fr,0.8fr]">
+        <SectionPanel
+          title="Model mix"
+          description="When the runtime exposes model usage, it lands here as a quick comparison chart."
+          aside={<IconAvatar icon={Cpu} tone="muted" />}
+        >
+          {modelEntries.length > 0 ? (
+            <EChart option={modelsChart} className="h-72 w-full" />
+          ) : (
+            <EmptyState
+              icon={Cpu}
+              title="Model usage is still sparse"
+              description="Claude sessions usually populate this chart first. Codex and Gemini will become more descriptive as their transcripts expose richer model metadata."
+            />
+          )}
+        </SectionPanel>
+
+        <SectionPanel title="Activity pulse" description="A lighter summary for providers that do not expose Claude-style token accounting.">
+          {analytics && analytics.totalSessions > 0 ? (
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="rounded-[22px] border border-[var(--border-soft)] bg-[var(--panel-muted)] px-4 py-4">
+                <p className="text-xs uppercase tracking-[0.16em] text-[var(--text-subtle)]">Sessions</p>
+                <p className="mt-2 text-2xl font-semibold text-[var(--text-strong)]">{analytics.totalSessions}</p>
+                <p className="mt-2 text-sm text-[var(--text-muted)]">
+                  {analytics.topProjects[0]
+                    ? `Most active project: ${analytics.topProjects[0].projectPath.split("/").pop()}`
+                    : "No dominant project yet"}
+                </p>
+              </div>
+              <div className="rounded-[22px] border border-[var(--border-soft)] bg-[var(--panel-muted)] px-4 py-4">
+                <p className="text-xs uppercase tracking-[0.16em] text-[var(--text-subtle)]">Cost visibility</p>
+                <p className="mt-2 text-lg font-semibold text-[var(--text-strong)]">
+                  {activeProvider === "claude" ? `$${analytics.totalCostUsd.toFixed(2)}` : "Unavailable"}
+                </p>
+                <p className="mt-2 text-sm text-[var(--text-muted)]">
+                  {activeProvider === "claude"
+                    ? "Claude sessions include estimated token cost."
+                    : "Codex and Gemini summaries stay focused on session volume for now."}
+                </p>
+              </div>
+              <div className="rounded-[22px] border border-[var(--border-soft)] bg-[var(--panel-muted)] px-4 py-4 sm:col-span-2">
+                <p className="text-xs uppercase tracking-[0.16em] text-[var(--text-subtle)]">Fetcher state</p>
+                <div className="mt-3 flex items-center justify-between gap-3">
+                  <p className="text-lg font-semibold text-[var(--text-strong)]">
+                    {analyticsLoading ? "Refreshing analytics..." : "Analytics ready"}
+                  </p>
+                  <span className={`rounded-full px-3 py-1 text-xs font-medium ${
+                    analyticsLoading
+                      ? "bg-amber-500/15 text-amber-700 dark:text-amber-300"
+                      : "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300"
+                  }`}>
+                    {analyticsLoading ? "Syncing" : "Live"}
+                  </span>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <EmptyState
+              icon={Activity}
+              title="No runtime activity yet"
+              description="Open a project or start a session from your selected provider. Once sessions exist, the dashboard will summarize recent activity here."
+            />
+          )}
+        </SectionPanel>
+      </section>
     </div>
   );
 }

@@ -3,6 +3,8 @@ import { join } from 'path'
 
 export const HOME_DIR = homedir()
 export const CLAUDE_DIR = join(HOME_DIR, '.claude')
+export const CODEX_DIR = join(HOME_DIR, '.codex')
+export const GEMINI_DIR = join(HOME_DIR, '.gemini')
 export const AGENTS_DIR = join(CLAUDE_DIR, 'agents')
 export const SKILLS_DIR = join(CLAUDE_DIR, 'skills')
 export const PLUGINS_DIR = join(CLAUDE_DIR, 'plugins')
@@ -16,3 +18,7 @@ export const CC_KNOWN_MARKETPLACES_FILE = join(PLUGINS_DIR, 'known_marketplaces.
 export const CC_INSTALLED_PLUGINS_FILE = join(PLUGINS_DIR, 'installed_plugins.json')
 export const SETTINGS_FILE = join(CLAUDE_DIR, 'settings.json')
 export const CLAUDE_JSON_FILE = join(HOME_DIR, '.claude.json')
+export const CODEX_CONFIG_FILE = join(CODEX_DIR, 'config.toml')
+export const CODEX_SKILLS_DIR = join(CODEX_DIR, 'skills')
+export const CODEX_SESSIONS_DIR = join(CODEX_DIR, 'sessions')
+export const CODEX_SESSION_INDEX_FILE = join(CODEX_DIR, 'session_index.jsonl')
