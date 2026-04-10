@@ -17,10 +17,10 @@ export function ProviderSwitcher(): JSX.Element {
   }
 
   return (
-    <div className="relative">
+    <div className="relative no-drag">
       <button
         onClick={() => setOpen((value) => !value)}
-        className="flex items-center gap-3 rounded-2xl border border-[var(--border-soft)] bg-[var(--panel)] px-4 py-2.5 shadow-[var(--panel-shadow)] transition hover:border-[var(--border-strong)]"
+        className="no-drag flex items-center gap-3 rounded-2xl border border-[var(--border-soft)] bg-[var(--panel)] px-4 py-2.5 shadow-[var(--panel-shadow)] transition hover:border-[var(--border-strong)]"
       >
         <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[var(--panel-muted)] p-1">
           <ProviderGlyph providerId={activeProvider.id} className="h-full w-full" />
@@ -37,7 +37,7 @@ export function ProviderSwitcher(): JSX.Element {
       </button>
 
       {open && (
-        <div className="absolute left-0 top-[calc(100%+12px)] z-30 min-w-full overflow-hidden rounded-3xl border border-[var(--border-soft)] bg-[var(--panel)] p-2 shadow-2xl">
+        <div className="no-drag absolute left-0 top-[calc(100%+12px)] z-30 min-w-full overflow-hidden rounded-3xl border border-[var(--border-soft)] bg-[var(--panel)] p-2 shadow-2xl">
           {providers.map((provider) => (
             <button
               key={provider.id}
@@ -45,7 +45,7 @@ export function ProviderSwitcher(): JSX.Element {
                 setOpen(false);
                 await setActiveProvider(provider.id);
               }}
-              className="flex w-full items-center gap-3 rounded-2xl px-3 py-3 text-left transition hover:bg-[var(--panel-muted)]"
+              className="no-drag flex w-full items-center gap-3 rounded-2xl px-3 py-3 text-left transition hover:bg-[var(--panel-muted)]"
             >
               <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--panel-muted)] p-1">
                 <ProviderGlyph providerId={provider.id} className="h-full w-full" />
