@@ -42,12 +42,7 @@ export function DashboardPage(): JSX.Element {
   useEffect(() => {
     fetchSettings();
   }, [fetchSettings]);
-
-  if (!settings) {
-    return <div className="py-12 text-center text-[var(--text-muted)]">{t("common.loading")}</div>;
-  }
-
-  const activeProvider = settings.activeProvider;
+  const activeProvider = settings?.activeProvider ?? "claude";
   const totalSkills = skills.personal.length + skills.plugin.length;
   const topProjects = analytics?.topProjects ?? [];
   const activityByDay = analytics?.activityByDay ?? [];
@@ -229,6 +224,10 @@ export function DashboardPage(): JSX.Element {
     fetchMcp();
     fetchAnalytics();
   }, [fetchAgents, fetchAnalytics, fetchMcp, fetchPlugins, fetchSkills, settings]);
+
+  if (!settings) {
+    return <div className="py-12 text-center text-[var(--text-muted)]">{t("common.loading")}</div>;
+  }
 
   return (
     <div className="space-y-6">
